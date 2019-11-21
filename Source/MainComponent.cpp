@@ -11,7 +11,8 @@
 
 //==============================================================================
 MainComponent::MainComponent() : openButton("Open"), playButton("Play"), stopButton("Stop"), state(Stopped),
-thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5)
+thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5),
+keyPressPlay(KeyPress::spaceKey)
 {
 	// Make sure you set the size of the component after
 	// you add any child components.
@@ -24,6 +25,7 @@ thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positio
 	addAndMakeVisible(&playButton);
 	playButton.setColour(TextButton::buttonColourId, Colours::green);
 	playButton.setEnabled(false);
+	playButton.addShortcut(keyPressPlay);
 
 	stopButton.onClick = [this] {stopButtonClicked(); };
 	addAndMakeVisible(&stopButton);
@@ -41,11 +43,15 @@ thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positio
 
 	addAndMakeVisible(gainSlider);
 	gainSlider.setSliderStyle(Slider::LinearVertical);
-	gainSlider.setRange(-1.0f, 1.0f, 0.01);
+	gainSlider.setRange(0.0f, 1.0f, 0.01);
 	gainSlider.setValue(gain);
 	gainSlider.setTextBoxStyle(Slider::TextBoxBelow, true, 40, 30);
+	gainSlider.addListener(this);
+	gainSlider.setSkewFactorFromMidPoint(0.25);
 
-
+	addAndMakeVisible(debugLabel);
+	debugLabel.setText("This little area could display hints in the future but for now it displays debug messages. ", dontSendNotification);
+	
 
 	// Some platforms require permissions to open input channels so request that here
 	if (RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
@@ -111,6 +117,27 @@ void MainComponent::resized()
 	positionOverlay.setBounds(thumbnailBounds);
 
 	gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight()-150, 40, thumbnailBounds.getHeight()+10);
+
+	debugLabel.setBounds(5, getHeight() - 50, getWidth(), 30);
+}
+
+void MainComponent::readFile(File myFile)
+{
+		AudioFormatReader* reader = formatManager.createReaderFor(myFile);
+		//get the file ready to play
+		if (reader != nullptr)
+		{
+			changeState(Stopped);
+			std::unique_ptr<AudioFormatReaderSource> newSource(new AudioFormatReaderSource(reader, true));
+			transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);
+			playButton.setEnabled(true);
+			playSource.reset(newSource.release());
+			playButton.setButtonText(PLAYINIT);
+			playButton.setColour(TextButton::buttonColourId, Colours::green);
+			thumbnailComponent.setFile(myFile);
+			debugLabel.setText("You opened an audio file. Aren't you clever? ", dontSendNotification);
+		}
+	
 }
 
 void MainComponent::openButtonClicked()
@@ -126,21 +153,7 @@ void MainComponent::openButtonClicked()
 		//what did the user choose? 
 		File myFile = chooser.getResult();
 		//read the file
-		AudioFormatReader* reader = formatManager.createReaderFor(myFile);
-		//get the file ready to play
-		if (reader != nullptr)
-		{
-			changeState(Stopped);
-			std::unique_ptr<AudioFormatReaderSource> newSource(new AudioFormatReaderSource(reader, true));
-			transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);
-			playButton.setEnabled(true);
-			playSource.reset(newSource.release());
-			playButton.setButtonText(PLAYINIT);
-			playButton.setColour(TextButton::buttonColourId, Colours::green);
-			thumbnailComponent.setFile(myFile);
-		}
-
-
+		readFile(myFile);
 	}
 
 }
@@ -230,9 +243,22 @@ void MainComponent::changeState(TransportState newState)
 
 void MainComponent::sliderValueChanged(Slider* slider)
 {
-	if (&gainSlider == slider)
+	if (slider == &gainSlider)
 	{
-		gainSlider.set
+	//	debugLabel.setText("volume slider changed",dontSendNotification);
 		transportSource.setGain(slider->getValue());
 	}
+}
+
+void MainComponent::filesDropped(const StringArray& files, int x, int y)
+{
+	// (isInterestedInFileDrag (files))
+	
+	readFile(files[0]);
+	debugLabel.setText("you tried to drop a file in, that's adventurous!",dontSendNotification);
+}
+
+bool MainComponent::isInterestedInFileDrag(const StringArray& files)
+{
+	return true;
 }
