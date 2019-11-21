@@ -9,7 +9,6 @@
 #include "MainComponent.h"
 #define PLAYINIT "Play"
 
-
 //==============================================================================
 MainComponent::MainComponent() : openButton("Open"), playButton("Play"), stopButton("Stop"), state(Stopped),
 thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5)
@@ -68,7 +67,7 @@ MainComponent::~MainComponent()
 	shutdownAudio();
 }
 
-//==============================================================================
+//==================================================================================
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
 	transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
