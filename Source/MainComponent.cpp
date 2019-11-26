@@ -16,7 +16,7 @@ keyPressPlay(KeyPress::spaceKey)
 {
 	// Make sure you set the size of the component after
 	// you add any child components.
-	setSize(600, 400);
+	setSize(1800, 800);
 
 	openButton.onClick = [this] {openButtonClicked(); };
 	addAndMakeVisible(&openButton);
@@ -106,20 +106,6 @@ void MainComponent::paint(Graphics& g)
 
 }
 
-void MainComponent::resized()
-{
-	openButton.setBounds(10, 10, getWidth() - 20, 20);
-	playButton.setBounds(10, 40, getWidth() - 20, 20);
-	stopButton.setBounds(10, 70, getWidth() - 20, 20);
-
-	Rectangle<int>thumbnailBounds(10, 100, getWidth() - 60, getHeight() - 160);
-	thumbnailComponent.setBounds(thumbnailBounds);
-	positionOverlay.setBounds(thumbnailBounds);
-
-	gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight()-150, 40, thumbnailBounds.getHeight()+10);
-
-	debugLabel.setBounds(5, getHeight() - 50, getWidth(), 30);
-}
 
 void MainComponent::readFile(File myFile)
 {
@@ -259,6 +245,24 @@ void MainComponent::filesDropped(const StringArray& files, int x, int y)
 }
 
 bool MainComponent::isInterestedInFileDrag(const StringArray& files)
+
 {
 	return true;
+}
+
+void MainComponent::resized()
+{
+	int buttonBorder = 10;
+	Rectangle<int>wavPlayerBounds(600, 0, 600, 600);
+	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
+	playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
+	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
+
+	//Rectangle<int>thumbnailBounds(10, 100, getWidth() - 60, getHeight() - 160);
+	thumbnailComponent.setBounds(wavPlayerBounds.getX(),wavPlayerBounds.getHeight()/2,wavPlayerBounds.getWidth(),wavPlayerBounds.getHeight()/2);
+	positionOverlay.setBounds(wavPlayerBounds.getX(),wavPlayerBounds.getHeight()/2,wavPlayerBounds.getWidth(),wavPlayerBounds.getHeight()/2);
+
+	//gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight() - 150, 40, thumbnailBounds.getHeight() + 10);
+
+	debugLabel.setBounds(wavPlayerBounds.getX(), thumbnailComponent.getY() + thumbnailComponent.getHeight(), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
 }
