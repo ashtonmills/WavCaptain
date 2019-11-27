@@ -52,6 +52,7 @@ keyPressPlay(KeyPress::spaceKey)
 	addAndMakeVisible(debugLabel);
 	debugLabel.setText("This little area could display hints in the future but for now it displays debug messages. ", dontSendNotification);
 	
+	addAndMakeVisible(localTableList);
 
 	// Some platforms require permissions to open input channels so request that here
 	if (RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
@@ -265,4 +266,6 @@ void MainComponent::resized()
 	//gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight() - 150, 40, thumbnailBounds.getHeight() + 10);
 
 	debugLabel.setBounds(wavPlayerBounds.getX(), thumbnailComponent.getY() + thumbnailComponent.getHeight(), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
+
+	localTableList.setBounds(0, 0, getWidth() / 3, getHeight());
 }

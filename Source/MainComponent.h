@@ -10,6 +10,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "localTableList.h"
 
 //==============================================================================
 /*
@@ -203,6 +204,8 @@ private:
 	Label debugLabel;
 
 	KeyPress keyPressPlay;
+
+	LocalTableList localTableList;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
