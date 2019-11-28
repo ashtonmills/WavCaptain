@@ -35,12 +35,14 @@ class LocalTableList : public Component,
 public:
 	LocalTableList() : loadDirButton ("choose local directory")
 	{
-		setSize(600, 800);
+		setSize(400, 750);
 		addAndMakeVisible(loadDirButton);
 		loadDirButton.onClick = [this] {loadData(); };
 		
 		addAndMakeVisible(table);
 		//loadData();
+
+		table.setRowHeight(25);
 	}
 
 	int getNumRows() override
@@ -152,7 +154,7 @@ public:
 	{
 		loadDirButton.setBounds(5, 5, getWidth()-10, 30);
 	//	debugLabel.setBounds(100, 500, 500, 30);
-		table.setBounds(5, 50, 590, 745);
+		table.setBounds(0, 50, 400, 700);
 	}
 
 	void debugLabelMsg(String message)
@@ -238,7 +240,7 @@ public:
 
 	}
 
-	void makeLocalXml(File& localDir)
+	File makeLocalXml(File& localDir)
 	{
 		XmlElement localDirXml("LOCALDIR");
 
@@ -250,7 +252,7 @@ public:
 		XmlElement* column1 = new XmlElement("COLUMN");
 		column1->setAttribute("columnId", "1");
 		column1->setAttribute("name", "FileName");
-		column1->setAttribute("width", "150");
+		column1->setAttribute("width", "200");
 		header->addChildElement(column1);
 
 		XmlElement* column2 = new XmlElement("COLUMN");
@@ -262,13 +264,13 @@ public:
 		XmlElement* column3 = new XmlElement("COLUMN");
 		column3->setAttribute("columnId", "3");
 		column3->setAttribute("name", "Channels");
-		column3->setAttribute("width", "50");
+		column3->setAttribute("width", "70");
 		header->addChildElement(column3);
 
 		XmlElement* column4 = new XmlElement("COLUMN");
 		column4->setAttribute("columnId", "4");
 		column4->setAttribute("name", "DateModified");
-		column4->setAttribute("width", "150");
+		column4->setAttribute("width", "200");
 		header->addChildElement(column4);
 
 		XmlElement* column5 = new XmlElement("COLUMN");
@@ -292,13 +294,24 @@ public:
 		XmlElement* data = new XmlElement("DATA");
 		localDirXml.addChildElement(data);
 
-		XmlElement* file1 = new XmlElement("FILE");
-		file1->setAttribute("FileName", "Whoosh_01");
-		file1->setAttribute("SampleRate", "44100");
-		file1->setAttribute("Channels", "2");
-		file1->setAttribute("DateModified", "30/10/1987");
-		file1->setAttribute("select", "0");
-		data->addChildElement(file1);
+		//XmlElement* file1 = new XmlElement("FILE");
+		//file1->setAttribute("FileName", "Whoosh_01");
+		//file1->setAttribute("SampleRate", "44100");
+		//file1->setAttribute("Channels", "2");
+		//file1->setAttribute("DateModified", "30/10/1987");
+		//file1->setAttribute("select", "0");
+		//data->addChildElement(file1);
+
+		auto localDirFileArray = localDir.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav");
+
+		for (int i = 0; i < localDirFileArray.size(); ++i)
+		{
+			XmlElement* file  = new XmlElement("FILE");
+			file->setAttribute("FileName", localDirFileArray[i].getFileNameWithoutExtension());
+			file->setAttribute("DateModified", localDirFileArray[i].getLastModificationTime().toString(true,true,false,true));
+			data->addChildElement(file);
+
+		}
 
 		//XmlElement* pumpkin1 = new XmlElement("PUMPKIN");
 		//pumpkin1->setAttribute("NAME", "Pumpkin");
@@ -324,6 +337,7 @@ public:
 		File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
 		localDirXml.writeTo(localDirDataFile);
 
+		return localDirDataFile;
 	}
 
 private:
@@ -401,20 +415,21 @@ private:
 
 	void loadData()
 	{
-	    File initDir = File("/Projects/PersonalLearning/User_JUCE_Modules/wavcaptain");
+		File initDir = File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory);
 		FileChooser directoryChooser("Choose local directory",initDir);
 		File dir;
 		if (directoryChooser.browseForDirectory())
 			 dir = directoryChooser.getResult();
 		
-		makeLocalXml(dir);
+	
 
 		int numTries = 0;
 
-		while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
-			dir = dir.getParentDirectory();
+	//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
+	//		dir = dir.getParentDirectory();
 
-		auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
+	//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
+		auto tableFile = makeLocalXml(dir);
 
 		if (tableFile.exists())
 		{

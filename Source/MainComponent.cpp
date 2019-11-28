@@ -16,7 +16,7 @@ keyPressPlay(KeyPress::spaceKey)
 {
 	// Make sure you set the size of the component after
 	// you add any child components.
-	setSize(1800, 800);
+	setSize(1200, 800);
 
 	openButton.onClick = [this] {openButtonClicked(); };
 	addAndMakeVisible(&openButton);
@@ -254,7 +254,7 @@ bool MainComponent::isInterestedInFileDrag(const StringArray& files)
 void MainComponent::resized()
 {
 	int buttonBorder = 10;
-	Rectangle<int>wavPlayerBounds(600, 0, 600, 600);
+	Rectangle<int>wavPlayerBounds(400, 0, 400, 800);
 	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
 	playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
 	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);

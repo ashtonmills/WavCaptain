@@ -2,14 +2,17 @@
 
 <LOCALDIR>
   <HEADERS>
-    <COLUMN columnId="1" name="FileName" width="150"/>
+    <COLUMN columnId="1" name="FileName" width="200"/>
     <COLUMN columnId="2" name="SampleRate" width="100"/>
-    <COLUMN columnId="3" name="Channels" width="50"/>
-    <COLUMN columnId="4" name="DateModified" width="150"/>
+    <COLUMN columnId="3" name="Channels" width="70"/>
+    <COLUMN columnId="4" name="DateModified" width="200"/>
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="Whoosh_01" SampleRate="44100" Channels="2" DateModified="30/10/1987"
-          select="0"/>
+    <FILE FileName="Irkalla Music Pitch ver_01 Ashton Mills" DateModified="17 Nov 2019 21:14"/>
+    <FILE FileName="mySoundRev5" DateModified="6 Aug 2019 15:23"/>
+    <FILE FileName="mySoundRevBackAgain" DateModified="6 Aug 2019 15:11"/>
+    <FILE FileName="shot_01_original_mono" DateModified="2 Aug 2019 18:14"/>
+    <FILE FileName="shot_01_original_stereo" DateModified="2 Aug 2019 18:07"/>
   </DATA>
 </LOCALDIR>
