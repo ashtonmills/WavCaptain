@@ -76,7 +76,7 @@ public:
 	Component* refreshComponentForCell(int rowNumber, int columnId, bool /*isRowSelected*/,
 		Component* existingComponentToUpdate) override
 	{
-		if (columnId == 4)
+		if (columnId == 5)
 		{
 			auto* mySelectionBox = dynamic_cast<SelectionColumnCustomComponent*>(existingComponentToUpdate);
 
@@ -89,7 +89,7 @@ public:
 			return mySelectionBox;
 		}
 
-		if (columnId == 3)
+		if (columnId == 1)
 		{
 			auto* textLabel = dynamic_cast<EditableTextCustomComponent*> (existingComponentToUpdate);
 
@@ -199,6 +199,12 @@ public:
 		column5->setAttribute("width", "150");
 		header->addChildElement(column5);
 
+		XmlElement* column6 = new XmlElement("COLUMN");
+		column6->setAttribute("columnId", "6");
+		column6->setAttribute("name", "select");
+		column6->setAttribute("width", "50");
+		header->addChildElement(column6);
+
 
 
 		//data
@@ -207,21 +213,21 @@ public:
 		plantList.addChildElement(data);
 
 		XmlElement* pumpkin1 = new XmlElement("PUMPKIN");
-		pumpkin1->setAttribute("name", "Pumpkin");
+		pumpkin1->setAttribute("NAME", "Pumpkin");
 		pumpkin1->setAttribute("family", "cucurbit");
 		pumpkin1->setAttribute("colour", "orange");
 		pumpkin1->setAttribute("type", "veg");
 		data->addChildElement(pumpkin1);
 
 		XmlElement* pumpkin2 = new XmlElement("PUMPKIN");
-		pumpkin2->setAttribute("name", "Pumpkin");
+		pumpkin2->setAttribute("NAME", "Pumpkin");
 		pumpkin2->setAttribute("family", "halloweeny");
 		pumpkin2->setAttribute("colour", "green");
 		pumpkin2->setAttribute("type", "zombie");
 		data->addChildElement(pumpkin2);
 
 		XmlElement* holly = new XmlElement("HOLLY");
-		holly->setAttribute("name", "Holly");
+		holly->setAttribute("NAME", "Holly");
 		holly->setAttribute("family", "aquifoliaceae");
 		holly->setAttribute("colour", "green");
 		holly->setAttribute("type", "tree");
@@ -229,6 +235,94 @@ public:
 
 		File plantListFile = File::getCurrentWorkingDirectory().getChildFile("plantList.xml");
 		plantList.writeTo(plantListFile);
+
+	}
+
+	void makeLocalXml(File& localDir)
+	{
+		XmlElement localDirXml("LOCALDIR");
+
+		//headers
+
+		XmlElement* header = new XmlElement("HEADERS");
+		localDirXml.addChildElement(header);
+
+		XmlElement* column1 = new XmlElement("COLUMN");
+		column1->setAttribute("columnId", "1");
+		column1->setAttribute("name", "FileName");
+		column1->setAttribute("width", "150");
+		header->addChildElement(column1);
+
+		XmlElement* column2 = new XmlElement("COLUMN");
+		column2->setAttribute("columnId", "2");
+		column2->setAttribute("name", "SampleRate");
+		column2->setAttribute("width", "100");
+		header->addChildElement(column2);
+
+		XmlElement* column3 = new XmlElement("COLUMN");
+		column3->setAttribute("columnId", "3");
+		column3->setAttribute("name", "Channels");
+		column3->setAttribute("width", "50");
+		header->addChildElement(column3);
+
+		XmlElement* column4 = new XmlElement("COLUMN");
+		column4->setAttribute("columnId", "4");
+		column4->setAttribute("name", "DateModified");
+		column4->setAttribute("width", "150");
+		header->addChildElement(column4);
+
+		XmlElement* column5 = new XmlElement("COLUMN");
+		column5->setAttribute("columnId", "5");
+		column5->setAttribute("name", "select");
+		column5->setAttribute("width", "50");
+		header->addChildElement(column5);
+
+		//XmlElement* column6 = new XmlElement("COLUMN");
+		//column6->setAttribute("columnId", "6");
+		//column6->setAttribute("name", "select");
+		//column6->setAttribute("width", "50");
+		//header->addChildElement(column6);
+
+
+
+		//data
+
+
+
+		XmlElement* data = new XmlElement("DATA");
+		localDirXml.addChildElement(data);
+
+		XmlElement* file1 = new XmlElement("FILE");
+		file1->setAttribute("FileName", "Whoosh_01");
+		file1->setAttribute("SampleRate", "44100");
+		file1->setAttribute("Channels", "2");
+		file1->setAttribute("DateModified", "30/10/1987");
+		file1->setAttribute("select", "0");
+		data->addChildElement(file1);
+
+		//XmlElement* pumpkin1 = new XmlElement("PUMPKIN");
+		//pumpkin1->setAttribute("NAME", "Pumpkin");
+		//pumpkin1->setAttribute("family", "cucurbit");
+		//pumpkin1->setAttribute("colour", "orange");
+		//pumpkin1->setAttribute("type", "veg");
+		//data->addChildElement(pumpkin1);
+
+		//XmlElement* pumpkin2 = new XmlElement("PUMPKIN");
+		//pumpkin2->setAttribute("NAME", "Pumpkin");
+		//pumpkin2->setAttribute("family", "halloweeny");
+		//pumpkin2->setAttribute("colour", "green");
+		//pumpkin2->setAttribute("type", "zombie");
+		//data->addChildElement(pumpkin2);
+
+		//XmlElement* holly = new XmlElement("HOLLY");
+		//holly->setAttribute("NAME", "Holly");
+		//holly->setAttribute("family", "aquifoliaceae");
+		//holly->setAttribute("colour", "green");
+		//holly->setAttribute("type", "tree");
+		//data->addChildElement(holly);
+
+		File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
+		localDirXml.writeTo(localDirDataFile);
 
 	}
 
@@ -307,33 +401,30 @@ private:
 
 	void loadData()
 	{
-		makeTreeListXml();
-		FileChooser directoryChooser("Choose local directory");
+	    File initDir = File("/Projects/PersonalLearning/User_JUCE_Modules/wavcaptain");
+		FileChooser directoryChooser("Choose local directory",initDir);
 		File dir;
 		if (directoryChooser.browseForDirectory())
 			 dir = directoryChooser.getResult();
+		
+		makeLocalXml(dir);
 
 		int numTries = 0;
 
 		while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
 			dir = dir.getParentDirectory();
 
-		auto tableFile = dir.getChildFile("Resources").getChildFile("plantList.xml");
-	
+		auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
 
 		if (tableFile.exists())
 		{
 			playlistData = XmlDocument::parse(tableFile);
-			dataList = playlistData->getChildByName("DATA");
 			columnList = playlistData->getChildByName("HEADERS");
+			dataList = playlistData->getChildByName("DATA");
+
 
 			numRows = dataList->getNumChildElements();
 		}
-		else
-		{
-			debugLabelMsg("no such file you nob");
-		}
-
 
 		table.setColour(ListBox::outlineColourId, Colours::lightgrey);
 		table.setOutlineThickness(1);
@@ -349,8 +440,8 @@ private:
 		}
 
 
-		//addAndMakeVisible(debugLabel);
-		//debugLabel.setText("default debug message", dontSendNotification);
+	/*	addAndMakeVisible(debugLabel);
+		debugLabel.setText("default debug message", dontSendNotification);*/
 		table.setMultipleSelectionEnabled(true);
 	}
 

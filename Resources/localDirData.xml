@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LOCALDIR>
+  <HEADERS>
+    <COLUMN columnId="1" name="FileName" width="150"/>
+    <COLUMN columnId="2" name="SampleRate" width="100"/>
+    <COLUMN columnId="3" name="Channels" width="50"/>
+    <COLUMN columnId="4" name="DateModified" width="150"/>
+    <COLUMN columnId="5" name="select" width="50"/>
+  </HEADERS>
+  <DATA>
+    <FILE FileName="Whoosh_01" SampleRate="44100" Channels="2" DateModified="30/10/1987"
+          select="0"/>
+  </DATA>
+</LOCALDIR>
