@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PLANTS>
+  <HEADERS>
+    <COLUMN columnId="1" name="ID" width="50"/>
+    <COLUMN columnId="2" name="NAME" width="150"/>
+    <COLUMN columnId="3" name="family" width="150"/>
+    <COLUMN columnId="4" name="colour" width="150"/>
+    <COLUMN columnId="5" name="type" width="150"/>
+  </HEADERS>
+  <DATA>
+    <PUMPKIN name="Pumpkin" family="cucurbit" colour="orange" type="veg"/>
+    <PUMPKIN name="Pumpkin" family="halloweeny" colour="green" type="zombie"/>
+    <HOLLY name="Holly" family="aquifoliaceae" colour="green" type="tree"/>
+  </DATA>
+</PLANTS>
