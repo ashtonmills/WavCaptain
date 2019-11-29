@@ -20,6 +20,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "MainComponent.h"
 
 
 //==============================================================================
@@ -33,12 +34,12 @@ class LocalTableList : public Component,
 	public TableListBoxModel
 {
 public:
-	LocalTableList(String chooseButtonText) : loadDirButton (chooseButtonText)
+	LocalTableList(String chooseButtonText) : loadDirButton(chooseButtonText)
 	{
 		setSize(500, 750);
 		addAndMakeVisible(loadDirButton);
 		loadDirButton.onClick = [this] {loadData(); };
-		
+
 		addAndMakeVisible(table);
 		//loadData();
 
@@ -56,7 +57,11 @@ public:
 		auto alternateColour = getLookAndFeel().findColour(ListBox::backgroundColourId)
 			.interpolatedWith(getLookAndFeel().findColour(ListBox::textColourId), 0.03f);
 		if (rowIsSelected)
+		{
 			g.fillAll(Colours::lightblue);
+			if (parent)
+				parent->readFile(localDirWavs[rowNumber - 1]);
+		}
 		else if (rowNumber % 2)
 			g.fillAll(alternateColour);
 	}
@@ -158,7 +163,7 @@ public:
 		loadDirButton.setBounds(area.removeFromTop(dirButtonHeight));
 		//loadDirButton.setBounds(5, 5, getWidth()-10, 30);
 	//	debugLabel.setBounds(100, 500, 500, 30);
-		table.setBounds(area.removeFromTop(getHeight()-dirButtonHeight));
+		table.setBounds(area.removeFromTop(getHeight() - dirButtonHeight));
 	}
 
 	void debugLabelMsg(String message)
@@ -166,89 +171,11 @@ public:
 		debugLabel.setText(message, dontSendNotification);
 	}
 
-	void makeTreeListXml() 
-	{
-		XmlElement plantList ("PLANTS");
-
-		//headers
-
-	    XmlElement* header = new XmlElement("HEADERS");
-		plantList.addChildElement(header);
-
-		XmlElement* column1 = new XmlElement("COLUMN");
-		column1->setAttribute("columnId", "1");
-		column1->setAttribute("name", "ID");
-		column1->setAttribute("width", "50");
-		header->addChildElement(column1);
-
-		XmlElement* column2 = new XmlElement("COLUMN");
-		column2->setAttribute("columnId", "2");
-		column2->setAttribute("name", "NAME");
-		column2->setAttribute("width", "150");
-		header->addChildElement(column2);
-
-		XmlElement* column3 = new XmlElement("COLUMN");
-		column3->setAttribute("columnId", "3");
-		column3->setAttribute("name", "family");
-		column3->setAttribute("width", "150");
-		header->addChildElement(column3);
-
-		XmlElement* column4 = new XmlElement("COLUMN");
-		column4->setAttribute("columnId", "4");
-		column4->setAttribute("name", "colour");
-		column4->setAttribute("width", "150");
-		header->addChildElement(column4);
-
-		XmlElement* column5 = new XmlElement("COLUMN");
-		column5->setAttribute("columnId", "5");
-		column5->setAttribute("name", "type");
-		column5->setAttribute("width", "150");
-		header->addChildElement(column5);
-
-		XmlElement* column6 = new XmlElement("COLUMN");
-		column6->setAttribute("columnId", "6");
-		column6->setAttribute("name", "select");
-		column6->setAttribute("width", "50");
-		header->addChildElement(column6);
-
-
-
-		//data
-
-		XmlElement* data = new XmlElement("DATA");
-		plantList.addChildElement(data);
-
-		XmlElement* pumpkin1 = new XmlElement("PUMPKIN");
-		pumpkin1->setAttribute("NAME", "Pumpkin");
-		pumpkin1->setAttribute("family", "cucurbit");
-		pumpkin1->setAttribute("colour", "orange");
-		pumpkin1->setAttribute("type", "veg");
-		data->addChildElement(pumpkin1);
-
-		XmlElement* pumpkin2 = new XmlElement("PUMPKIN");
-		pumpkin2->setAttribute("NAME", "Pumpkin");
-		pumpkin2->setAttribute("family", "halloweeny");
-		pumpkin2->setAttribute("colour", "green");
-		pumpkin2->setAttribute("type", "zombie");
-		data->addChildElement(pumpkin2);
-
-		XmlElement* holly = new XmlElement("HOLLY");
-		holly->setAttribute("NAME", "Holly");
-		holly->setAttribute("family", "aquifoliaceae");
-		holly->setAttribute("colour", "green");
-		holly->setAttribute("type", "tree");
-		data->addChildElement(holly);
-
-		File plantListFile = File::getCurrentWorkingDirectory().getChildFile("plantList.xml");
-		plantList.writeTo(plantListFile);
-
-	}
-
 	File makeLocalXml(File& localDir)
 	{
 		XmlElement localDirXml("LOCALDIR");
 
-		//headers
+		//Generate the table headers
 
 		XmlElement* header = new XmlElement("HEADERS");
 		localDirXml.addChildElement(header);
@@ -283,37 +210,22 @@ public:
 		column5->setAttribute("width", "50");
 		header->addChildElement(column5);
 
-		//XmlElement* column6 = new XmlElement("COLUMN");
-		//column6->setAttribute("columnId", "6");
-		//column6->setAttribute("name", "select");
-		//column6->setAttribute("width", "50");
-		//header->addChildElement(column6);
 
-
-
-		//data
-
+		//iterate through the files in directory and add data to Xml
 
 
 		XmlElement* data = new XmlElement("DATA");
 		localDirXml.addChildElement(data);
 
-		//XmlElement* file1 = new XmlElement("FILE");
-		//file1->setAttribute("FileName", "Whoosh_01");
-		//file1->setAttribute("SampleRate", "44100");
-		//file1->setAttribute("Channels", "2");
-		//file1->setAttribute("DateModified", "30/10/1987");
-		//file1->setAttribute("select", "0");
-		//data->addChildElement(file1);
 
-		auto localDirFileArray = localDir.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav");
+		auto localDirWavs = localDir.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav");
 
-		for (int i = 0; i < localDirFileArray.size(); ++i)
+		for (int i = 0; i < localDirWavs.size(); ++i)
 		{
-			XmlElement* file  = new XmlElement("FILE");
-			file->setAttribute("FileName", localDirFileArray[i].getFileNameWithoutExtension());
-			file->setAttribute("DateModified", localDirFileArray[i].getLastModificationTime().toString(true,true,false,true));
-			auto reader = std::unique_ptr<AudioFormatReader>(formatManager.createReaderFor(localDirFileArray[i]));
+			XmlElement* file = new XmlElement("FILE");
+			file->setAttribute("FileName", localDirWavs[i].getFileNameWithoutExtension());
+			file->setAttribute("DateModified", localDirWavs[i].getLastModificationTime().toString(true, true, false, true));
+			auto reader = std::unique_ptr<AudioFormatReader>(formatManager.createReaderFor(localDirWavs[i]));
 			if (reader)
 			{
 				float fileSampleRate = reader->sampleRate / 1000;
@@ -328,27 +240,6 @@ public:
 			}
 
 		}
-
-		//XmlElement* pumpkin1 = new XmlElement("PUMPKIN");
-		//pumpkin1->setAttribute("NAME", "Pumpkin");
-		//pumpkin1->setAttribute("family", "cucurbit");
-		//pumpkin1->setAttribute("colour", "orange");
-		//pumpkin1->setAttribute("type", "veg");
-		//data->addChildElement(pumpkin1);
-
-		//XmlElement* pumpkin2 = new XmlElement("PUMPKIN");
-		//pumpkin2->setAttribute("NAME", "Pumpkin");
-		//pumpkin2->setAttribute("family", "halloweeny");
-		//pumpkin2->setAttribute("colour", "green");
-		//pumpkin2->setAttribute("type", "zombie");
-		//data->addChildElement(pumpkin2);
-
-		//XmlElement* holly = new XmlElement("HOLLY");
-		//holly->setAttribute("NAME", "Holly");
-		//holly->setAttribute("family", "aquifoliaceae");
-		//holly->setAttribute("colour", "green");
-		//holly->setAttribute("type", "tree");
-		//data->addChildElement(holly);
 
 		File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
 		localDirXml.writeTo(localDirDataFile);
@@ -368,6 +259,9 @@ private:
 	int numRows = 0;
 	Label debugLabel;
 	TextButton loadDirButton;
+	Array<File> localDirWavs;
+	Array<File> repoDirWavs;
+	MainComponent* parent = dynamic_cast<MainComponent*>(getParentComponent());
 	//==========================================================================
 	class EditableTextCustomComponent : public Label
 	{
@@ -434,19 +328,19 @@ private:
 	void loadData()
 	{
 		File initDir = File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory);
-		FileChooser directoryChooser("Choose local directory",initDir);
+		FileChooser directoryChooser("Choose local directory", initDir);
 		File dir;
 		if (directoryChooser.browseForDirectory())
-			 dir = directoryChooser.getResult();
-		
-	
+			dir = directoryChooser.getResult();
+
+
 
 		int numTries = 0;
 
-	//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
-	//		dir = dir.getParentDirectory();
+		//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
+		//		dir = dir.getParentDirectory();
 
-	//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
+		//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
 		auto tableFile = makeLocalXml(dir);
 
 		if (tableFile.exists())
@@ -473,8 +367,8 @@ private:
 		}
 
 
-	/*	addAndMakeVisible(debugLabel);
-		debugLabel.setText("default debug message", dontSendNotification);*/
+		/*	addAndMakeVisible(debugLabel);
+			debugLabel.setText("default debug message", dontSendNotification);*/
 		table.setMultipleSelectionEnabled(true);
 	}
 
