@@ -206,6 +206,7 @@ private:
 	KeyPress keyPressPlay;
 
 	LocalTableList localTableList;
+	LocalTableList destinationRepoList;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

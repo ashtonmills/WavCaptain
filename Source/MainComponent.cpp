@@ -11,7 +11,7 @@
 
 //==============================================================================
 MainComponent::MainComponent() : openButton("Open"), playButton("Play"), stopButton("Stop"), state(Stopped),
-thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5),
+thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList("Source Directory"), destinationRepoList("Destination Repo Directory"),
 keyPressPlay(KeyPress::spaceKey)
 {
 	// Make sure you set the size of the component after
@@ -53,6 +53,8 @@ keyPressPlay(KeyPress::spaceKey)
 	debugLabel.setText("This little area could display hints in the future but for now it displays debug messages. ", dontSendNotification);
 	
 	addAndMakeVisible(localTableList);
+	addAndMakeVisible(destinationRepoList);
+
 
 	// Some platforms require permissions to open input channels so request that here
 	if (RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
@@ -253,19 +255,24 @@ bool MainComponent::isInterestedInFileDrag(const StringArray& files)
 
 void MainComponent::resized()
 {
-	int buttonBorder = 10;
-	Rectangle<int>wavPlayerBounds(400, 0, 400, 800);
-	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
-	playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
-	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + buttonBorder + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
+	
+	int border = 10;
+	Rectangle<int> area (0,border,getWidth(),getHeight()-border);
+	thumbnailComponent.setBounds(area.removeFromTop(100));
+	positionOverlay.setBounds(thumbnailComponent.getBounds());
+	debugLabel.setBounds(area.removeFromBottom(30));
+	localTableList.setBounds(area.removeFromLeft(getWidth() / 3));
+	auto wavPlayerBounds = area.removeFromLeft(getWidth() / 3);
+	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
+	playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
+	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
 
 	//Rectangle<int>thumbnailBounds(10, 100, getWidth() - 60, getHeight() - 160);
-	thumbnailComponent.setBounds(wavPlayerBounds.getX(),wavPlayerBounds.getHeight()/2,wavPlayerBounds.getWidth(),wavPlayerBounds.getHeight()/2);
-	positionOverlay.setBounds(wavPlayerBounds.getX(),wavPlayerBounds.getHeight()/2,wavPlayerBounds.getWidth(),wavPlayerBounds.getHeight()/2);
+
 
 	//gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight() - 150, 40, thumbnailBounds.getHeight() + 10);
 
-	debugLabel.setBounds(wavPlayerBounds.getX(), thumbnailComponent.getY() + thumbnailComponent.getHeight(), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
 
-	localTableList.setBounds(0, 0, getWidth() / 3, getHeight());
+	destinationRepoList.setBounds(area.removeFromLeft(getWidth() / 3));
+
 }

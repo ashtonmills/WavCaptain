@@ -33,9 +33,9 @@ class LocalTableList : public Component,
 	public TableListBoxModel
 {
 public:
-	LocalTableList() : loadDirButton ("choose local directory")
+	LocalTableList(String chooseButtonText) : loadDirButton (chooseButtonText)
 	{
-		setSize(400, 750);
+		setSize(500, 750);
 		addAndMakeVisible(loadDirButton);
 		loadDirButton.onClick = [this] {loadData(); };
 		
@@ -43,6 +43,7 @@ public:
 		//loadData();
 
 		table.setRowHeight(25);
+		formatManager.registerBasicFormats();
 	}
 
 	int getNumRows() override
@@ -152,9 +153,12 @@ public:
 
 	void resized() override
 	{
-		loadDirButton.setBounds(5, 5, getWidth()-10, 30);
+		auto area = getLocalBounds();
+		auto dirButtonHeight = 30;
+		loadDirButton.setBounds(area.removeFromTop(dirButtonHeight));
+		//loadDirButton.setBounds(5, 5, getWidth()-10, 30);
 	//	debugLabel.setBounds(100, 500, 500, 30);
-		table.setBounds(0, 50, 400, 700);
+		table.setBounds(area.removeFromTop(getHeight()-dirButtonHeight));
 	}
 
 	void debugLabelMsg(String message)
@@ -309,7 +313,19 @@ public:
 			XmlElement* file  = new XmlElement("FILE");
 			file->setAttribute("FileName", localDirFileArray[i].getFileNameWithoutExtension());
 			file->setAttribute("DateModified", localDirFileArray[i].getLastModificationTime().toString(true,true,false,true));
-			data->addChildElement(file);
+			auto reader = std::unique_ptr<AudioFormatReader>(formatManager.createReaderFor(localDirFileArray[i]));
+			if (reader)
+			{
+				float fileSampleRate = reader->sampleRate / 1000;
+				String sampleRateString(fileSampleRate);
+				sampleRateString += " khz";
+				String numChannels;
+				if (reader->numChannels > 1) numChannels = "Stereo";
+				else numChannels = "Mono";
+				file->setAttribute("Channels", numChannels);
+				file->setAttribute("SampleRate", sampleRateString);
+				data->addChildElement(file);
+			}
 
 		}
 
@@ -342,6 +358,8 @@ public:
 
 private:
 	//member variables
+	AudioFormatManager formatManager;
+	std::unique_ptr<AudioFormatReaderSource> playSource;
 	TableListBox table{ {}, this };
 	Font font{ 14.0 };
 	std::unique_ptr<XmlElement> playlistData;
