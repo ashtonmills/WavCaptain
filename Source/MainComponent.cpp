@@ -11,7 +11,7 @@
 
 //==============================================================================
 MainComponent::MainComponent() : openButton("Open"), playButton("Play"), stopButton("Stop"), state(Stopped),
-thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList("Source Directory"), destinationRepoList("Destination Repo Directory"),
+thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory"), destinationRepoList(*this,"Destination Repo Directory"),
 keyPressPlay(KeyPress::spaceKey)
 {
 	// Make sure you set the size of the component after
@@ -145,6 +145,11 @@ void MainComponent::openButtonClicked()
 		readFile(myFile);
 	}
 
+}
+
+void MainComponent::setDebugText(String textToDisplay)
+{
+	debugLabel.setText(textToDisplay, dontSendNotification);
 }
 
 void MainComponent::playButtonClicked()

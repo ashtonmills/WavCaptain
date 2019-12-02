@@ -157,6 +157,8 @@ public:
 	void paint(Graphics& g) override;
 	void resized() override;
 	void readFile(File myFile);
+	void openButtonClicked();
+	void setDebugText(String textToDisplay);
 
 private:
 	//==============================================================================
@@ -173,7 +175,7 @@ private:
 
 	TransportState state;
 
-	void openButtonClicked();
+
 	void playButtonClicked();
 	void stopButtonClicked();
 

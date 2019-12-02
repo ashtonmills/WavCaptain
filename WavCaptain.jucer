@@ -3,6 +3,8 @@
 <JUCERPROJECT id="vhm16g" name="WavCaptain" projectType="guiapp" jucerVersion="5.4.4">
   <MAINGROUP id="CnRjED" name="WavCaptain">
     <GROUP id="{2A0018B1-5D29-DCDA-011D-173409231A51}" name="Source">
+      <FILE id="HxmvDR" name="localTableList.cpp" compile="1" resource="0"
+            file="Source/localTableList.cpp"/>
       <FILE id="fW6Nt6" name="localTableList.h" compile="0" resource="0"
             file="Source/localTableList.h"/>
       <FILE id="sT4hmr" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
