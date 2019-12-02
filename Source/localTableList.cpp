@@ -222,8 +222,8 @@ File LocalTableList::makeXml(File& localDir)
 
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
-	table.setRowHeight(50);
 	mainComp.readFile(localDirWavs[rowNumber]);
+	mainComp.playButtonClicked();
 }
 
 String LocalTableList::getAttributeNameForColumnId(const int columnId) const

@@ -159,6 +159,8 @@ public:
 	void readFile(File myFile);
 	void openButtonClicked();
 	void setDebugText(String textToDisplay);
+	void playButtonClicked();
+	void stopButtonClicked();
 
 private:
 	//==============================================================================
@@ -176,8 +178,7 @@ private:
 	TransportState state;
 
 
-	void playButtonClicked();
-	void stopButtonClicked();
+
 
 	void transportSourceChanged();
 

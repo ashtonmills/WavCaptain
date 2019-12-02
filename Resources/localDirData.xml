@@ -9,13 +9,109 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="Ancestral Engines" DateModified="8 Nov 2019 14:10"
-          Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_ceremony_music_loop" DateModified="28 Nov 2019 9:40"
-          Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="Echoes of the Tempest" DateModified="11 Nov 2019 15:35"
-          Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="Skybound and Sundered" DateModified="25 Nov 2019 11:34"
-          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="02-190430_1648" DateModified="21 May 2019 11:38" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="02-190430_1649" DateModified="21 May 2019 11:38" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="03-190430_1654-01" DateModified="21 May 2019 11:38"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="03-190604_0945" DateModified="4 Jun 2019 9:45" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="03-190604_1028" DateModified="4 Jun 2019 10:29" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="03-190604_1029" DateModified="4 Jun 2019 10:29" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="04-190430_1658-01" DateModified="30 Apr 2019 16:58"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="04-190430_1658-02" DateModified="30 Apr 2019 16:58"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="04-190430_1658-03" DateModified="30 Apr 2019 16:58"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="04-190430_1658-04" DateModified="30 Apr 2019 16:58"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="04-190430_1658" DateModified="30 Apr 2019 16:58" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1700-01" DateModified="30 Apr 2019 17:00"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1700-02" DateModified="30 Apr 2019 17:00"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1700-03" DateModified="30 Apr 2019 17:01"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1700" DateModified="30 Apr 2019 17:00" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1701-01" DateModified="30 Apr 2019 17:01"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1701-02" DateModified="30 Apr 2019 17:02"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="05-190430_1701" DateModified="30 Apr 2019 17:01" Channels="Mono"
+          SampleRate="48 khz"/>
+    <FILE FileName="06-flappy slippers -190603_1753-01" DateModified="3 Jun 2019 17:53"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="06-flappy slippers -190603_1753" DateModified="3 Jun 2019 17:53"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="07-flappy slippers -190603_1754-01" DateModified="3 Jun 2019 17:54"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="07-flappy slippers -190603_1754-02" DateModified="3 Jun 2019 17:54"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="07-flappy slippers -190603_1754-03" DateModified="3 Jun 2019 17:54"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="07-flappy slippers -190603_1754-04" DateModified="3 Jun 2019 17:54"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="07-flappy slippers -190603_1754" DateModified="3 Jun 2019 17:54"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="08-Flappy canvas-190603_1755" DateModified="3 Jun 2019 17:55"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="08-Flappy canvas-190603_1756-01" DateModified="3 Jun 2019 17:56"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="08-Flappy canvas-190603_1756-02-glued" DateModified="3 Jun 2019 17:57"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="08-Flappy canvas-190603_1756-02" DateModified="3 Jun 2019 17:57"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="08-Flappy canvas-190603_1756" DateModified="3 Jun 2019 17:56"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="15-inhale-190603_1130-01" DateModified="3 Jun 2019 11:30"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="15-inhale-190603_1130-02" DateModified="3 Jun 2019 11:30"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="15-inhale-190603_1130" DateModified="3 Jun 2019 11:30"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="15-inhale-190603_1131-01" DateModified="3 Jun 2019 11:32"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="15-inhale-190603_1131" DateModified="3 Jun 2019 11:31"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="AnimalChimpanzee TL01_31" DateModified="21 May 2019 11:38"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="bellow_large_09_02_average_soft" DateModified="21 May 2019 11:38"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="BirdGoose JBA03_28_3-glued" DateModified="20 May 2019 10:03"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="BirdPrehistoric MON01_12_1 reversed 001" DateModified="21 May 2019 11:39"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="BirdPrehistoric MON01_12_1 reversed 002" DateModified="21 May 2019 11:41"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="BirdPrehistoric MON01_12_1-glued" DateModified="4 Jun 2019 13:10"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="BirdPrehistoric MON01_12_1" DateModified="3 Jun 2019 10:57"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="DinosaurScreech MON01_48_3-glued" DateModified="4 Jun 2019 16:05"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="hell-hound_die (3.4-5.26)" DateModified="21 May 2019 11:38"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Leopard JBA02_38_1" DateModified="21 May 2019 11:38"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="moan_large_06_03_average_hard" DateModified="21 May 2019 11:38"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="rattle_large_04_01_average_soft-glued" DateModified="5 Jun 2019 9:55"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="roar_large_13_02_average_hard" DateModified="21 May 2019 11:38"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="ruckle_medium_05_01_short_hard" DateModified="21 May 2019 11:38"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="screech_small_04_03_short_hard-glued" DateModified="4 Jun 2019 16:03"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="screech_small_04_04_long_hard" DateModified="21 May 2019 11:38"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="Tiger JBA02_76_1" DateModified="21 May 2019 11:38"
+          Channels="Stereo" SampleRate="48 khz"/>
   </DATA>
 </LOCALDIR>
