@@ -10,27 +10,16 @@
 #define PLAYINIT "Play"
 
 //==============================================================================
-MainComponent::MainComponent() : openButton("Open"), playButton("Play"), stopButton("Stop"), state(Stopped),
-thumbnailCache(5), thumbnailComponent(512,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory"), destinationRepoList(*this,"Destination Repo Directory"),
-keyPressPlay(KeyPress::spaceKey)
+MainComponent::MainComponent() : openButton("Open"), state(Stopped),
+thumbnailCache(5), thumbnailComponent(1024,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory"), destinationRepoList(*this,"Destination Repo Directory"),buttonPanel(*this)
 {
 	// Make sure you set the size of the component after
 	// you add any child components.
 	setSize(1200, 800);
 
-	openButton.onClick = [this] {openButtonClicked(); };
-	addAndMakeVisible(&openButton);
+	//openButton.onClick = [this] {openButtonClicked(); };
+//	addAndMakeVisible(&openButton);
 
-	playButton.onClick = [this] {playButtonClicked(); };
-	addAndMakeVisible(&playButton);
-	playButton.setColour(TextButton::buttonColourId, Colours::green);
-	playButton.setEnabled(false);
-	playButton.addShortcut(keyPressPlay);
-
-	stopButton.onClick = [this] {stopButtonClicked(); };
-	addAndMakeVisible(&stopButton);
-	stopButton.setColour(TextButton::buttonColourId, Colours::red);
-	stopButton.setEnabled(false);
 
 	transportSource.addChangeListener(this);
 	//transportSource.addChangeListener(this);
@@ -55,6 +44,7 @@ keyPressPlay(KeyPress::spaceKey)
 	addAndMakeVisible(localTableList);
 	addAndMakeVisible(destinationRepoList);
 
+	addAndMakeVisible(buttonPanel);
 
 	// Some platforms require permissions to open input channels so request that here
 	if (RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
@@ -119,10 +109,10 @@ void MainComponent::readFile(File myFile)
 			changeState(Stopped);
 			std::unique_ptr<AudioFormatReaderSource> newSource(new AudioFormatReaderSource(reader, true));
 			transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);
-			playButton.setEnabled(true);
+			buttonPanel.playButton.setEnabled(true);
 			playSource.reset(newSource.release());
-			playButton.setButtonText(PLAYINIT);
-			playButton.setColour(TextButton::buttonColourId, Colours::green);
+			buttonPanel.playButton.setButtonText(PLAYINIT);
+			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::green);
 			thumbnailComponent.setFile(myFile);
 			debugLabel.setText("You opened an audio file. Aren't you clever? ", dontSendNotification);
 		}
@@ -152,7 +142,7 @@ void MainComponent::setDebugText(String textToDisplay)
 	debugLabel.setText(textToDisplay, dontSendNotification);
 }
 
-void MainComponent::playButtonClicked()
+void MainComponent::play()
 {
 	if ((state == Stopped) || (state == Paused))
 		changeState(Starting);
@@ -160,14 +150,13 @@ void MainComponent::playButtonClicked()
 		changeState(Pausing);
 }
 
-void MainComponent::stopButtonClicked()
+void MainComponent::stop()
 {
 	if (state == Paused)
 		changeState(Stopped);
 	else
 		changeState(Stopping);
 }
-
 
 void MainComponent::changeListenerCallback(ChangeBroadcaster* source)
 {
@@ -196,11 +185,12 @@ void MainComponent::changeState(TransportState newState)
 		switch (state)
 		{
 		case Stopped:
-			stopButton.setEnabled(false);
-			playButton.setEnabled(true);
-			playButton.setButtonText(PLAYINIT);
-			playButton.setColour(TextButton::buttonColourId, Colours::green);
-			stopButton.setButtonText("Stop");
+			buttonPanel.stopButton.setEnabled(false);
+			buttonPanel.playButton.setEnabled(true);
+			buttonPanel.rewindButton.setEnabled(false);
+			buttonPanel.playButton.setButtonText(PLAYINIT);
+			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::green);
+			buttonPanel.stopButton.setButtonText("Stop");
 			transportSource.setPosition(0.0);
 			break;
 
@@ -209,10 +199,11 @@ void MainComponent::changeState(TransportState newState)
 			break;
 
 		case Playing:
-			stopButton.setEnabled(true);
-			playButton.setButtonText("Pause");
-			playButton.setColour(TextButton::buttonColourId, Colours::yellow);
-			stopButton.setButtonText("Stop");
+			buttonPanel.rewindButton.setEnabled(true);
+			buttonPanel.stopButton.setEnabled(true);
+			buttonPanel.playButton.setButtonText("Pause");
+			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::yellow);
+			buttonPanel.stopButton.setButtonText("Stop");
 			break;
 
 		case Stopping:
@@ -225,9 +216,9 @@ void MainComponent::changeState(TransportState newState)
 			break;
 
 		case Paused:
-			playButton.setButtonText("Resume");
-			playButton.setColour(TextButton::buttonColourId, Colours::green);
-			stopButton.setButtonText("Rewind");
+			buttonPanel.playButton.setButtonText("Resume");
+			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::green);
+			buttonPanel.stopButton.setButtonText("Rewind");
 			break;
 		}
 	}
@@ -265,12 +256,14 @@ void MainComponent::resized()
 	Rectangle<int> area (0,border,getWidth(),getHeight()-border);
 	thumbnailComponent.setBounds(area.removeFromTop(100));
 	positionOverlay.setBounds(thumbnailComponent.getBounds());
+	buttonPanel.setBounds(area.removeFromTop(20));
 	debugLabel.setBounds(area.removeFromBottom(30));
-	localTableList.setBounds(area.removeFromLeft(getWidth() / 3));
-	auto wavPlayerBounds = area.removeFromLeft(getWidth() / 3);
-	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
-	playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
-	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);
+	localTableList.setBounds(area.removeFromLeft(getWidth() / 2));
+	destinationRepoList.setBounds(area.removeFromLeft(localTableList.getWidth()));
+	//auto wavPlayerBounds = area.removeFromLeft(getWidth() / 3);
+//	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
+	/*playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
+	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);*/
 
 	//Rectangle<int>thumbnailBounds(10, 100, getWidth() - 60, getHeight() - 160);
 
@@ -278,6 +271,6 @@ void MainComponent::resized()
 	//gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight() - 150, 40, thumbnailBounds.getHeight() + 10);
 
 
-	destinationRepoList.setBounds(area.removeFromLeft(getWidth() / 3));
+	
 
 }

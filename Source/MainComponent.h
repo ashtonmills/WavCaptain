@@ -12,6 +12,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "localTableList.h"
 
+class buttonPanel;
 //==============================================================================
 /*
 	This component lives inside our window, and this is where you should put all
@@ -20,6 +21,7 @@
 
 // child component that controls what we paint in the thumnbnail box.
 //or telling us no file is loaded is there is no file opened. 
+
 
 class ThumbnailComponent : public Component, private ChangeListener
 {
@@ -159,9 +161,66 @@ public:
 	void readFile(File myFile);
 	void openButtonClicked();
 	void setDebugText(String textToDisplay);
-	void playButtonClicked();
-	void stopButtonClicked();
+	void play();
+	void stop();
 
+	class ButtonPanel : public Component
+	{
+	public:
+		ButtonPanel(MainComponent& mc) : mainComp(mc)
+		{
+			setSize(getParentWidth(), 30);
+
+			playButton.onClick = [this] {playButtonClicked(); };
+			addAndMakeVisible(&playButton);
+			playButton.setColour(TextButton::buttonColourId, Colours::green);
+			playButton.setEnabled(false);
+			playButton.addShortcut(keyPressPlay);
+
+			stopButton.onClick = [this] {stopButtonClicked(); };
+			addAndMakeVisible(&stopButton);
+			stopButton.setColour(TextButton::buttonColourId, Colours::red);
+			stopButton.setEnabled(false);
+
+			rewindButton.onClick = [this] {rewindButtonClicked(); };
+			addAndMakeVisible(&rewindButton);
+			playButton.setColour(TextButton::buttonColourId, Colours::aliceblue);
+			playButton.setEnabled(false);
+			rewindButton.addShortcut(keyPressRewind);
+		}
+
+		void stopButtonClicked()
+		{
+			mainComp.stop();
+		}
+
+		void playButtonClicked()
+		{
+			mainComp.play();
+		}
+
+		void rewindButtonClicked()
+		{
+			mainComp.transportSource.setPosition(0.0);
+		}
+
+		void resized() override
+		{
+			auto panelBounds = getLocalBounds();
+			playButton.setBounds(panelBounds.removeFromLeft(100));
+			stopButton.setBounds(panelBounds.removeFromLeft(100));
+			rewindButton.setBounds(panelBounds.removeFromLeft(100));
+		}
+
+		TextButton playButton{ "Play" };
+		TextButton stopButton{ "Stop" };
+		TextButton rewindButton{ "<" };
+		KeyPress keyPressPlay{ KeyPress::spaceKey };
+		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
+
+		MainComponent& mainComp;
+
+	};
 private:
 	//==============================================================================
 	// Your private member variables go here...
@@ -177,9 +236,6 @@ private:
 
 	TransportState state;
 
-
-
-
 	void transportSourceChanged();
 
 	void changeState(TransportState newState);
@@ -188,8 +244,7 @@ private:
 	void sliderValueChanged(Slider* slider) override;
 
 	TextButton openButton;
-	TextButton playButton;
-	TextButton stopButton;
+
 
 	AudioTransportSource transportSource;
 
@@ -206,10 +261,13 @@ private:
 
 	Label debugLabel;
 
-	KeyPress keyPressPlay;
-
 	LocalTableList localTableList;
 	LocalTableList destinationRepoList;
 
+	ButtonPanel buttonPanel;
+
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
+
+

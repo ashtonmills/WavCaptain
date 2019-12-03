@@ -174,7 +174,7 @@ File LocalTableList::makeXml(File& localDir)
 	XmlElement* column4 = new XmlElement("COLUMN");
 	column4->setAttribute("columnId", "4");
 	column4->setAttribute("name", "DateModified");
-	column4->setAttribute("width", "200");
+	column4->setAttribute("width", "150");
 	header->addChildElement(column4);
 
 	XmlElement* column5 = new XmlElement("COLUMN");
@@ -223,7 +223,7 @@ File LocalTableList::makeXml(File& localDir)
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
 	mainComp.readFile(localDirWavs[rowNumber]);
-	mainComp.playButtonClicked();
+	mainComp.play();
 }
 
 String LocalTableList::getAttributeNameForColumnId(const int columnId) const
