@@ -7,8 +7,9 @@
 */
 
 #include "MainComponent.h"
-#define PLAYINIT "Play"
-
+#define PLAYTEXT CharPointer_UTF8("\xe2\x96\xb6")
+#define STOPTEXT CharPointer_UTF8("\xe2\x96\xa0")
+#define PAUSETEXT CharPointer_UTF8 ("\xe2\x8f\xb8")
 //==============================================================================
 MainComponent::MainComponent() : openButton("Open"), state(Stopped),
 thumbnailCache(5), thumbnailComponent(1024,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory"), destinationRepoList(*this,"Destination Repo Directory"),buttonPanel(*this)
@@ -16,6 +17,8 @@ thumbnailCache(5), thumbnailComponent(1024,formatManager,thumbnailCache), positi
 	// Make sure you set the size of the component after
 	// you add any child components.
 	setSize(1200, 800);
+
+
 
 	//openButton.onClick = [this] {openButtonClicked(); };
 //	addAndMakeVisible(&openButton);
@@ -93,7 +96,7 @@ void MainComponent::paint(Graphics& g)
 {
 	// (Our component is opaque, so we must completely fill the background with a solid colour)
 	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
-
+	//g.setFont(Font("Arial", 12, Font::plain));
 	// You can add your drawing code here!
 //	Rectangle<int> thumbnailBounds(10, 100, getWidth() - 20, getHeight() - 120);
 
@@ -111,8 +114,7 @@ void MainComponent::readFile(File myFile)
 			transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);
 			buttonPanel.playButton.setEnabled(true);
 			playSource.reset(newSource.release());
-			buttonPanel.playButton.setButtonText(PLAYINIT);
-			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::green);
+			buttonPanel.playButton.setButtonText(PLAYTEXT);
 			thumbnailComponent.setFile(myFile);
 			debugLabel.setText("You opened an audio file. Aren't you clever? ", dontSendNotification);
 		}
@@ -188,9 +190,8 @@ void MainComponent::changeState(TransportState newState)
 			buttonPanel.stopButton.setEnabled(false);
 			buttonPanel.playButton.setEnabled(true);
 			buttonPanel.rewindButton.setEnabled(false);
-			buttonPanel.playButton.setButtonText(PLAYINIT);
-			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::green);
-			buttonPanel.stopButton.setButtonText("Stop");
+			buttonPanel.playButton.setButtonText(PLAYTEXT);
+			buttonPanel.stopButton.setButtonText(STOPTEXT);
 			transportSource.setPosition(0.0);
 			break;
 
@@ -201,9 +202,8 @@ void MainComponent::changeState(TransportState newState)
 		case Playing:
 			buttonPanel.rewindButton.setEnabled(true);
 			buttonPanel.stopButton.setEnabled(true);
-			buttonPanel.playButton.setButtonText("Pause");
-			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::yellow);
-			buttonPanel.stopButton.setButtonText("Stop");
+			buttonPanel.playButton.setButtonText(PAUSETEXT);
+			buttonPanel.stopButton.setButtonText(STOPTEXT);
 			break;
 
 		case Stopping:
@@ -216,9 +216,8 @@ void MainComponent::changeState(TransportState newState)
 			break;
 
 		case Paused:
-			buttonPanel.playButton.setButtonText("Resume");
-			buttonPanel.playButton.setColour(TextButton::buttonColourId, Colours::green);
-			buttonPanel.stopButton.setButtonText("Rewind");
+			buttonPanel.playButton.setButtonText(PLAYTEXT);
+			buttonPanel.stopButton.setButtonText(STOPTEXT);
 			break;
 		}
 	}

@@ -1,4 +1,4 @@
-/*
+﻿/*
 
   ==============================================================================
 
@@ -171,21 +171,21 @@ public:
 		{
 			setSize(getParentWidth(), 30);
 
+			setLookAndFeel(&buttonLookAndFeel);
+
 			playButton.onClick = [this] {playButtonClicked(); };
 			addAndMakeVisible(&playButton);
-			playButton.setColour(TextButton::buttonColourId, Colours::green);
 			playButton.setEnabled(false);
 			playButton.addShortcut(keyPressPlay);
+		
 
 			stopButton.onClick = [this] {stopButtonClicked(); };
 			addAndMakeVisible(&stopButton);
-			stopButton.setColour(TextButton::buttonColourId, Colours::red);
 			stopButton.setEnabled(false);
 
 			rewindButton.onClick = [this] {rewindButtonClicked(); };
 			addAndMakeVisible(&rewindButton);
-			playButton.setColour(TextButton::buttonColourId, Colours::aliceblue);
-			playButton.setEnabled(false);
+			rewindButton.setEnabled(false);
 			rewindButton.addShortcut(keyPressRewind);
 		}
 
@@ -212,15 +212,34 @@ public:
 			rewindButton.setBounds(panelBounds.removeFromLeft(100));
 		}
 
-		TextButton playButton{ "Play" };
-		TextButton stopButton{ "Stop" };
-		TextButton rewindButton{ "<" };
+
+		class MyLookAndFeel : public LookAndFeel_V4
+		{
+		public:
+			MyLookAndFeel()
+			{
+			}
+			Font getTextButtonFont(TextButton&, int buttonHeight) override
+			{
+				return Font("Segoe UI Symbol", 20, Font::plain);
+			}
+		};
+
+		String stopSymbol = CharPointer_UTF8("\xe2\x96\xa0");
+		String playSymbol = CharPointer_UTF8("\xe2\x96\xb6");
+		TextButton playButton{ playSymbol};
+		TextButton stopButton{ stopSymbol };
+		TextButton rewindButton{ CharPointer_UTF8("\xe2\x8f\xae") };
 		KeyPress keyPressPlay{ KeyPress::spaceKey };
 		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
-
 		MainComponent& mainComp;
+		MyLookAndFeel buttonLookAndFeel;
+
 
 	};
+
+
+
 private:
 	//==============================================================================
 	// Your private member variables go here...
@@ -245,7 +264,7 @@ private:
 
 	TextButton openButton;
 
-
+	
 	AudioTransportSource transportSource;
 
 	AudioFormatManager formatManager;
