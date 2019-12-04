@@ -9,13 +9,13 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="Ancestral Engines" DateModified="8 Nov 2019 14:10"
+    <FILE FileName="Ancestral Engines.wav" DateModified="8 Nov 2019 14:10"
           Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_ceremony_music_loop" DateModified="28 Nov 2019 9:40"
+    <FILE FileName="arch_ceremony_music_loop.wav" DateModified="28 Nov 2019 9:40"
           Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="Echoes of the Tempest" DateModified="11 Nov 2019 15:35"
+    <FILE FileName="Echoes of the Tempest.wav" DateModified="11 Nov 2019 15:35"
           Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="Skybound and Sundered" DateModified="25 Nov 2019 11:34"
+    <FILE FileName="Skybound and Sundered.wav" DateModified="25 Nov 2019 11:34"
           Channels="Stereo" SampleRate="44.1 khz"/>
   </DATA>
 </LOCALDIR>

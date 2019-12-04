@@ -16,7 +16,7 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText) : mai
 {
 	setSize(500, 750);
 	addAndMakeVisible(loadDirButton);
-	loadDirButton.onClick = [this] {loadData(); };
+	loadDirButton.onClick = [this] {chooseDir(); };
 
 	addAndMakeVisible(table);
 	//loadData();
@@ -72,18 +72,18 @@ Component* LocalTableList::refreshComponentForCell(int rowNumber, int columnId, 
 		return mySelectionBox;
 	}
 
-	if (columnId == 1)
-	{
-		auto* textLabel = dynamic_cast<EditableTextCustomComponent*> (existingComponentToUpdate);
+	//if (columnId == 1)
+	//{
+	//	auto* textLabel = dynamic_cast<EditableTextCustomComponent*> (existingComponentToUpdate);
 
-		if (textLabel == nullptr)
-		{
-			textLabel = new EditableTextCustomComponent(*this);
-		}
+	//	if (textLabel == nullptr)
+	//	{
+	//		textLabel = new EditableTextCustomComponent(*this);
+	//	}
 
-		textLabel->setRowAndColumn(rowNumber, columnId);
-		return textLabel;
-	}
+	//	textLabel->setRowAndColumn(rowNumber, columnId);
+	//	return textLabel;
+	//}
 
 	jassert(existingComponentToUpdate == nullptr);
 	return nullptr;
@@ -196,7 +196,7 @@ File LocalTableList::makeXml(File& localDir)
 	for (int i = 0; i < localDirWavs.size(); ++i)
 	{
 		XmlElement* file = new XmlElement("FILE");
-		file->setAttribute("FileName", localDirWavs[i].getFileNameWithoutExtension());
+		file->setAttribute("FileName", localDirWavs[i].getFileName());
 		file->setAttribute("DateModified", localDirWavs[i].getLastModificationTime().toString(true, true, false, true));
 		auto reader = std::unique_ptr<AudioFormatReader>(formatManager.createReaderFor(localDirWavs[i]));
 		if (reader)
@@ -220,6 +220,62 @@ File LocalTableList::makeXml(File& localDir)
 	return localDirDataFile;
 }
 
+void LocalTableList::deploySelectedFiles(bool bDeployingAll)
+{
+	mainComp.setDebugText("deployFiles() called on local table");
+	
+	if (!mainComp.destinationRepoList.directory.exists())
+	{
+		mainComp.destinationRepoList.loadData();
+	}
+	int filesCopied = 0;
+
+	for (int row = 0; row < table.getNumRows(); ++row)
+	{
+		if ((getSelection(row) != 0) || (bDeployingAll))
+		{
+			if (mainComp.destinationRepoList.directory.exists())
+			{
+				localDirWavs[row].copyFileTo(mainComp.destinationRepoList.directory.getChildFile(getText(1,row)));
+				filesCopied++;
+			}
+
+		}
+	}
+	if (filesCopied == 0)
+	{
+		if (!bDeployingAll) { mainComp.setDebugText("No files selected"); }
+		else { mainComp.setDebugText("No files in local directory to copy");}
+
+	}
+	else
+	{
+		//String message = message.formatted("Copied %s files to %s.", filesCopied, mainComp.destinationRepoList.directory.getFileName());
+
+		String message = "Copied ";
+		message += filesCopied;
+		message += " files to ";
+		message += mainComp.destinationRepoList.directory.getFullPathName();
+		mainComp.setDebugText(message);
+		mainComp.destinationRepoList.loadData();
+	}
+
+	
+	//if Repo directory is not selected
+		//run the choose directoy function on the repo
+		
+
+	// For loop cells in table
+		//if checkbox is selected
+			//copy to the repo directory
+	
+			//if number of checkboxes ticked on lical list is > 0 
+		//popup no files selected to deploy
+		//return
+}
+
+//TODO make a function for copying ALL files, not just selected ones. 
+
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
 	mainComp.readFile(localDirWavs[rowNumber]);
@@ -238,21 +294,13 @@ String LocalTableList::getAttributeNameForColumnId(const int columnId) const
 
 void LocalTableList::loadData()
 {
-	File initDir = File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory);
-	FileChooser directoryChooser("Choose local directory", initDir);
-	File dir;
-	if (directoryChooser.browseForDirectory())
-		dir = directoryChooser.getResult();
-
-
-
 	int numTries = 0;
 
 	//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
 	//		dir = dir.getParentDirectory();
 
 	//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
-	auto tableFile = makeXml(dir);
+	auto tableFile = makeXml(directory);
 
 	if (tableFile.exists())
 	{
@@ -284,3 +332,11 @@ void LocalTableList::loadData()
 }
 
 
+void LocalTableList::chooseDir()
+{
+	File initDir = File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory);
+	FileChooser directoryChooser("Choose local directory", initDir);
+	if (directoryChooser.browseForDirectory())
+		directory = directoryChooser.getResult();
+	loadData();
+}

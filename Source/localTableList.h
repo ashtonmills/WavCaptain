@@ -70,6 +70,10 @@ public:
 
 	void loadData();
 
+	void chooseDir();
+
+	void deploySelectedFiles(bool bDeployingAll);
+
 	String getAttributeNameForColumnId(const int columnId) const;
 
 	void cellClicked(int rowNumber, int columnId, const MouseEvent&);
@@ -89,7 +93,7 @@ private:
 	Array<File> localDirWavs;
 	Array<File> repoDirWavs;
 	MainComponent& mainComp;
-
+	File directory;
 
 
 

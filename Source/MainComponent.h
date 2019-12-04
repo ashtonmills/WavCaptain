@@ -1,4 +1,4 @@
-﻿/*
+/*
 
   ==============================================================================
 
@@ -164,6 +164,7 @@ public:
 	void play();
 	void stop();
 
+
 	class ButtonPanel : public Component
 	{
 	public:
@@ -171,22 +172,32 @@ public:
 		{
 			setSize(getParentWidth(), 30);
 
-			setLookAndFeel(&buttonLookAndFeel);
+		//	setLookAndFeel(&unicodeLookAndFeel);
 
 			playButton.onClick = [this] {playButtonClicked(); };
+			playButton.setLookAndFeel(&unicodeLookAndFeel);
 			addAndMakeVisible(&playButton);
 			playButton.setEnabled(false);
 			playButton.addShortcut(keyPressPlay);
 		
 
 			stopButton.onClick = [this] {stopButtonClicked(); };
+			stopButton.setLookAndFeel(&unicodeLookAndFeel);
 			addAndMakeVisible(&stopButton);
 			stopButton.setEnabled(false);
 
 			rewindButton.onClick = [this] {rewindButtonClicked(); };
+			rewindButton.setLookAndFeel(&unicodeLookAndFeel);
 			addAndMakeVisible(&rewindButton);
 			rewindButton.setEnabled(false);
 			rewindButton.addShortcut(keyPressRewind);
+
+	
+			deployButton.onClick = [this] {deployButtonClicked(); };
+			addAndMakeVisible(&deployButton);
+
+			deployAllButton.onClick = [this] {deployAllButtonClicked(); };
+			addAndMakeVisible(&deployAllButton);
 		}
 
 		void stopButtonClicked()
@@ -204,19 +215,30 @@ public:
 			mainComp.transportSource.setPosition(0.0);
 		}
 
+		void deployButtonClicked()
+		{
+			mainComp.localTableList.deploySelectedFiles(false);
+		}
+		
+		void deployAllButtonClicked()
+		{
+			mainComp.localTableList.deploySelectedFiles(true);
+		}
+
 		void resized() override
 		{
 			auto panelBounds = getLocalBounds();
 			playButton.setBounds(panelBounds.removeFromLeft(100));
 			stopButton.setBounds(panelBounds.removeFromLeft(100));
 			rewindButton.setBounds(panelBounds.removeFromLeft(100));
+			deployButton.setBounds(panelBounds.removeFromLeft(100));
+			deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 		}
 
-
-		class MyLookAndFeel : public LookAndFeel_V4
+		class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
 		{
 		public:
-			MyLookAndFeel()
+			UnicodeSymbolsLookAndFeel()
 			{
 			}
 			Font getTextButtonFont(TextButton&, int buttonHeight) override
@@ -230,14 +252,18 @@ public:
 		TextButton playButton{ playSymbol};
 		TextButton stopButton{ stopSymbol };
 		TextButton rewindButton{ CharPointer_UTF8("\xe2\x8f\xae") };
+		TextButton deployButton{ "Deploy Selected" };
+		TextButton deployAllButton{ "Deploy All" };
 		KeyPress keyPressPlay{ KeyPress::spaceKey };
 		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
 		MainComponent& mainComp;
-		MyLookAndFeel buttonLookAndFeel;
+		UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
 
 
 	};
 
+	LocalTableList localTableList;
+	LocalTableList destinationRepoList;
 
 
 private:
@@ -262,9 +288,7 @@ private:
 
 	void sliderValueChanged(Slider* slider) override;
 
-	TextButton openButton;
 
-	
 	AudioTransportSource transportSource;
 
 	AudioFormatManager formatManager;
@@ -280,8 +304,6 @@ private:
 
 	Label debugLabel;
 
-	LocalTableList localTableList;
-	LocalTableList destinationRepoList;
 
 	ButtonPanel buttonPanel;
 
