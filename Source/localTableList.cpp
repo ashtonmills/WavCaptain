@@ -362,6 +362,8 @@ void LocalTableList::filesDropped(const StringArray& files, int x, int y)
 			}
 			else if (iFile.getFileExtension() == ".wav")
 			{
+				mainComp.readFile(iFile);
+				mainComp.play();
 				directory = iFile.getParentDirectory();
 				loadData();
 				break;
