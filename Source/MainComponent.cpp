@@ -108,7 +108,7 @@ void MainComponent::readFile(File myFile)
 			playSource.reset(newSource.release());
 			buttonPanel.playButton.setButtonText(PLAYTEXT);
 			thumbnailComponent.setFile(myFile);
-			debugLabel.setText("You opened an audio file. Aren't you clever? ", dontSendNotification);
+			setDebugText("You loaded a file, arean't you clever?");
 		}
 	
 }
@@ -133,6 +133,8 @@ void MainComponent::openButtonClicked()
 
 void MainComponent::setDebugText(String textToDisplay)
 {
+	timerFlashCount = 0;
+	startTimer(50);
 	debugLabel.setText(textToDisplay, dontSendNotification);
 }
 
@@ -150,6 +152,25 @@ void MainComponent::stop()
 		changeState(Stopped);
 	else
 		changeState(Stopping);
+}
+
+void MainComponent::timerCallback()
+{
+	timerFlashCount++;
+	if (timerFlashCount % 2 != 0)
+	{
+		debugLabel.setColour(0x1000280,Colours::darkgrey);
+	}
+	else
+	{
+		Colour defaultColour = Colour(0x1005700);
+		debugLabel.setColour(0x1000280, defaultColour);
+	}
+	if (timerFlashCount == 8)
+	{
+		timerFlashCount = 0;
+		stopTimer();
+	}
 }
 
 void MainComponent::changeListenerCallback(ChangeBroadcaster* source)

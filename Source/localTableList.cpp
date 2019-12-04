@@ -223,10 +223,15 @@ File LocalTableList::makeXml(File& localDir)
 void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 {
 	mainComp.setDebugText("deployFiles() called on local table");
+	if (!directory.exists())
+	{
+		mainComp.setDebugText("You haven't selected a source directory yet mate. Click 'Source Directory' to select one");
+		return;
+	}
 	
 	if (!mainComp.destinationRepoList.directory.exists())
 	{
-		mainComp.destinationRepoList.loadData();
+		mainComp.destinationRepoList.chooseDir();
 	}
 	int filesCopied = 0;
 

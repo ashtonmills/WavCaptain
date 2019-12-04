@@ -142,7 +142,7 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
 
-class MainComponent : public AudioAppComponent, public ChangeListener, public Slider::Listener, public FileDragAndDropTarget
+class MainComponent : public AudioAppComponent, public ChangeListener, public Slider::Listener, public FileDragAndDropTarget, private Timer
 {
 public:
 	//==============================================================================
@@ -163,6 +163,7 @@ public:
 	void setDebugText(String textToDisplay);
 	void play();
 	void stop();
+	void timerCallback() override;
 
 
 	class ButtonPanel : public Component
@@ -303,6 +304,7 @@ private:
 	float gain;
 
 	Label debugLabel;
+	int timerFlashCount;
 
 
 	ButtonPanel buttonPanel;
