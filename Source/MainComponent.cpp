@@ -246,20 +246,20 @@ void MainComponent::sliderValueChanged(Slider* slider)
 		transportSource.setGain(slider->getValue());
 	}
 }
-
-void MainComponent::filesDropped(const StringArray& files, int x, int y)
-{
-	// (isInterestedInFileDrag (files))
-	
-	readFile(files[0]);
-	debugLabel.setText("you tried to drop a file in, that's adventurous!",dontSendNotification);
-}
-
-bool MainComponent::isInterestedInFileDrag(const StringArray& files)
-
-{
-	return true;
-}
+//
+//void MainComponent::filesDropped(const StringArray& files, int x, int y)
+//{
+//	 (isInterestedInFileDrag (files))
+//	
+//	readFile(files[0]);
+//	debugLabel.setText("you tried to drop a file in, that's adventurous!",dontSendNotification);
+//}
+//
+//bool MainComponent::isInterestedInFileDrag(const StringArray& files)
+//
+//{
+//	return true;
+//}
 
 
 

@@ -345,3 +345,50 @@ void LocalTableList::chooseDir()
 		directory = directoryChooser.getResult();
 	loadData();
 }
+
+void LocalTableList::filesDropped(const StringArray& files, int x, int y)
+{
+	if (isInterestedInFileDrag(files))
+	{
+		int iterator = 0;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			File iFile = File(files[0]);
+			if (iFile.isDirectory())
+			{
+				directory = iFile;
+				loadData();
+				break;
+			}
+			else if (iFile.getFileExtension() == ".wav")
+			{
+				directory = iFile.getParentDirectory();
+				loadData();
+				break;
+			}
+			iterator++;
+		}
+		if (iterator == files.size())
+		{
+			mainComp.setDebugText("No .wav files dropped");
+		}
+	}
+}
+
+bool LocalTableList::isInterestedInFileDrag(const StringArray& files)
+{
+	for (int i = 0; i < files.size(); ++i)
+	{
+		File iFile = File(files[i]);
+	 if	((iFile.isDirectory()) && (iFile.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav").size()>0))
+		{
+		 return true;
+		}
+
+	 else if (iFile.getFileExtension()==".wav")
+	 {
+		 return true;
+	 }
+	 else return false;
+	}
+}

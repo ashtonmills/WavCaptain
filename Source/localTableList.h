@@ -30,7 +30,7 @@ class MainComponent;
 */
 
 
-class LocalTableList : public Component,
+class LocalTableList : public Component, public FileDragAndDropTarget,
 	public TableListBoxModel
 {
 public:
@@ -77,6 +77,10 @@ public:
 	String getAttributeNameForColumnId(const int columnId) const;
 
 	void cellClicked(int rowNumber, int columnId, const MouseEvent&);
+
+	void filesDropped(const StringArray& files, int x, int y) override;
+
+	bool isInterestedInFileDrag(const StringArray& files) override;
 
 private:
 	//member variables
