@@ -34,7 +34,8 @@ class LocalTableList : public Component, public FileDragAndDropTarget,
 	public TableListBoxModel
 {
 public:
-	LocalTableList(MainComponent& mc, String chooseButtonText);
+	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel);
+	~LocalTableList();
 	
 	int getNumRows() override;
 
@@ -98,6 +99,7 @@ private:
 	Array<File> repoDirWavs;
 	MainComponent& mainComp;
 	File directory;
+	bool bIsLeftPanel;
 
 
 

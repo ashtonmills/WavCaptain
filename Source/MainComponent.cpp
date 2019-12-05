@@ -11,7 +11,7 @@
 #define STOPTEXT CharPointer_UTF8("\xe2\x96\xa0")
 #define PAUSETEXT CharPointer_UTF8 ("\xe2\x8f\xb8")
 //==============================================================================
-MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailComponent(1024,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory"), destinationRepoList(*this,"Destination Repo Directory"),buttonPanel(*this)
+MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailComponent(1024,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory",true), destinationRepoList(*this,"Destination Repo Directory",false),buttonPanel(*this)
 {
 	// Make sure you set the size of the component after
 	// you add any child components.

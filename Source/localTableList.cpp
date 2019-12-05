@@ -12,7 +12,7 @@
 #include "localTableList.h"
 
 
-LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText) : mainComp (mc), loadDirButton(chooseButtonText)
+LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel) : mainComp (mc), loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
 {
 	setSize(500, 750);
 	addAndMakeVisible(loadDirButton);
@@ -23,6 +23,10 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText) : mai
 
 	table.setRowHeight(25);
 	formatManager.registerBasicFormats();
+}
+
+LocalTableList::~LocalTableList()
+{
 }
 
 
@@ -144,14 +148,14 @@ void LocalTableList::debugLabelMsg(String message)
 	debugLabel.setText(message, dontSendNotification);
 }
 
-File LocalTableList::makeXml(File& localDir)
+File LocalTableList::makeXml(File& dir)
 {
-	XmlElement localDirXml("LOCALDIR");
+	XmlElement dirXml("LOCALDIR");
 
 	//Generate the table headers
 
 	XmlElement* header = new XmlElement("HEADERS");
-	localDirXml.addChildElement(header);
+	dirXml.addChildElement(header);
 
 	XmlElement* column1 = new XmlElement("COLUMN");
 	column1->setAttribute("columnId", "1");
@@ -177,21 +181,24 @@ File LocalTableList::makeXml(File& localDir)
 	column4->setAttribute("width", "150");
 	header->addChildElement(column4);
 
-	XmlElement* column5 = new XmlElement("COLUMN");
-	column5->setAttribute("columnId", "5");
-	column5->setAttribute("name", "select");
-	column5->setAttribute("width", "50");
-	header->addChildElement(column5);
+	if (bIsLeftPanel)
+	{
+		XmlElement* column5 = new XmlElement("COLUMN");
+		column5->setAttribute("columnId", "5");
+		column5->setAttribute("name", "select");
+		column5->setAttribute("width", "50");
+		header->addChildElement(column5);
+	}
 
 
 	//iterate through the files in directory and add data to Xml
 
 
 	XmlElement* data = new XmlElement("DATA");
-	localDirXml.addChildElement(data);
+	dirXml.addChildElement(data);
 
 
-	 localDirWavs = localDir.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav");
+	 localDirWavs = dir.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav");
 
 	for (int i = 0; i < localDirWavs.size(); ++i)
 	{
@@ -213,11 +220,18 @@ File LocalTableList::makeXml(File& localDir)
 		}
 
 	}
-
-	File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
-	localDirXml.writeTo(localDirDataFile);
-
-	return localDirDataFile;
+	if (bIsLeftPanel)
+	{
+		File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
+		dirXml.writeTo(localDirDataFile);
+		return localDirDataFile;
+	}
+	else
+	{
+		File repoDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("repoDirData.xml");
+		dirXml.writeTo(repoDirDataFile);
+		return repoDirDataFile;
+	}
 }
 
 void LocalTableList::deploySelectedFiles(bool bDeployingAll)
@@ -299,12 +313,11 @@ String LocalTableList::getAttributeNameForColumnId(const int columnId) const
 
 void LocalTableList::loadData()
 {
-	int numTries = 0;
-
 	//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
 	//		dir = dir.getParentDirectory();
 
 	//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
+	table.getHeader().removeAllColumns();
 	auto tableFile = makeXml(directory);
 
 	if (tableFile.exists())
@@ -340,7 +353,7 @@ void LocalTableList::loadData()
 void LocalTableList::chooseDir()
 {
 	File initDir = File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory);
-	FileChooser directoryChooser("Choose local directory", initDir);
+	FileChooser directoryChooser("Choose directory", initDir);
 	if (directoryChooser.browseForDirectory())
 		directory = directoryChooser.getResult();
 	loadData();

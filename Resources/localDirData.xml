@@ -9,27 +9,13 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="archaeology_stormguard_electromagnet_electric_spark_01.wav"
-          DateModified="26 Nov 2019 15:56" Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="archaeology_stormguard_electromagnet_electric_spark_02.wav"
-          DateModified="26 Nov 2019 15:56" Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="archaeology_stormguard_electromagnet_electric_spark_03.wav"
-          DateModified="26 Nov 2019 15:56" Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="archaeology_stormguard_electromagnet_electric_spark_04.wav"
-          DateModified="26 Nov 2019 15:56" Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="archaeology_stormguard_electromagnet_electric_spark_05.wav"
-          DateModified="26 Nov 2019 15:56" Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="archaeology_stormguard_electromagnet_spin_loop_01.wav"
-          DateModified="27 Nov 2019 11:25" Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_stormguard_storm_loop_01.wav" DateModified="27 Nov 2019 11:44"
-          Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_stormguard_storm_loop_02.wav" DateModified="27 Nov 2019 11:44"
-          Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_stormguard_storm_loop_03.wav" DateModified="27 Nov 2019 11:44"
-          Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_stormguard_storm_loop_04.wav" DateModified="27 Nov 2019 11:44"
-          Channels="Mono" SampleRate="44.1 khz"/>
-    <FILE FileName="arch_stormguard_storm_loop_05.wav" DateModified="27 Nov 2019 11:44"
-          Channels="Mono" SampleRate="44.1 khz"/>
+    <FILE FileName="Ancestral Engines.wav" DateModified="8 Nov 2019 14:10"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="arch_ceremony_music_loop.wav" DateModified="28 Nov 2019 9:40"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="Echoes of the Tempest.wav" DateModified="11 Nov 2019 15:35"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="Skybound and Sundered.wav" DateModified="25 Nov 2019 11:34"
+          Channels="Stereo" SampleRate="44.1 khz"/>
   </DATA>
 </LOCALDIR>
