@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <LOCALDIR>
+  <\\commercial.jagex.network\user\home\ashton_mills\Documents\My Music/>
   <HEADERS>
     <COLUMN columnId="1" name="FileName" width="200"/>
     <COLUMN columnId="2" name="SampleRate" width="100"/>

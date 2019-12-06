@@ -173,6 +173,31 @@ void MainComponent::timerCallback()
 	}
 }
 
+void MainComponent::saveData(String directory, bool isRepo)
+{
+	XmlElement saveData("SAVEDATA");
+
+	XmlElement* header = new XmlElement("HEADERS");
+	saveData.addChildElement(header);
+
+	XmlElement* column1 = new XmlElement("COLUMN");
+	column1->setAttribute("name", "filepath");
+	header->addChildElement(column1);
+
+	XmlElement* column2 = new XmlElement("COLUMN");
+	column2->setAttribute("name", "Local/Repo");
+	header->addChildElement(column2);
+
+	XmlElement* data = new XmlElement("DATA");
+	saveData.addChildElement(data);
+
+	XmlElement* path1 = new XmlElement("PATH");
+	path1->setAttribute("filepath", directory);
+
+	XmlElement* path2 = new XmlElement("PATH");
+	path2->setAttribute("filePath", directory);
+}
+
 void MainComponent::changeListenerCallback(ChangeBroadcaster* source)
 {
 	if (source == &transportSource)

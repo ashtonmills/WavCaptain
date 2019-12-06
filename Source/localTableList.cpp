@@ -150,7 +150,7 @@ void LocalTableList::debugLabelMsg(String message)
 
 File LocalTableList::makeXml(File& dir)
 {
-	XmlElement dirXml("LOCALDIR");
+	XmlElement dirXml("DIR");
 
 	//Generate the table headers
 
@@ -220,6 +220,8 @@ File LocalTableList::makeXml(File& dir)
 		}
 
 	}
+
+
 	if (bIsLeftPanel)
 	{
 		File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
