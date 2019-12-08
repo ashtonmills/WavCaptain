@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<DIR>
+  <HEADERS>
+    <COLUMN columnId="1" name="FileName" width="200"/>
+    <COLUMN columnId="2" name="SampleRate" width="100"/>
+    <COLUMN columnId="3" name="Channels" width="70"/>
+    <COLUMN columnId="4" name="DateModified" width="150"/>
+  </HEADERS>
+  <DATA/>
+</DIR>

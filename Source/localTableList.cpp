@@ -19,7 +19,7 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 	loadDirButton.onClick = [this] {chooseDir(); };
 
 	addAndMakeVisible(table);
-	//loadData();
+
 
 	table.setRowHeight(25);
 	formatManager.registerBasicFormats();
@@ -29,6 +29,38 @@ LocalTableList::~LocalTableList()
 {
 }
 
+void LocalTableList::initDirectoryLoad()
+{
+	XmlElement* saveDirColumnList = nullptr;
+	XmlElement* saveDirDataList = nullptr;
+
+	auto savedDirFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
+	if (savedDirFile.exists())
+	{
+		savedData = XmlDocument::parse(savedDirFile);
+		saveDirColumnList = savedData->getChildByName("HEADERS");
+		saveDirDataList = savedData->getChildByName("DATA");
+		numRows = dataList->getNumChildElements();
+
+		for (int i = 1; i < numRows; ++i)
+		{
+			auto dirFile = File(saveDirDataList->getChildElement(i)->getAttributeValue(1));
+			if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Local") && (bIsLeftPanel))
+			{
+				directory = dirFile;
+				//call overloaded loadData
+			}
+			if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Repo") && (!bIsLeftPanel))
+			{
+				directory = dirFile;
+				//call overloaded loadData
+			}
+		}
+	}
+//	loadData();  maybe we want to call load load data or maybe just handle it seperatly as it's the init load
+
+//	Or we overLoad loaddata()!!  Do a sencind version of load data that takes a direcotry paramter and misses out all of the stuff to do with finding the file. 
+}
 
 int LocalTableList::getNumRows()
 {
@@ -141,6 +173,11 @@ void LocalTableList::resized()
 	auto dirButtonHeight = 30;
 	loadDirButton.setBounds(area.removeFromTop(dirButtonHeight));
 	table.setBounds(area.removeFromTop(getHeight() - dirButtonHeight));
+}
+
+File LocalTableList::getDirectory()
+{
+	return directory;
 }
 
 void LocalTableList::debugLabelMsg(String message)
@@ -349,6 +386,7 @@ void LocalTableList::loadData()
 	/*	addAndMakeVisible(debugLabel);
 		debugLabel.setText("default debug message", dontSendNotification);*/
 	table.setMultipleSelectionEnabled(true);
+	mainComp.saveData();
 }
 
 

@@ -37,6 +37,9 @@ public:
 	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel);
 	~LocalTableList();
 	
+
+	void LocalTableList::initDirectoryLoad();
+
 	int getNumRows() override;
 
 	void paintRowBackground(Graphics& g, int rowNumber, int /*width*/, int /*height*/, bool rowIsSelected) override;
@@ -64,6 +67,7 @@ public:
 
 	void resized() override;
 
+	File getDirectory();
 
 	void debugLabelMsg(String message);
 	
@@ -83,6 +87,7 @@ public:
 
 	bool isInterestedInFileDrag(const StringArray& files) override;
 
+
 private:
 	//member variables
 	AudioFormatManager formatManager;
@@ -90,6 +95,7 @@ private:
 	TableListBox table{ {}, this };
 	Font font{ 14.0 };
 	std::unique_ptr<XmlElement> playlistData;
+	std::unique_ptr<XmlElement> savedData;
 	XmlElement* columnList = nullptr;
 	XmlElement* dataList = nullptr;
 	int numRows = 0;

@@ -164,7 +164,7 @@ public:
 	void play();
 	void stop();
 	void timerCallback() override;
-	void saveData(String directory, bool isRepo);
+	void saveData();
 
 
 	class ButtonPanel : public Component

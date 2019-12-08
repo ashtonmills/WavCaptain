@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SAVEDATA>
+  <HEADERS>
+    <COLUMN name="filepath"/>
+    <COLUMN name="LocalOrRepo"/>
+  </HEADERS>
+  <DATA>
+    <PATH filepath="C:\Users\Ashton\Music" LocalOrRepo="Local"/>
+    <PATH filepath="B:\8Dio_Claire_Clarinet" LocalOrRepo="Repo"/>
+  </DATA>
+</SAVEDATA>
