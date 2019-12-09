@@ -6,7 +6,7 @@
     <COLUMN name="LocalOrRepo"/>
   </HEADERS>
   <DATA>
-    <PATH filepath="C:\Users\Ashton\Music" LocalOrRepo="Local"/>
-    <PATH filepath="B:\8Dio_Claire_Clarinet" LocalOrRepo="Repo"/>
+    <PATH filepath="C:\Users\User\Music" LocalOrRepo="Local"/>
+    <PATH filepath="" LocalOrRepo="Repo"/>
   </DATA>
 </SAVEDATA>

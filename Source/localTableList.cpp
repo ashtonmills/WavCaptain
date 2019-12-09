@@ -23,6 +23,8 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 
 	table.setRowHeight(25);
 	formatManager.registerBasicFormats();
+
+	initDirectoryLoad();
 }
 
 LocalTableList::~LocalTableList()
@@ -40,26 +42,36 @@ void LocalTableList::initDirectoryLoad()
 		savedData = XmlDocument::parse(savedDirFile);
 		saveDirColumnList = savedData->getChildByName("HEADERS");
 		saveDirDataList = savedData->getChildByName("DATA");
-		numRows = dataList->getNumChildElements();
+		numRows = savedData->getNumChildElements();
 
-		for (int i = 1; i < numRows; ++i)
+		for (int i = 0; i < numRows; ++i)
 		{
-			auto dirFile = File(saveDirDataList->getChildElement(i)->getAttributeValue(1));
-			if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Local") && (bIsLeftPanel))
+			String cellData = String(saveDirDataList->getChildElement(i)->getAttributeValue(1));
+			if (cellData.isNotEmpty())
 			{
-				directory = dirFile;
-				//call overloaded loadData
-			}
-			if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Repo") && (!bIsLeftPanel))
-			{
-				directory = dirFile;
-				//call overloaded loadData
+				auto dirFile = File(saveDirDataList->getChildElement(i)->getAttributeValue(1));
+				if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Local") && (bIsLeftPanel))
+				{
+					directory = dirFile;
+					loadData();
+					break;
+				}
+				if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Repo") && (!bIsLeftPanel))
+				{
+					directory = dirFile;
+					loadData();
+					break;
+				}
 			}
 		}
 	}
 //	loadData();  maybe we want to call load load data or maybe just handle it seperatly as it's the init load
 
 //	Or we overLoad loaddata()!!  Do a sencind version of load data that takes a direcotry paramter and misses out all of the stuff to do with finding the file. 
+
+//or or we just separate the load data function, picking the directory and loading the data are separate concerns. 
+
+	// I do that anyway lol. don't need to change anything. 
 }
 
 int LocalTableList::getNumRows()
@@ -356,6 +368,7 @@ void LocalTableList::loadData()
 	//		dir = dir.getParentDirectory();
 
 	//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
+
 	table.getHeader().removeAllColumns();
 	auto tableFile = makeXml(directory);
 
@@ -396,7 +409,10 @@ void LocalTableList::chooseDir()
 	FileChooser directoryChooser("Choose directory", initDir);
 	if (directoryChooser.browseForDirectory())
 		directory = directoryChooser.getResult();
-	loadData();
+	if (directory.exists())
+	{
+		loadData();
+	}
 }
 
 void LocalTableList::filesDropped(const StringArray& files, int x, int y)
