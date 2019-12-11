@@ -25,6 +25,10 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 	formatManager.registerBasicFormats();
 
 	initDirectoryLoad();
+	if (directory.exists())
+	{
+		loadData(true);
+	}
 }
 
 LocalTableList::~LocalTableList()
@@ -33,6 +37,7 @@ LocalTableList::~LocalTableList()
 
 void LocalTableList::initDirectoryLoad()
 {
+	//TODO get ride of these afterwards? make them smart pointers?
 	XmlElement* saveDirColumnList = nullptr;
 	XmlElement* saveDirDataList = nullptr;
 
@@ -43,36 +48,81 @@ void LocalTableList::initDirectoryLoad()
 		saveDirColumnList = savedData->getChildByName("HEADERS");
 		saveDirDataList = savedData->getChildByName("DATA");
 		numRows = savedData->getNumChildElements();
-
-		for (int i = 0; i < numRows; ++i)
+		forEachXmlChildElement(*saveDirDataList, child)
 		{
-			String cellData = String(saveDirDataList->getChildElement(i)->getAttributeValue(1));
+			String cellData = String(child->getAttributeValue(0));
 			if (cellData.isNotEmpty())
 			{
-				auto dirFile = File(saveDirDataList->getChildElement(i)->getAttributeValue(1));
-				if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Local") && (bIsLeftPanel))
+				File dirFile = File(cellData);
+				if ((child->getAttributeValue(1) == "Local") && (bIsLeftPanel))
 				{
 					directory = dirFile;
-					loadData();
+					//loadDirButton.setButtonText(cellData);
 					break;
 				}
-				if ((saveDirDataList->getChildElement(i)->getAttributeValue(2) == "Repo") && (!bIsLeftPanel))
+				if ((child->getAttributeValue(1) == "Repo") && (!bIsLeftPanel))
 				{
 					directory = dirFile;
-					loadData();
+					//loadData(false);
 					break;
 				}
+
 			}
 		}
-	}
-//	loadData();  maybe we want to call load load data or maybe just handle it seperatly as it's the init load
 
-//	Or we overLoad loaddata()!!  Do a sencind version of load data that takes a direcotry paramter and misses out all of the stuff to do with finding the file. 
+	}
+}
+
+	void LocalTableList::loadData(bool isInitLoad)
+	{
+		//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
+		//		dir = dir.getParentDirectory();
+
+		//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
+
+		table.getHeader().removeAllColumns();
+		auto tableFile = makeXml(directory);
+
+		if (tableFile.exists())
+		{
+			playlistData = XmlDocument::parse(tableFile);
+			columnList = playlistData->getChildByName("HEADERS");
+			dataList = playlistData->getChildByName("DATA");
+
+
+			numRows = dataList->getNumChildElements();
+		}
+
+		table.setColour(ListBox::outlineColourId, Colours::lightgrey);
+		table.setOutlineThickness(1);
+
+		if (columnList != nullptr)
+		{
+			forEachXmlChildElement(*columnList, columnXml)
+			{
+				table.getHeader().addColumn(columnXml->getStringAttribute("name"),
+					columnXml->getIntAttribute("columnId"),
+					columnXml->getIntAttribute("width"), 50, 400, TableHeaderComponent::defaultFlags);
+			}
+		}
+
+
+		/*	addAndMakeVisible(debugLabel);
+			debugLabel.setText("default debug message", dontSendNotification);*/
+		table.setMultipleSelectionEnabled(true);
+		if (!isInitLoad)
+		{
+			mainComp.saveData();
+		}
+	}
+//	loadData(false);  maybe we want to call load load data or maybe just handle it seperatly as it's the init load
+
+//	Or we overLoad loadData(false)!!  Do a sencind version of load data that takes a direcotry paramter and misses out all of the stuff to do with finding the file. 
 
 //or or we just separate the load data function, picking the directory and loading the data are separate concerns. 
 
 	// I do that anyway lol. don't need to change anything. 
-}
+
 
 int LocalTableList::getNumRows()
 {
@@ -327,7 +377,7 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 		message += " files to ";
 		message += mainComp.destinationRepoList.directory.getFullPathName();
 		mainComp.setDebugText(message);
-		mainComp.destinationRepoList.loadData();
+		mainComp.destinationRepoList.loadData(false);
 	}
 
 	
@@ -362,46 +412,6 @@ String LocalTableList::getAttributeNameForColumnId(const int columnId) const
 	return{};
 }
 
-void LocalTableList::loadData()
-{
-	//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
-	//		dir = dir.getParentDirectory();
-
-	//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
-
-	table.getHeader().removeAllColumns();
-	auto tableFile = makeXml(directory);
-
-	if (tableFile.exists())
-	{
-		playlistData = XmlDocument::parse(tableFile);
-		columnList = playlistData->getChildByName("HEADERS");
-		dataList = playlistData->getChildByName("DATA");
-
-
-		numRows = dataList->getNumChildElements();
-	}
-
-	table.setColour(ListBox::outlineColourId, Colours::lightgrey);
-	table.setOutlineThickness(1);
-
-	if (columnList != nullptr)
-	{
-		forEachXmlChildElement(*columnList, columnXml)
-		{
-			table.getHeader().addColumn(columnXml->getStringAttribute("name"),
-				columnXml->getIntAttribute("columnId"),
-				columnXml->getIntAttribute("width"), 50, 400, TableHeaderComponent::defaultFlags);
-		}
-	}
-
-
-	/*	addAndMakeVisible(debugLabel);
-		debugLabel.setText("default debug message", dontSendNotification);*/
-	table.setMultipleSelectionEnabled(true);
-	mainComp.saveData();
-}
-
 
 void LocalTableList::chooseDir()
 {
@@ -411,7 +421,7 @@ void LocalTableList::chooseDir()
 		directory = directoryChooser.getResult();
 	if (directory.exists())
 	{
-		loadData();
+		loadData(false);
 	}
 }
 
@@ -426,7 +436,7 @@ void LocalTableList::filesDropped(const StringArray& files, int x, int y)
 			if (iFile.isDirectory())
 			{
 				directory = iFile;
-				loadData();
+				loadData(false);
 				break;
 			}
 			else if (iFile.getFileExtension() == ".wav")
@@ -434,7 +444,7 @@ void LocalTableList::filesDropped(const StringArray& files, int x, int y)
 				mainComp.readFile(iFile);
 				mainComp.play();
 				directory = iFile.getParentDirectory();
-				loadData();
+				loadData(false);
 				break;
 			}
 			iterator++;

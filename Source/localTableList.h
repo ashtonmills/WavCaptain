@@ -38,6 +38,8 @@ public:
 	~LocalTableList();
 	
 
+	void loadData(bool isInitLoad);
+
 	void LocalTableList::initDirectoryLoad();
 
 	int getNumRows() override;
@@ -73,7 +75,6 @@ public:
 	
 	File makeXml(File& localDir);
 
-	void loadData();
 
 	void chooseDir();
 
@@ -106,6 +107,8 @@ private:
 	MainComponent& mainComp;
 	File directory;
 	bool bIsLeftPanel;
+	XmlElement* saveDirColumnList = nullptr;
+	XmlElement* saveDirDataList = nullptr;
 
 
 

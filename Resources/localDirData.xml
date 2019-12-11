@@ -9,15 +9,31 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="Irkalla Music Pitch ver_01 Ashton Mills.wav" DateModified="17 Nov 2019 21:14"
-          Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="mySoundRev5.wav" DateModified="6 Aug 2019 15:23" Channels="Mono"
-          SampleRate="48 khz"/>
-    <FILE FileName="mySoundRevBackAgain.wav" DateModified="6 Aug 2019 15:11"
-          Channels="Mono" SampleRate="48 khz"/>
-    <FILE FileName="shot_01_original_mono.wav" DateModified="2 Aug 2019 18:14"
-          Channels="Mono" SampleRate="48 khz"/>
-    <FILE FileName="shot_01_original_stereo.WAV" DateModified="2 Aug 2019 18:07"
+    <FILE FileName="COMBINED EXPLOSION Anti-Tank Mine Character.wav" DateModified="26 Sep 2019 17:27"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="COMBINED EXPLOSION Bursting Foil 2kg 70_4oz Character.wav"
+          DateModified="26 Sep 2019 17:27" Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="COMBINED EXPLOSION Emulsion Explosives 1_8kg 63_5oz Character.wav"
+          DateModified="26 Sep 2019 17:27" Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Fire 6049_16.wav" DateModified="26 Sep 2019 17:12"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Fire 6083_86.wav" DateModified="26 Sep 2019 17:13"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Fire 6095_18.wav" DateModified="26 Sep 2019 17:12"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Fire DSS02_02.wav" DateModified="26 Sep 2019 17:12"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Thunderstorm THR02_07.wav" DateModified="26 Sep 2019 17:03"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Thunderstorm THR02_20.wav" DateModified="26 Sep 2019 17:03"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="WeatherLightning MIX64_90_4.wav" DateModified="26 Sep 2019 17:22"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="WeatherLightning MIX64_90_7.wav" DateModified="26 Sep 2019 17:22"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="WeatherThunder LTL05_39.wav" DateModified="26 Sep 2019 17:23"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="WeatherThunder LTL05_41.wav" DateModified="26 Sep 2019 17:23"
           Channels="Stereo" SampleRate="48 khz"/>
   </DATA>
 </DIR>

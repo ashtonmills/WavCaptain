@@ -175,47 +175,57 @@ void MainComponent::timerCallback()
 
 void MainComponent::saveData()
 {
-	XmlElement saveData("SAVEDATA");
+	//wrapped this in an if check so it doesn't save empty paths
+	if (destinationRepoList.getDirectory().exists())
+	{
+		XmlElement saveData("SAVEDATA");
 
-	XmlElement* header = new XmlElement("HEADERS");
-	saveData.addChildElement(header);
+		XmlElement* header = new XmlElement("HEADERS");
+		saveData.addChildElement(header);
 
-	XmlElement* column1 = new XmlElement("COLUMN");
-	column1->setAttribute("name", "filepath");
-	header->addChildElement(column1);
+		XmlElement* column1 = new XmlElement("COLUMN");
+		column1->setAttribute("name", "filepath");
+		header->addChildElement(column1);
 
-	XmlElement* column2 = new XmlElement("COLUMN");
-	column2->setAttribute("name", "LocalOrRepo");
-	header->addChildElement(column2);
+		XmlElement* column2 = new XmlElement("COLUMN");
+		column2->setAttribute("name", "LocalOrRepo");
+		header->addChildElement(column2);
 
-	XmlElement* data = new XmlElement("DATA");
-	saveData.addChildElement(data);
-	
-	XmlElement* localPath = new XmlElement("PATH");
-	localPath->setAttribute("filepath", localTableList.getDirectory().getFullPathName());
-	localPath->setAttribute("LocalOrRepo", "Local");
-	data->addChildElement(localPath);
+		XmlElement* data = new XmlElement("DATA");
+		saveData.addChildElement(data);
 
-	XmlElement* repoPath = new XmlElement("PATH");
-	repoPath->setAttribute("filepath", destinationRepoList.getDirectory().getFullPathName());
-	repoPath->setAttribute("LocalOrRepo", "Repo");
-	data->addChildElement(repoPath);
+		if (localTableList.getDirectory().exists())
+		{
+			XmlElement* localPath = new XmlElement("PATH");
+			localPath->setAttribute("filepath", localTableList.getDirectory().getFullPathName());
+			localPath->setAttribute("LocalOrRepo", "Local");
+			data->addChildElement(localPath);
+		}
 
-	File saveDirFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
-	saveData.writeTo(saveDirFile);
+		if (destinationRepoList.getDirectory().exists())
+		{
+			XmlElement* repoPath = new XmlElement("PATH");
+			repoPath->setAttribute("filepath", destinationRepoList.getDirectory().getFullPathName());
+			repoPath->setAttribute("LocalOrRepo", "Repo");
+			data->addChildElement(repoPath);
+		}
 
-	/*Let's have another think through this one.
-	Obviously the best thing to do would be to have a recent files option. 
-	But for now Iwant the simple option, where it will load up whaterver was last in the direcrtorries when th project loads. 
-	So let's just ovewrite the file each time for now. It will bring back the same as it was before, even if that was empty. 
-	(Though at the minute there is no option for it to be selected as empty,
-	so when you open one file, with the basic save feature it will always then have a file loaded)
+		File saveDirFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
+		saveData.writeTo(saveDirFile);
 
-	SO change this function instead of passing in variables, the function itslf just looks at the two directory members and saves the full file path as a string and writes the XML doc. 
-	Then when we first open the app we parse that document and set thoise members and load the data. 
+		/*Let's have another think through this one.
+		Obviously the best thing to do would be to have a recent files option.
+		But for now Iwant the simple option, where it will load up whaterver was last in the direcrtorries when th project loads.
+		So let's just ovewrite the file each time for now. It will bring back the same as it was before, even if that was empty.
+		(Though at the minute there is no option for it to be selected as empty,
+		so when you open one file, with the basic save feature it will always then have a file loaded)
 
-	After that is working we add a recent places feature
-	*/
+		SO change this function instead of passing in variables, the function itslf just looks at the two directory members and saves the full file path as a string and writes the XML doc.
+		Then when we first open the app we parse that document and set thoise members and load the data.
+
+		After that is working we add a recent places feature
+		*/
+	}
 
 }
 
