@@ -343,7 +343,7 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 		mainComp.setDebugText("You haven't selected a source directory yet mate. Click 'Source Directory' to select one");
 		return;
 	}
-	
+
 	if (!mainComp.destinationRepoList.directory.exists())
 	{
 		mainComp.destinationRepoList.chooseDir();
@@ -356,7 +356,7 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 		{
 			if (mainComp.destinationRepoList.directory.exists())
 			{
-				localDirWavs[row].copyFileTo(mainComp.destinationRepoList.directory.getChildFile(getText(1,row)));
+				localDirWavs[row].copyFileTo(mainComp.destinationRepoList.directory.getChildFile(getText(1, row)));
 				filesCopied++;
 			}
 
@@ -365,7 +365,7 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 	if (filesCopied == 0)
 	{
 		if (!bDeployingAll) { mainComp.setDebugText("No files selected"); }
-		else { mainComp.setDebugText("No files in local directory to copy");}
+		else { mainComp.setDebugText("No files in local directory to copy"); }
 
 	}
 	else
@@ -379,22 +379,23 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 		mainComp.setDebugText(message);
 		mainComp.destinationRepoList.loadData(false);
 	}
-
-	
-	//if Repo directory is not selected
-		//run the choose directoy function on the repo
-		
-
-	// For loop cells in table
-		//if checkbox is selected
-			//copy to the repo directory
-	
-			//if number of checkboxes ticked on lical list is > 0 
-		//popup no files selected to deploy
-		//return
 }
 
-//TODO make a function for copying ALL files, not just selected ones. 
+
+
+
+void LocalTableList::convertSampleRate()
+{
+	if (!directory.exists())
+	{
+		mainComp.setDebugText("No source directory selected");
+		return;
+	}
+
+}
+
+
+
 
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
@@ -473,3 +474,4 @@ bool LocalTableList::isInterestedInFileDrag(const StringArray& files)
 	 else return false;
 	}
 }
+

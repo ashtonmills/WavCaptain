@@ -75,6 +75,7 @@ public:
 	
 	File makeXml(File& localDir);
 
+	void convertSampleRate();
 
 	void chooseDir();
 

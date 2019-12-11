@@ -200,6 +200,9 @@ public:
 
 			deployAllButton.onClick = [this] {deployAllButtonClicked(); };
 			addAndMakeVisible(&deployAllButton);
+
+			addAndMakeVisible(convertSRButton);
+			convertSRButton.onClick = [this] {convertSRButtonClicked(); };
 		}
 
 		void stopButtonClicked()
@@ -227,6 +230,11 @@ public:
 			mainComp.localTableList.deploySelectedFiles(true);
 		}
 
+		void convertSRButtonClicked()
+		{
+			mainComp.localTableList.convertSampleRate();
+		}
+
 		void resized() override
 		{
 			auto panelBounds = getLocalBounds();
@@ -235,6 +243,7 @@ public:
 			rewindButton.setBounds(panelBounds.removeFromLeft(100));
 			deployButton.setBounds(panelBounds.removeFromLeft(100));
 			deployAllButton.setBounds(panelBounds.removeFromLeft(100));
+			convertSRButton.setBounds(panelBounds.removeFromLeft(100));
 		}
 
 		class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
@@ -256,11 +265,12 @@ public:
 		TextButton rewindButton{ CharPointer_UTF8("\xe2\x8f\xae") };
 		TextButton deployButton{ "Deploy Selected" };
 		TextButton deployAllButton{ "Deploy All" };
+		TextButton convertSRButton{ "Convert Sample Rate" };
 		KeyPress keyPressPlay{ KeyPress::spaceKey };
 		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
 		MainComponent& mainComp;
 		UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
-
+		
 
 	};
 
