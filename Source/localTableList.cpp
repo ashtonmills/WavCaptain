@@ -391,7 +391,9 @@ void LocalTableList::convertSampleRate()
 		mainComp.setDebugText("No source directory selected");
 		return;
 	}
-
+	int targetSampleRate = mainComp.getTargetSampleRate();
+	String mes = "sample rate set to " + std::to_string(targetSampleRate);
+	mainComp.setDebugText(mes);
 }
 
 

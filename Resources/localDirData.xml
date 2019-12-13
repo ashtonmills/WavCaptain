@@ -9,31 +9,17 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="COMBINED EXPLOSION Anti-Tank Mine Character.wav" DateModified="26 Sep 2019 17:27"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="COMBINED EXPLOSION Bursting Foil 2kg 70_4oz Character.wav"
-          DateModified="26 Sep 2019 17:27" Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="COMBINED EXPLOSION Emulsion Explosives 1_8kg 63_5oz Character.wav"
-          DateModified="26 Sep 2019 17:27" Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="Fire 6049_16.wav" DateModified="26 Sep 2019 17:12"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="Fire 6083_86.wav" DateModified="26 Sep 2019 17:13"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="Fire 6095_18.wav" DateModified="26 Sep 2019 17:12"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="Fire DSS02_02.wav" DateModified="26 Sep 2019 17:12"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="Thunderstorm THR02_07.wav" DateModified="26 Sep 2019 17:03"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="Thunderstorm THR02_20.wav" DateModified="26 Sep 2019 17:03"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="WeatherLightning MIX64_90_4.wav" DateModified="26 Sep 2019 17:22"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="WeatherLightning MIX64_90_7.wav" DateModified="26 Sep 2019 17:22"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="WeatherThunder LTL05_39.wav" DateModified="26 Sep 2019 17:23"
-          Channels="Stereo" SampleRate="48 khz"/>
-    <FILE FileName="WeatherThunder LTL05_41.wav" DateModified="26 Sep 2019 17:23"
-          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="bone_break_neck_snap_crack_03.wav" DateModified="25 Apr 2016 17:25"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="bone_break_neck_snap_crack_04.wav" DateModified="25 Apr 2016 17:24"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="foley_cloth_light_fast_movement_01.wav" DateModified="23 Sep 2015 13:56"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="foley_cloth_light_fast_movement_02.wav" DateModified="22 Aug 2015 19:33"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="foley_cloth_light_fast_movement_03.wav" DateModified="22 Aug 2015 19:33"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="foley_cloth_light_fast_movement_04.wav" DateModified="22 Aug 2015 19:34"
+          Channels="Stereo" SampleRate="96 khz"/>
   </DATA>
 </DIR>

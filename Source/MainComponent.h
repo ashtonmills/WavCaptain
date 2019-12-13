@@ -79,6 +79,8 @@ public :
 			thumbnailChanged();
 	}
 
+
+
 private:
 	void thumbnailChanged()
 	{
@@ -165,6 +167,7 @@ public:
 	void stop();
 	void timerCallback() override;
 	void saveData();
+	int getTargetSampleRate();
 
 
 	class ButtonPanel : public Component
@@ -203,6 +206,11 @@ public:
 
 			addAndMakeVisible(convertSRButton);
 			convertSRButton.onClick = [this] {convertSRButtonClicked(); };
+
+			addAndMakeVisible(SRMenu);
+			Array<String> rates = { "22.05Khz","44.1Khz","48Khz","96Khz" };
+			SRMenu.addItemList(rates, 1);
+			SRMenu.setSelectedId(1);
 		}
 
 		void stopButtonClicked()
@@ -244,6 +252,7 @@ public:
 			deployButton.setBounds(panelBounds.removeFromLeft(100));
 			deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 			convertSRButton.setBounds(panelBounds.removeFromLeft(100));
+			SRMenu.setBounds(panelBounds.removeFromRight(150));
 		}
 
 		class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
@@ -270,6 +279,7 @@ public:
 		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
 		MainComponent& mainComp;
 		UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
+		ComboBox SRMenu;
 		
 
 	};

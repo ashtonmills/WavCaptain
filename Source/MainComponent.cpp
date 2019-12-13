@@ -176,8 +176,9 @@ void MainComponent::timerCallback()
 void MainComponent::saveData()
 {
 	//wrapped this in an if check so it doesn't save empty paths
-	if (destinationRepoList.getDirectory().exists())
+	if (localTableList.getDirectory().exists()||destinationRepoList.getDirectory().exists())
 	{
+		setDebugText("saveData function called");
 		XmlElement saveData("SAVEDATA");
 
 		XmlElement* header = new XmlElement("HEADERS");
@@ -316,8 +317,20 @@ void MainComponent::sliderValueChanged(Slider* slider)
 //{
 //	return true;
 //}
+int MainComponent::getTargetSampleRate()
+{
 
+		int SRSelection = buttonPanel.SRMenu.getSelectedItemIndex() +1;
 
+		switch (SRSelection)
+		{
+		case 1: return 22050;
+		case 2: return 44100;
+		case 3: return 48000;
+		case 4: return 96000;
+		}
+	
+}
 
 void MainComponent::resized()
 {
