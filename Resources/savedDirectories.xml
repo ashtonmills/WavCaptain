@@ -6,6 +6,7 @@
     <COLUMN name="LocalOrRepo"/>
   </HEADERS>
   <DATA>
-    <PATH filepath="C:\Users\Ashton\Music" LocalOrRepo="Local"/>
+    <PATH filepath="\\commercial.jagex.network\user\home\ashton_mills\Documents\My Music"
+          LocalOrRepo="Local"/>
   </DATA>
 </SAVEDATA>

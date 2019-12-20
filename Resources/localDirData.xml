@@ -9,17 +9,13 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="bone_break_neck_snap_crack_03.wav" DateModified="25 Apr 2016 17:25"
-          Channels="Stereo" SampleRate="96 khz"/>
-    <FILE FileName="bone_break_neck_snap_crack_04.wav" DateModified="25 Apr 2016 17:24"
-          Channels="Stereo" SampleRate="96 khz"/>
-    <FILE FileName="foley_cloth_light_fast_movement_01.wav" DateModified="23 Sep 2015 13:56"
-          Channels="Stereo" SampleRate="96 khz"/>
-    <FILE FileName="foley_cloth_light_fast_movement_02.wav" DateModified="22 Aug 2015 19:33"
-          Channels="Stereo" SampleRate="96 khz"/>
-    <FILE FileName="foley_cloth_light_fast_movement_03.wav" DateModified="22 Aug 2015 19:33"
-          Channels="Stereo" SampleRate="96 khz"/>
-    <FILE FileName="foley_cloth_light_fast_movement_04.wav" DateModified="22 Aug 2015 19:34"
-          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="Ancestral Engines.wav" DateModified="8 Nov 2019 14:10"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="arch_ceremony_music_loop.wav" DateModified="28 Nov 2019 9:40"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="Echoes of the Tempest.wav" DateModified="11 Nov 2019 15:35"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="Skybound and Sundered.wav" DateModified="25 Nov 2019 11:34"
+          Channels="Stereo" SampleRate="44.1 khz"/>
   </DATA>
 </DIR>
