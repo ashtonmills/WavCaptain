@@ -113,6 +113,7 @@ void MainComponent::readFile(File myFile)
 	
 }
 
+
 void MainComponent::openButtonClicked()
 {
 

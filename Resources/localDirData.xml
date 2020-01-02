@@ -9,13 +9,47 @@
     <COLUMN columnId="5" name="select" width="50"/>
   </HEADERS>
   <DATA>
-    <FILE FileName="Ancestral Engines.wav" DateModified="8 Nov 2019 14:10"
+    <FILE FileName="01-Counter line-191001_1129.wav" DateModified="1 Oct 2019 11:29"
+          Channels="Mono" SampleRate="48 khz"/>
+    <FILE FileName="46-191128_0934.wav" DateModified="28 Nov 2019 9:34"
+          Channels="Mono" SampleRate="96 khz"/>
+    <FILE FileName="46-191128_0935.wav" DateModified="28 Nov 2019 9:35"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="46-191128_0936-01.wav" DateModified="28 Nov 2019 9:36"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="46-191128_0936-02.wav" DateModified="28 Nov 2019 9:36"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="46-191128_0936.wav" DateModified="28 Nov 2019 9:36"
+          Channels="Stereo" SampleRate="96 khz"/>
+    <FILE FileName="Ancestral Engines - Copy.wav" DateModified="8 Nov 2019 14:08"
           Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="Ancestral Engines.wav" DateModified="8 Nov 2019 14:08"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="Archaeology theme WIP.wav" DateModified="17 Sep 2019 11:24"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Archaeology_VT_Music_01.wav" DateModified="26 Sep 2019 14:37"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Archaeology_VT_Underscore_WIP.wav" DateModified="24 Sep 2019 11:30"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Archaeology_VT_Underscore_WIP_2.wav" DateModified="25 Sep 2019 12:51"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Archaeology_VT_youtube_music.wav" DateModified="10 Oct 2019 11:24"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Archeology_wavetest.wav" DateModified="17 Sep 2019 11:22"
+          Channels="Stereo" SampleRate="48 khz"/>
     <FILE FileName="arch_ceremony_music_loop.wav" DateModified="28 Nov 2019 9:40"
           Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="Echoes of the Tempest.wav" DateModified="11 Nov 2019 15:35"
+    <FILE FileName="Arch_level_jingle.wav" DateModified="1 Oct 2019 14:07"
           Channels="Stereo" SampleRate="44.1 khz"/>
-    <FILE FileName="Skybound and Sundered.wav" DateModified="25 Nov 2019 11:34"
+    <FILE FileName="Arch_restore_jingle.wav" DateModified="1 Oct 2019 14:04"
+          Channels="Stereo" SampleRate="44.1 khz"/>
+    <FILE FileName="piano Lh untitled MIDI item render 001.wav" DateModified="13 Mar 2019 8:54"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Scapers_of_the_lost_ark.wav" DateModified="14 Mar 2019 10:48"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="Sequence 01_1-glued.wav" DateModified="20 Sep 2019 9:47"
+          Channels="Stereo" SampleRate="48 khz"/>
+    <FILE FileName="testNewTrackAshton.wav" DateModified="18 Apr 2018 15:18"
           Channels="Stereo" SampleRate="44.1 khz"/>
   </DATA>
 </DIR>

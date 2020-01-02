@@ -386,14 +386,74 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 
 void LocalTableList::convertSampleRate()
 {
+	//create popup menu to decide whether we overiwite or keep original files
+	PopupMenu popup;
+	popup.addItem(1, "Overwite Existing Files");
+	popup.addItem(2, "Create Subfolder for new files");
+	popup.addItem(3, "Append names of new files");
+	const int popupResult = popup.show();
+	//if user picks nothing from this menu cancel the function
+	if (popupResult == 0) return;
+
 	if (!directory.exists())
 	{
 		mainComp.setDebugText("No source directory selected");
 		return;
 	}
 	int targetSampleRate = mainComp.getTargetSampleRate();
-	String mes = "sample rate set to " + std::to_string(targetSampleRate);
-	mainComp.setDebugText(mes);
+
+	for (int row = 0; row < table.getNumRows(); ++row)
+	{
+		if (getSelection(row) != 0)
+		{
+			//start off just converting first file in the directory, then we'll work out the selection boxes and which ones to convert etc
+			File targetFile = localDirWavs[row];
+			//make reader to load the file
+			AudioFormatReader* reader = formatManager.createReaderFor(targetFile);
+			//check the sample rate of the file and skip over this iteration if it's already the sample rate we want
+			unsigned int initialSampleRate = reader->sampleRate;
+			if (initialSampleRate != targetSampleRate)
+			{
+				unsigned int numChans = reader->numChannels;
+				unsigned int numSamples = reader->lengthInSamples;
+				double SRRatio = initialSampleRate / targetSampleRate;
+				//create an audiosource that can read from the reader, read from the reader then delete the reader
+				AudioFormatReaderSource* newSource = new AudioFormatReaderSource(reader, true);
+				//create a resamping audiosource from the audiosource then delete the one that you passed in 
+				ResamplingAudioSource* resamplingAudioSource = new ResamplingAudioSource(newSource, true, reader->numChannels);
+				resamplingAudioSource->setResamplingRatio(SRRatio);
+				File targetDestination;
+				switch (popupResult)
+				{
+				case 0: return;
+				case 1: targetDestination = File(localDirWavs[row].getFullPathName());//overwite the file with the new sample rate version
+					break;
+				case 2: targetDestination = directory.getChildFile("resampled_"+ std::to_string(targetSampleRate)).getChildFile(localDirWavs[row].getFileName()); //create a subfolder in this directory named the sample rate they've been named to 
+					break; 
+				case 3: targetDestination = File(localDirWavs[row].getParentDirectory().getFullPathName() + "/"+ localDirWavs[row].getFileNameWithoutExtension() + "-" + std::to_string(targetSampleRate) + ".wav"); //make a new file in this directory with the sample rate appending the name
+					break;
+				}
+				if (popupResult == 1)
+				{
+					//crappy hack to make sure that we don't add our data to the existing file but we do have a place to write to
+					//but it doesn't work!
+					String pathName = targetDestination.getFullPathName();
+					targetDestination.deleteFile();
+					targetDestination = File(pathName);
+				}
+				FileOutputStream* fos = new FileOutputStream(targetDestination);
+				//delete the file on disk, but we arlready did this if we did option 1
+				if(popupResult!=1){ targetDestination.deleteFile(); }
+				AudioFormatWriter* writer = WavAudioFormat().createWriterFor(fos, targetSampleRate, numChans, 16, StringPairArray(), 0);
+				resamplingAudioSource->prepareToPlay(512, targetSampleRate);
+				writer->writeFromAudioSource(*resamplingAudioSource, numSamples / SRRatio);
+				delete writer;
+				delete resamplingAudioSource;
+				mainComp.setDebugText("targetDestination is" + targetDestination.getFullPathName());
+			}
+		}
+	}
+
 }
 
 
