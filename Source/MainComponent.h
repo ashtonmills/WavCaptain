@@ -211,6 +211,9 @@ public:
 			Array<String> rates = { "22.05Khz","44.1Khz","48Khz","96Khz" };
 			SRMenu.addItemList(rates, 1);
 			SRMenu.setSelectedId(1);
+
+
+
 		}
 
 		void stopButtonClicked()

@@ -89,6 +89,20 @@ public:
 
 	bool isInterestedInFileDrag(const StringArray& files) override;
 
+	void LocalTableList::refreshButtonClicked();
+
+	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
+	{
+	public:
+		UnicodeSymbolsLookAndFeel()
+		{
+		}
+		Font getTextButtonFont(TextButton&, int buttonHeight) override
+		{
+			return Font("Segoe UI Symbol", 20, Font::plain);
+		}
+	};
+
 
 private:
 	//member variables
@@ -103,6 +117,8 @@ private:
 	int numRows = 0;
 	Label debugLabel;
 	TextButton loadDirButton;
+	String refreshSymbol = CharPointer_UTF8("\xe2\x9f\xb3");
+	TextButton refreshButton{ refreshSymbol };
 	Array<File> localDirWavs;
 	Array<File> repoDirWavs;
 	MainComponent& mainComp;
@@ -110,6 +126,7 @@ private:
 	bool bIsLeftPanel;
 	XmlElement* saveDirColumnList = nullptr;
 	XmlElement* saveDirDataList = nullptr;
+	UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
 
 
 

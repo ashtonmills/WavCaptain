@@ -18,6 +18,10 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 	addAndMakeVisible(loadDirButton);
 	loadDirButton.onClick = [this] {chooseDir(); };
 
+	refreshButton.onClick = [this] {refreshButtonClicked(); };
+	refreshButton.setLookAndFeel(&unicodeLookAndFeel);
+	addAndMakeVisible(refreshButton);
+
 	addAndMakeVisible(table);
 
 
@@ -232,9 +236,11 @@ void LocalTableList::setText(const int columnNumber, const int rowNumber, const 
 void LocalTableList::resized()
 {
 	auto area = getLocalBounds();
-	auto dirButtonHeight = 30;
-	loadDirButton.setBounds(area.removeFromTop(dirButtonHeight));
-	table.setBounds(area.removeFromTop(getHeight() - dirButtonHeight));
+	auto buttonPanelHeight = 30;
+	auto buttonPanel = area.removeFromTop(buttonPanelHeight);
+	loadDirButton.setBounds(buttonPanel.removeFromLeft(getWidth()-30));
+	refreshButton.setBounds(buttonPanel.removeFromLeft(30));
+	table.setBounds(area.removeFromTop(getHeight() - buttonPanelHeight));
 }
 
 File LocalTableList::getDirectory()
@@ -420,9 +426,11 @@ void LocalTableList::convertSampleRate()
 				//create an audiosource that can read from the reader, read from the reader then delete the reader
 				AudioFormatReaderSource* newSource = new AudioFormatReaderSource(reader, true);
 				//create a resamping audiosource from the audiosource then delete the one that you passed in 
-				ResamplingAudioSource* resamplingAudioSource = new ResamplingAudioSource(newSource, true, reader->numChannels);
+				auto resamplingAudioSource = std::make_unique<ResamplingAudioSource>(newSource, true, reader->numChannels);
+			//	ResamplingAudioSource* resamplingAudioSource = new ResamplingAudioSource(newSource, true, reader->numChannels);
 				resamplingAudioSource->setResamplingRatio(SRRatio);
 				File targetDestination;
+				File tempFile = File(File::getCurrentWorkingDirectory().getChildFile("wavCapTemp.wav"));
 				switch (popupResult)
 				{
 				case 0: return;
@@ -433,23 +441,13 @@ void LocalTableList::convertSampleRate()
 				case 3: targetDestination = File(localDirWavs[row].getParentDirectory().getFullPathName() + "/"+ localDirWavs[row].getFileNameWithoutExtension() + "-" + std::to_string(targetSampleRate) + ".wav"); //make a new file in this directory with the sample rate appending the name
 					break;
 				}
-				if (popupResult == 1)
-				{
-					//crappy hack to make sure that we don't add our data to the existing file but we do have a place to write to
-					//but it doesn't work!
-					String pathName = targetDestination.getFullPathName();
-					targetDestination.deleteFile();
-					targetDestination = File(pathName);
-				}
-				FileOutputStream* fos = new FileOutputStream(targetDestination);
-				//delete the file on disk, but we arlready did this if we did option 1
-				if(popupResult!=1){ targetDestination.deleteFile(); }
-				AudioFormatWriter* writer = WavAudioFormat().createWriterFor(fos, targetSampleRate, numChans, 16, StringPairArray(), 0);
+				auto fos = std::unique_ptr<FileOutputStream>(tempFile.createOutputStream());
+				auto writer = std::unique_ptr<AudioFormatWriter>  (WavAudioFormat().createWriterFor(fos.release(), targetSampleRate, numChans, 16, StringPairArray(), 0)); //note here that to be able to use the unique_ptr as a parameter I need to do .get()
 				resamplingAudioSource->prepareToPlay(512, targetSampleRate);
 				writer->writeFromAudioSource(*resamplingAudioSource, numSamples / SRRatio);
-				delete writer;
-				delete resamplingAudioSource;
-				mainComp.setDebugText("targetDestination is" + targetDestination.getFullPathName());
+				File moveFile = File(File::getCurrentWorkingDirectory().getChildFile("wavCapTemp.wav"));
+				moveFile.moveFileTo(targetDestination.getParentDirectory());
+				mainComp.setDebugText("tagetDestination is " + moveFile.getFullPathName());
 			}
 		}
 	}
@@ -537,3 +535,8 @@ bool LocalTableList::isInterestedInFileDrag(const StringArray& files)
 	}
 }
 
+
+void LocalTableList::refreshButtonClicked()
+{
+	loadData(false);
+}
