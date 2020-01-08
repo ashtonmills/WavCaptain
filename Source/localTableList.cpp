@@ -14,6 +14,19 @@
 
 LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel) : mainComp (mc), loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
 {
+	//set the current working directory for the program and add a resources folder. 
+	File workingDir = File::getSpecialLocation(File::SpecialLocationType::userApplicationDataDirectory).getChildFile("wavCaptain");
+	if (!workingDir.isDirectory())
+	{
+		workingDir.createDirectory();
+	}
+	workingDir.setAsCurrentWorkingDirectory();
+	File resourcesDir = File::getCurrentWorkingDirectory().getChildFile("Resources");
+	if (!resourcesDir.isDirectory())
+	{
+	resourcesDir.createDirectory();
+	}
+
 	setSize(500, 750);
 	addAndMakeVisible(loadDirButton);
 	loadDirButton.onClick = [this] {chooseDir(); };
@@ -44,8 +57,9 @@ void LocalTableList::initDirectoryLoad()
 	//TODO get ride of these afterwards? make them smart pointers?
 	XmlElement* saveDirColumnList = nullptr;
 	XmlElement* saveDirDataList = nullptr;
+	
 
-	auto savedDirFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
+	File savedDirFile = File::getCurrentWorkingDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
 	if (savedDirFile.exists())
 	{
 		savedData = XmlDocument::parse(savedDirFile);
@@ -329,13 +343,13 @@ File LocalTableList::makeXml(File& dir)
 
 	if (bIsLeftPanel)
 	{
-		File localDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
+		File localDirDataFile = File::getCurrentWorkingDirectory().getChildFile("Resources").getChildFile("localDirData.xml");
 		dirXml.writeTo(localDirDataFile);
 		return localDirDataFile;
 	}
 	else
 	{
-		File repoDirDataFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("repoDirData.xml");
+		File repoDirDataFile = File::getCurrentWorkingDirectory().getChildFile("Resources").getChildFile("repoDirData.xml");
 		dirXml.writeTo(repoDirDataFile);
 		return repoDirDataFile;
 	}

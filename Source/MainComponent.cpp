@@ -15,6 +15,7 @@ MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailCompo
 {
 	// Make sure you set the size of the component after
 	// you add any child components.
+
 	setSize(1200, 800);
 
 	transportSource.addChangeListener(this);
@@ -60,6 +61,7 @@ MainComponent::~MainComponent()
 	// This shuts down the audio device and clears the audio source.
 	shutdownAudio();
 }
+
 
 //==================================================================================
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -212,7 +214,7 @@ void MainComponent::saveData()
 			data->addChildElement(repoPath);
 		}
 
-		File saveDirFile = File::getCurrentWorkingDirectory().getParentDirectory().getParentDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
+		File saveDirFile = File::getCurrentWorkingDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
 		saveData.writeTo(saveDirFile);
 
 		/*Let's have another think through this one.
@@ -332,6 +334,7 @@ int MainComponent::getTargetSampleRate()
 		}
 	
 }
+
 
 void MainComponent::resized()
 {
