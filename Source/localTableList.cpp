@@ -50,6 +50,7 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 
 LocalTableList::~LocalTableList()
 {
+	refreshButton.setLookAndFeel(nullptr);
 }
 
 void LocalTableList::initDirectoryLoad()

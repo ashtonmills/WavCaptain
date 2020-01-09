@@ -59,6 +59,7 @@ MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailCompo
 MainComponent::~MainComponent()
 {
 	// This shuts down the audio device and clears the audio source.
+	transportSource.setSource(nullptr);
 	shutdownAudio();
 }
 

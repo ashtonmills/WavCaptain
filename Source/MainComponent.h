@@ -216,6 +216,13 @@ public:
 
 		}
 
+		~ButtonPanel()
+		{
+			playButton.setLookAndFeel(nullptr);
+			stopButton.setLookAndFeel(nullptr);
+			rewindButton.setLookAndFeel(nullptr);
+		}
+
 		void stopButtonClicked()
 		{
 			mainComp.stop();
