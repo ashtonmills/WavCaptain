@@ -462,14 +462,15 @@ void LocalTableList::convertSampleRate()
 				//bool didOverwrite = temp.moveFileTo(targetFile);
 				String pathName = targetFile.getFullPathName();
 				targetFile.deleteFile();
-				bool didOverwrite = temp.moveFileTo(pathName);
-				if (didOverwrite)
+			//	 temp.moveFileTo(pathName);
+				 bool didDelete = temp.deleteFile();
+				if (didDelete)
 				{
-					mainComp.setDebugText("successfully overwrote ");
+					mainComp.setDebugText("successfully deleted temp ");
 				}
 				else
 				{
-					mainComp.setDebugText("failed to overwite ");
+					mainComp.setDebugText("failed to delete temp ");
 				}
 			}
 		}
