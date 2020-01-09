@@ -23,11 +23,11 @@ public:
     bool moreThanOneInstanceAllowed() override       { return true; }
 
     //==============================================================================
-    void initialise (const String& commandLine) override
+    void initialise (const String& commandLineString) override
     {
         // This method is where you should put your application's initialisation code..
-
-        mainWindow.reset (new MainWindow (getApplicationName()));
+		String arg = commandLineString;
+        mainWindow.reset (new MainWindow (getApplicationName(),arg));
     }
 
     void shutdown() override
@@ -60,13 +60,13 @@ public:
     class MainWindow    : public DocumentWindow
     {
     public:
-        MainWindow (String name)  : DocumentWindow (name,
+        MainWindow (String name, String commandLineParams)  : DocumentWindow (name,
                                                     Desktop::getInstance().getDefaultLookAndFeel()
                                                                           .findColour (ResizableWindow::backgroundColourId),
                                                     DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar (true);
-            setContentOwned (new MainComponent(), true);
+            setContentOwned (new MainComponent(commandLineParams), true);
 
            #if JUCE_IOS || JUCE_ANDROID
             setFullScreen (true);

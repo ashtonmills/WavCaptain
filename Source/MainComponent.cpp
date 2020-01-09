@@ -11,7 +11,12 @@
 #define STOPTEXT CharPointer_UTF8("\xe2\x96\xa0")
 #define PAUSETEXT CharPointer_UTF8 ("\xe2\x8f\xb8")
 //==============================================================================
-MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailComponent(1024,formatManager,thumbnailCache), positionOverlay(transportSource),gain(0.5), localTableList(*this,"Source Directory",true), destinationRepoList(*this,"Destination Repo Directory",false),buttonPanel(*this)
+MainComponent::MainComponent(String commandLineParam) :state(Stopped),thumbnailCache(5),
+thumbnailComponent(1024,formatManager,thumbnailCache), 
+positionOverlay(transportSource),gain(0.5),
+localTableList(*this,"Source Directory",true,commandLineParam),
+destinationRepoList(*this,"Destination Repo Directory",false,""),
+buttonPanel(*this)
 {
 	// Make sure you set the size of the component after
 	// you add any child components.
@@ -35,7 +40,7 @@ MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailCompo
 	gainSlider.setSkewFactorFromMidPoint(0.25);
 
 	addAndMakeVisible(debugLabel);
-	debugLabel.setText("This little area could display hints in the future but for now it displays debug messages. ", dontSendNotification);
+	debugLabel.setText("Display debug messages here", dontSendNotification);
 	
 	addAndMakeVisible(localTableList);
 	addAndMakeVisible(destinationRepoList);
@@ -53,6 +58,18 @@ MainComponent::MainComponent() :state(Stopped),thumbnailCache(5), thumbnailCompo
 	{
 		// Specify the number of input and output channels that we want to open
 		setAudioChannels(0, 2);
+	}
+
+	commandLineParam = commandLineParam.unquoted();
+
+	if ((commandLineParam.contains(".wav")) && (File(commandLineParam).existsAsFile()))
+	{
+		localTableList.filesDropped(commandLineParam, 1, 1);
+		setDebugText(commandLineParam + " was loaded");
+	}
+	else
+	{
+		setDebugText(commandLineParam + " could not be loaded");
 	}
 }
 

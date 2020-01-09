@@ -12,7 +12,7 @@
 #include "localTableList.h"
 
 
-LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel) : mainComp (mc), loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
+LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel,String sInitFile) : mainComp (mc), loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
 {
 	//set the current working directory for the program and add a resources folder. 
 	File workingDir = File::getSpecialLocation(File::SpecialLocationType::userApplicationDataDirectory).getChildFile("wavCaptain");
@@ -40,8 +40,16 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 
 	table.setRowHeight(25);
 	formatManager.registerBasicFormats();
+	
+	//if no string was passed in, or if we're constructing the destination panel, do the init load which will 
+	//look for a saved directory. This means that if we do 'open with' it will still load the destination table as normal
+	//which is good because we may well often want to launch files to preview them and then deploy them straight to the repo 
+	//directory that we've been workign with. 
+	if (!sInitFile.isNotEmpty() || isLeftPanel == false)
+	{
+		initDirectoryLoad();
+	}
 
-	initDirectoryLoad();
 	if (directory.exists())
 	{
 		loadData(true);
@@ -549,7 +557,6 @@ bool LocalTableList::isInterestedInFileDrag(const StringArray& files)
 	 else return false;
 	}
 }
-
 
 void LocalTableList::refreshButtonClicked()
 {

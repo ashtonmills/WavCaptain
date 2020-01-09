@@ -34,7 +34,7 @@ class LocalTableList : public Component, public FileDragAndDropTarget,
 	public TableListBoxModel
 {
 public:
-	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel);
+	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel,String sInitFile);
 	~LocalTableList();
 	
 
@@ -88,6 +88,7 @@ public:
 	void filesDropped(const StringArray& files, int x, int y) override;
 
 	bool isInterestedInFileDrag(const StringArray& files) override;
+
 
 	void LocalTableList::refreshButtonClicked();
 

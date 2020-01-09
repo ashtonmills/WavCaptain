@@ -148,7 +148,7 @@ class MainComponent : public AudioAppComponent, public ChangeListener, public Sl
 {
 public:
 	//==============================================================================
-	MainComponent();
+	MainComponent(String commandLineParams);
 	~MainComponent();
 
 	//==============================================================================
