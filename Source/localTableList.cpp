@@ -450,27 +450,27 @@ void LocalTableList::convertSampleRate()
 				AudioFormatReaderSource* newSource = new AudioFormatReaderSource(reader, true);
 				//create a resamping audiosource from the audiosource then delete the one that you passed in 
 				auto resamplingAudioSource = std::make_unique<ResamplingAudioSource>(newSource, true, reader->numChannels);
-			//	ResamplingAudioSource* resamplingAudioSource = new ResamplingAudioSource(newSource, true, reader->numChannels);
+				//	ResamplingAudioSource* resamplingAudioSource = new ResamplingAudioSource(newSource, true, reader->numChannels);
 				resamplingAudioSource->setResamplingRatio(SRRatio);
-				File targetDestination;
-				File tempFile = File(File::getCurrentWorkingDirectory().getChildFile("wavCapTemp.wav"));
-				switch (popupResult)
-				{
-				case 0: return;
-				case 1: targetDestination = File(localDirWavs[row].getFullPathName());//overwite the file with the new sample rate version
-					break;
-				case 2: targetDestination = directory.getChildFile("resampled_"+ std::to_string(targetSampleRate)).getChildFile(localDirWavs[row].getFileName()); //create a subfolder in this directory named the sample rate they've been named to 
-					break; 
-				case 3: targetDestination = File(localDirWavs[row].getParentDirectory().getFullPathName() + "/"+ localDirWavs[row].getFileNameWithoutExtension() + "-" + std::to_string(targetSampleRate) + ".wav"); //make a new file in this directory with the sample rate appending the name
-					break;
-				}
-				auto fos = std::unique_ptr<FileOutputStream>(tempFile.createOutputStream());
-				auto writer = std::unique_ptr<AudioFormatWriter>  (WavAudioFormat().createWriterFor(fos.release(), targetSampleRate, numChans, 16, StringPairArray(), 0)); //note here that to be able to use the unique_ptr as a parameter I need to do .get()
+
+				File temp = File(targetFile.getSiblingFile("temp.wav"));
+				auto fos = std::unique_ptr<FileOutputStream>(temp.createOutputStream());
+				auto writer = std::unique_ptr<AudioFormatWriter>(WavAudioFormat().createWriterFor(fos.release(), targetSampleRate, numChans, 16, StringPairArray(), 0)); //note here that to be able to use the unique_ptr as a parameter I need to do .get()
 				resamplingAudioSource->prepareToPlay(512, targetSampleRate);
 				writer->writeFromAudioSource(*resamplingAudioSource, numSamples / SRRatio);
-				File moveFile = File(File::getCurrentWorkingDirectory().getChildFile("wavCapTemp.wav"));
-				moveFile.moveFileTo(targetDestination.getParentDirectory());
-				mainComp.setDebugText("tagetDestination is " + moveFile.getFullPathName());
+				//mainComp.setDebugText("targetDestination is " + targetDestination.getFullPathName());
+				//bool didOverwrite = temp.moveFileTo(targetFile);
+				String pathName = targetFile.getFullPathName();
+				targetFile.deleteFile();
+				bool didOverwrite = temp.moveFileTo(pathName);
+				if (didOverwrite)
+				{
+					mainComp.setDebugText("successfully overwrote ");
+				}
+				else
+				{
+					mainComp.setDebugText("failed to overwite ");
+				}
 			}
 		}
 	}

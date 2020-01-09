@@ -41,7 +41,7 @@ buttonPanel(*this)
 
 	addAndMakeVisible(debugLabel);
 	debugLabel.setText("Display debug messages here", dontSendNotification);
-	
+
 	addAndMakeVisible(localTableList);
 	addAndMakeVisible(destinationRepoList);
 
