@@ -35,6 +35,10 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 	refreshButton.setLookAndFeel(&unicodeLookAndFeel);
 	addAndMakeVisible(refreshButton);
 
+	backFolderButton.onClick = [this] {backFolderButtonClicked(); };
+	backFolderButton.setLookAndFeel(&unicodeLookAndFeel);
+	addAndMakeVisible(backFolderButton);
+
 	addAndMakeVisible(table);
 
 
@@ -59,6 +63,7 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 LocalTableList::~LocalTableList()
 {
 	refreshButton.setLookAndFeel(nullptr);
+	backFolderButton.setLookAndFeel(nullptr);
 }
 
 void LocalTableList::initDirectoryLoad()
@@ -172,7 +177,7 @@ void LocalTableList::paintRowBackground(Graphics& g, int rowNumber, int, int, bo
 void LocalTableList::paintCell(Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) 
 {
 	g.setColour(rowIsSelected ? Colours::darkblue : getLookAndFeel().findColour(ListBox::textColourId)); // [5]
-	g.setFont(font);
+	g.setFont(Font("Segoe UI Symbol",17,Font::plain));
 	if (auto* rowElement = dataList->getChildElement(rowNumber))
 	{
 		auto text = rowElement->getStringAttribute(getAttributeNameForColumnId(columnId));
@@ -261,7 +266,8 @@ void LocalTableList::resized()
 	auto area = getLocalBounds();
 	auto buttonPanelHeight = 30;
 	auto buttonPanel = area.removeFromTop(buttonPanelHeight);
-	loadDirButton.setBounds(buttonPanel.removeFromLeft(getWidth()-30));
+	backFolderButton.setBounds(buttonPanel.removeFromLeft(50));
+	loadDirButton.setBounds(buttonPanel.removeFromLeft(getWidth()-80));
 	refreshButton.setBounds(buttonPanel.removeFromLeft(30));
 	table.setBounds(area.removeFromTop(getHeight() - buttonPanelHeight));
 }
@@ -325,12 +331,26 @@ File LocalTableList::makeXml(File& dir)
 	XmlElement* data = new XmlElement("DATA");
 	dirXml.addChildElement(data);
 
-
+   	 String folderIcon = CharPointer_UTF8("\xf0\x9f\x93\x81");
 	 localDirWavs = dir.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav");
+	 Array<File> localDirFolders = dir.findChildFiles(File::TypesOfFileToFind::findDirectories, false);
+	 localDirWavs.addArray(localDirFolders);
+
 
 	for (int i = 0; i < localDirWavs.size(); ++i)
 	{
 		XmlElement* file = new XmlElement("FILE");
+		if (localDirWavs[i].isDirectory())
+		{
+			String folderName = localDirWavs[i].getFileName();
+			DBG("the folder is called" + folderName);
+			file->setAttribute("FileName",folderIcon + " " + folderName);
+			file->setAttribute("DateModified", localDirWavs[i].getLastModificationTime().toString(true, true, false, true));
+			file->setAttribute("Channels", "-");
+			file->setAttribute("SampleRate", "-");
+			data->addChildElement(file);
+			continue;
+		}
 		file->setAttribute("FileName", localDirWavs[i].getFileName());
 		file->setAttribute("DateModified", localDirWavs[i].getLastModificationTime().toString(true, true, false, true));
 		auto reader = std::unique_ptr<AudioFormatReader>(formatManager.createReaderFor(localDirWavs[i]));
@@ -504,8 +524,21 @@ void LocalTableList::convertSampleRate()
 
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
-	mainComp.readFile(localDirWavs[rowNumber]);
-	mainComp.play();
+	//if you click a cell and it's not a directory, play the relevent file
+	if (!localDirWavs[rowNumber].isDirectory())
+	{
+		mainComp.readFile(localDirWavs[rowNumber]);
+		mainComp.play();
+	}
+}
+
+void LocalTableList::cellDoubleClicked(int rowNumber, int columnId, const MouseEvent&)
+{
+	if (localDirWavs[rowNumber].isDirectory())
+	{
+		directory = localDirWavs[rowNumber];
+		loadData(false);
+	}
 }
 
 String LocalTableList::getAttributeNameForColumnId(const int columnId) const
@@ -582,5 +615,11 @@ bool LocalTableList::isInterestedInFileDrag(const StringArray& files)
 
 void LocalTableList::refreshButtonClicked()
 {
+	loadData(false);
+}
+
+void LocalTableList::backFolderButtonClicked()
+{
+	directory = directory.getParentDirectory();
 	loadData(false);
 }

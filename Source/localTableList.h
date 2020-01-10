@@ -85,12 +85,16 @@ public:
 
 	void cellClicked(int rowNumber, int columnId, const MouseEvent&);
 
+	void cellDoubleClicked(int rowNumber, int columnId, const MouseEvent&);
+
 	void filesDropped(const StringArray& files, int x, int y) override;
 
 	bool isInterestedInFileDrag(const StringArray& files) override;
 
 
 	void LocalTableList::refreshButtonClicked();
+
+	void backFolderButtonClicked();
 
 	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
 	{
@@ -103,6 +107,8 @@ public:
 			return Font("Segoe UI Symbol", 20, Font::plain);
 		}
 	};
+
+
 
 
 private:
@@ -120,6 +126,9 @@ private:
 	TextButton loadDirButton;
 	String refreshSymbol = CharPointer_UTF8("\xe2\x9f\xb3");
 	TextButton refreshButton{ refreshSymbol };
+	String upArrowSymbol = CharPointer_UTF8("\xe2\x86\x91");
+	String folderSymbol = CharPointer_UTF8("\xf0\x9f\x93\x81");
+	TextButton backFolderButton{ folderSymbol + upArrowSymbol };
 	Array<File> localDirWavs;
 	Array<File> repoDirWavs;
 	MainComponent& mainComp;
