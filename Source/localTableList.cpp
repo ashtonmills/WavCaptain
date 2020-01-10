@@ -288,19 +288,19 @@ File LocalTableList::makeXml(File& dir)
 	XmlElement* column1 = new XmlElement("COLUMN");
 	column1->setAttribute("columnId", "1");
 	column1->setAttribute("name", "FileName");
-	column1->setAttribute("width", "200");
+	column1->setAttribute("width", "250");
 	header->addChildElement(column1);
 
 	XmlElement* column2 = new XmlElement("COLUMN");
 	column2->setAttribute("columnId", "2");
 	column2->setAttribute("name", "SampleRate");
-	column2->setAttribute("width", "100");
+	column2->setAttribute("width", "70");
 	header->addChildElement(column2);
 
 	XmlElement* column3 = new XmlElement("COLUMN");
 	column3->setAttribute("columnId", "3");
 	column3->setAttribute("name", "Channels");
-	column3->setAttribute("width", "70");
+	column3->setAttribute("width", "50");
 	header->addChildElement(column3);
 
 	XmlElement* column4 = new XmlElement("COLUMN");
@@ -417,9 +417,8 @@ void LocalTableList::convertSampleRate()
 {
 	//create popup menu to decide whether we overiwite or keep original files
 	PopupMenu popup;
-	popup.addItem(1, "Overwite Existing Files");
-	popup.addItem(2, "Create Subfolder for new files");
-	popup.addItem(3, "Append names of new files");
+	popup.addItem(1, "Don't back up originals");
+	popup.addItem(2, "Back up originals in subfolder");
 	const int popupResult = popup.show();
 	//if user picks nothing from this menu cancel the function
 	if (popupResult == 0) return;
@@ -441,40 +440,62 @@ void LocalTableList::convertSampleRate()
 			AudioFormatReader* reader = formatManager.createReaderFor(targetFile);
 			//check the sample rate of the file and skip over this iteration if it's already the sample rate we want
 			unsigned int initialSampleRate = reader->sampleRate;
+			if (initialSampleRate < targetSampleRate)
+			{
+				mainComp.setDebugText("Sorry, WavCaptain can downsample but it can't upsample.");
+				delete reader;
+				return;
+			}
 			if (initialSampleRate != targetSampleRate)
 			{
 				unsigned int numChans = reader->numChannels;
 				unsigned int numSamples = reader->lengthInSamples;
 				double SRRatio = initialSampleRate / targetSampleRate;
+
 				//create an audiosource that can read from the reader, read from the reader then delete the reader
 				AudioFormatReaderSource* newSource = new AudioFormatReaderSource(reader, true);
 				//create a resamping audiosource from the audiosource then delete the one that you passed in 
 				auto resamplingAudioSource = std::make_unique<ResamplingAudioSource>(newSource, true, reader->numChannels);
-				//	ResamplingAudioSource* resamplingAudioSource = new ResamplingAudioSource(newSource, true, reader->numChannels);
 				resamplingAudioSource->setResamplingRatio(SRRatio);
 
-				File temp = File(targetFile.getSiblingFile("temp.wav"));
-				auto fos = std::unique_ptr<FileOutputStream>(temp.createOutputStream());
+				//write a the stream to a temp file then replace the original
+				TemporaryFile temp(targetFile);
+				auto fos = std::unique_ptr<FileOutputStream>(temp.getFile().createOutputStream());
 				auto writer = std::unique_ptr<AudioFormatWriter>(WavAudioFormat().createWriterFor(fos.release(), targetSampleRate, numChans, 16, StringPairArray(), 0)); //note here that to be able to use the unique_ptr as a parameter I need to do .get()
 				resamplingAudioSource->prepareToPlay(512, targetSampleRate);
 				writer->writeFromAudioSource(*resamplingAudioSource, numSamples / SRRatio);
-				//mainComp.setDebugText("targetDestination is " + targetDestination.getFullPathName());
-				//bool didOverwrite = temp.moveFileTo(targetFile);
-				String pathName = targetFile.getFullPathName();
-				targetFile.deleteFile();
-			//	 temp.moveFileTo(pathName);
-				 bool didDelete = temp.deleteFile();
-				if (didDelete)
+				String fileName = targetFile.getFileName();
+				fos = nullptr;
+				writer = nullptr;
+				reader = nullptr;
+				resamplingAudioSource = nullptr;
+				//if you chose to backup the originals then we'll check to see if you already have a backups folder in this directory
+				//if not we'll make one
+				//then we'll copy the file to here before we continue
+				if (popupResult == 2)
 				{
-					mainComp.setDebugText("successfully deleted temp ");
+					File backupDir;
+					if (!File(targetFile.getSiblingFile("originalSRBackup")).isDirectory())
+					{
+						backupDir = File(targetFile.getSiblingFile("originalsSRBackup"));
+						backupDir.createDirectory();
+					}
+					targetFile.copyFileTo(backupDir.getChildFile(fileName));
+				}
+				bool didCopy = temp.overwriteTargetFileWithTemporary();
+				if (didCopy)
+				{
+					mainComp.setDebugText(fileName + " was overwritten");
 				}
 				else
 				{
-					mainComp.setDebugText("failed to delete temp ");
+					mainComp.setDebugText("failed to copy to overwrite" + fileName);
 				}
 			}
 		}
 	}
+
+	loadData(false);
 
 }
 

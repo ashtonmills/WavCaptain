@@ -21,7 +21,7 @@ buttonPanel(*this)
 	// Make sure you set the size of the component after
 	// you add any child components.
 
-	setSize(1200, 800);
+	setSize(1200, 900);
 
 	transportSource.addChangeListener(this);
 
