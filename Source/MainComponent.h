@@ -144,7 +144,7 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
 
-class MainComponent : public AudioAppComponent, public ChangeListener, public Slider::Listener, private Timer
+class MainComponent : public AudioAppComponent, public ChangeListener, private Timer
 {
 public:
 	//==============================================================================
@@ -170,7 +170,7 @@ public:
 	int getTargetSampleRate();
 
 
-	class ButtonPanel : public Component
+	class ButtonPanel : public Component, public Slider::Listener
 	{
 	public:
 		ButtonPanel(MainComponent& mc) : mainComp(mc)
@@ -185,7 +185,6 @@ public:
 			playButton.setEnabled(false);
 			playButton.addShortcut(keyPressPlay);
 		
-
 			stopButton.onClick = [this] {stopButtonClicked(); };
 			stopButton.setLookAndFeel(&unicodeLookAndFeel);
 			addAndMakeVisible(&stopButton);
@@ -212,6 +211,19 @@ public:
 			SRMenu.addItemList(rates, 1);
 			SRMenu.setSelectedId(1);
 
+			addAndMakeVisible(gainSlider);
+			gainSlider.setSliderStyle(Slider::LinearHorizontal);
+			gainSlider.setRange(0.0f, 1.0f, 0.01);
+			gainSlider.setValue(gain);
+			gainSlider.setColour(0x1001300, Colours::white); //slider thumb colour
+			gainSlider.setColour(0x1001310, Colours::lightgrey); // slider track colour
+			gainSlider.setTextBoxStyle(Slider::NoTextBox, true, 40, 30);
+			gainSlider.addListener(this);
+			gainSlider.setSkewFactorFromMidPoint(0.25);
+
+			muteButton.setLookAndFeel(&unicodeLookAndFeel);
+			addAndMakeVisible(muteButton);
+			muteButton.onClick = [this] {muteButtonClicked(); };
 
 
 		}
@@ -253,6 +265,28 @@ public:
 			mainComp.localTableList.convertSampleRate();
 		}
 
+		void sliderValueChanged(Slider* slider) override
+		{
+			mainComp.transportSource.setGain(slider->getValue());
+		}
+
+		void muteButtonClicked()
+		{
+			if (!isMuted)
+			{
+				gain = gainSlider.getValue();
+				gainSlider.setValue(0);
+				muteButton.setButtonText(muteSymbol);
+				isMuted = true;
+			}
+			else
+			{
+				gainSlider.setValue(gain);
+				muteButton.setButtonText(gainLabelSymbol);
+				isMuted = false;
+			}
+		}
+
 		void resized() override
 		{
 			auto panelBounds = getLocalBounds();
@@ -262,7 +296,9 @@ public:
 			deployButton.setBounds(panelBounds.removeFromLeft(100));
 			deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 			convertSRButton.setBounds(panelBounds.removeFromLeft(100));
-			SRMenu.setBounds(panelBounds.removeFromRight(150));
+			SRMenu.setBounds(panelBounds.removeFromLeft(150));
+			gainSlider.setBounds(panelBounds.removeFromRight(150));
+			muteButton.setBounds(panelBounds.removeFromRight(30));
 		}
 
 		class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
@@ -290,6 +326,13 @@ public:
 		MainComponent& mainComp;
 		UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
 		ComboBox SRMenu;
+		String gainLabelSymbol = CharPointer_UTF8("\xf0\x9f\x94\x8a");
+		TextButton muteButton{gainLabelSymbol};
+		String muteSymbol = CharPointer_UTF8("\xf0\x9f\x94\x87");
+		Slider gainSlider;
+		float gain = 1;
+		bool isMuted = false;
+
 		
 
 	};
@@ -318,7 +361,7 @@ private:
 	void changeState(TransportState newState);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
 
-	void sliderValueChanged(Slider* slider) override;
+
 
 
 	AudioTransportSource transportSource;
@@ -331,13 +374,12 @@ private:
 	ThumbnailComponent thumbnailComponent;
 	PositionOverlay positionOverlay;
 
-	Slider gainSlider;
-	float gain;
 
 	Label debugLabel;
 	int timerFlashCount;
 
 	ButtonPanel buttonPanel;
+
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

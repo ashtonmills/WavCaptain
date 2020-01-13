@@ -13,7 +13,7 @@
 //==============================================================================
 MainComponent::MainComponent(String commandLineParam) :state(Stopped),thumbnailCache(5),
 thumbnailComponent(1024,formatManager,thumbnailCache), 
-positionOverlay(transportSource),gain(0.5),
+positionOverlay(transportSource),
 localTableList(*this,"Source Directory",true,commandLineParam),
 destinationRepoList(*this,"Destination Repo Directory",false,""),
 buttonPanel(*this)
@@ -30,14 +30,6 @@ buttonPanel(*this)
 	addAndMakeVisible(thumbnailComponent);
 
 	addAndMakeVisible(positionOverlay);
-
-	addAndMakeVisible(gainSlider);
-	gainSlider.setSliderStyle(Slider::LinearVertical);
-	gainSlider.setRange(0.0f, 1.0f, 0.01);
-	gainSlider.setValue(gain);
-	gainSlider.setTextBoxStyle(Slider::TextBoxBelow, true, 40, 30);
-	gainSlider.addListener(this);
-	gainSlider.setSkewFactorFromMidPoint(0.25);
 
 	addAndMakeVisible(debugLabel);
 	debugLabel.setText("Display debug messages here", dontSendNotification);
@@ -66,10 +58,6 @@ buttonPanel(*this)
 	{
 		localTableList.filesDropped(commandLineParam, 1, 1);
 		setDebugText(commandLineParam + " was loaded");
-	}
-	else
-	{
-		setDebugText(commandLineParam + " could not be loaded");
 	}
 }
 
@@ -128,7 +116,7 @@ void MainComponent::readFile(File myFile)
 			playSource.reset(newSource.release());
 			buttonPanel.playButton.setButtonText(PLAYTEXT);
 			thumbnailComponent.setFile(myFile);
-			setDebugText("You loaded a file, arean't you clever?");
+		//	setDebugText("You loaded a file, arean't you clever?");
 		}
 	
 }
@@ -199,7 +187,7 @@ void MainComponent::saveData()
 	//wrapped this in an if check so it doesn't save empty paths
 	if (localTableList.getDirectory().exists()||destinationRepoList.getDirectory().exists())
 	{
-		setDebugText("saveData function called");
+	//	setDebugText("saveData function called");
 		XmlElement saveData("SAVEDATA");
 
 		XmlElement* header = new XmlElement("HEADERS");
@@ -314,16 +302,9 @@ void MainComponent::changeState(TransportState newState)
 	}
 }
 
-//try using the lambda version of this instead 
 
-void MainComponent::sliderValueChanged(Slider* slider)
-{
-	if (slider == &gainSlider)
-	{
-	//	debugLabel.setText("volume slider changed",dontSendNotification);
-		transportSource.setGain(slider->getValue());
-	}
-}
+
+
 //
 //void MainComponent::filesDropped(const StringArray& files, int x, int y)
 //{
