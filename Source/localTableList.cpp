@@ -39,6 +39,11 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 	backFolderButton.setLookAndFeel(&unicodeLookAndFeel);
 	addAndMakeVisible(backFolderButton);
 
+	
+	openInExplorerButton.onClick = [this] {openInExplorerButtonClicked(); };
+	openInExplorerButton.setLookAndFeel(&unicodeLookAndFeel);
+	addAndMakeVisible(openInExplorerButton);
+
 	addAndMakeVisible(table);
 
 
@@ -64,6 +69,7 @@ LocalTableList::~LocalTableList()
 {
 	refreshButton.setLookAndFeel(nullptr);
 	backFolderButton.setLookAndFeel(nullptr);
+	openInExplorerButton.setLookAndFeel(nullptr);
 }
 
 void LocalTableList::initDirectoryLoad()
@@ -265,10 +271,15 @@ void LocalTableList::resized()
 {
 	auto area = getLocalBounds();
 	auto buttonPanelHeight = 30;
+	int openButtonWidth = 50;
+	int folderBackButtonWidth = 50;
+	int refreshButtonWidth = 50;
+	int loadDirButtonWidthOffset = openButtonWidth + refreshButtonWidth + folderBackButtonWidth;
 	auto buttonPanel = area.removeFromTop(buttonPanelHeight);
-	backFolderButton.setBounds(buttonPanel.removeFromLeft(50));
-	loadDirButton.setBounds(buttonPanel.removeFromLeft(getWidth()-80));
-	refreshButton.setBounds(buttonPanel.removeFromLeft(30));
+	openInExplorerButton.setBounds(buttonPanel.removeFromLeft(openButtonWidth));
+	backFolderButton.setBounds(buttonPanel.removeFromLeft(folderBackButtonWidth));
+	loadDirButton.setBounds(buttonPanel.removeFromLeft(getWidth()-loadDirButtonWidthOffset));
+	refreshButton.setBounds(buttonPanel.removeFromLeft(refreshButtonWidth));
 	table.setBounds(area.removeFromTop(getHeight() - buttonPanelHeight));
 }
 
@@ -386,7 +397,16 @@ File LocalTableList::makeXml(File& dir)
 
 void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 {
-	mainComp.setDebugText("deployFiles() called on local table");
+//	mainComp.setDebugText("deployFiles() called on local table");
+	PopupMenu popup;
+	popup.addItem(1, "Don't deploy files that already exist in destination directory");
+	popup.addItem(2, "Overwrite files that already exist in destination directory");
+	const int popupResult = popup.show();
+	if (popupResult == 0)
+	{
+		return;
+	}
+	
 	if (!directory.exists())
 	{
 		mainComp.setDebugText("You haven't selected a source directory yet mate. Click 'Source Directory' to select one");
@@ -405,29 +425,50 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 		{
 			if (mainComp.destinationRepoList.directory.exists())
 			{
-				localDirWavs[row].copyFileTo(mainComp.destinationRepoList.directory.getChildFile(getText(1, row)));
+				//if you selected don't copy exiting files over, then check the other repo to see if it exists there
+				if (popupResult == 1)
+				{
+					bool existsInRepo = false;
+					for (int repoRow = 0; repoRow < mainComp.destinationRepoList.getNumRows(); ++repoRow)
+					{
+						if (mainComp.destinationRepoList.localDirWavs[repoRow].getFileName() == localDirWavs[row].getFileName())
+						{
+							DBG("not copying bacause it's already there");
+							existsInRepo = true;
+						}
+					}
+					if (existsInRepo)
+					{
+						//jump out of loop to the next iteration
+						continue;
+					}
+				}
+				//file is either not in the repo or we chose 2 so will overwrite it anyway
+				String fileName = localDirWavs[row].getFileName();
+				localDirWavs[row].copyFileTo(mainComp.destinationRepoList.directory.getChildFile(fileName));
 				filesCopied++;
+				loadData(false);
 			}
 
 		}
 	}
-	if (filesCopied == 0)
-	{
-		if (!bDeployingAll) { mainComp.setDebugText("No files selected"); }
-		else { mainComp.setDebugText("No files in local directory to copy"); }
+//	if (filesCopied == 0)
+	//{
+	//	if (!bDeployingAll) { mainComp.setDebugText("No files selected"); }
+		//else { mainComp.setDebugText("No files in local directory to copy"); }
 
-	}
-	else
-	{
+	//}
+//	else
+	//{
 		//String message = message.formatted("Copied %s files to %s.", filesCopied, mainComp.destinationRepoList.directory.getFileName());
 
-		String message = "Copied ";
+	/*	String message = "Copied ";
 		message += filesCopied;
 		message += " files to ";
 		message += mainComp.destinationRepoList.directory.getFullPathName();
 		mainComp.setDebugText(message);
-		mainComp.destinationRepoList.loadData(false);
-	}
+		mainComp.destinationRepoList.loadData(false);*/
+	//}
 }
 
 
@@ -622,4 +663,9 @@ void LocalTableList::backFolderButtonClicked()
 {
 	directory = directory.getParentDirectory();
 	loadData(false);
+}
+
+void LocalTableList::openInExplorerButtonClicked()
+{
+	directory.revealToUser();
 }

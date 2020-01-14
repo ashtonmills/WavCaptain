@@ -96,6 +96,8 @@ public:
 
 	void backFolderButtonClicked();
 
+	void openInExplorerButtonClicked();
+
 	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
 	{
 	public:
@@ -129,6 +131,8 @@ private:
 	String upArrowSymbol = CharPointer_UTF8("\xe2\x86\x91");
 	String folderSymbol = CharPointer_UTF8("\xf0\x9f\x93\x81");
 	TextButton backFolderButton{ folderSymbol + upArrowSymbol };
+	String outArrowSymbol = CharPointer_UTF8("\xe2\xae\xa2");
+	TextButton openInExplorerButton{ folderSymbol+outArrowSymbol };
 	Array<File> localDirWavs;
 	Array<File> repoDirWavs;
 	MainComponent& mainComp;
