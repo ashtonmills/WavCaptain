@@ -19,6 +19,7 @@ Deploying means copying files from the left panel (source Directory) to the righ
 
 That's about it for now. 
 
+Next up I plan to add a button to convert etween stereo and mono. 
 
 I've currently only made this work for .wav files because that's all I need at the moment, and it is only available for Windows. 
 If people are interested I could potentially look into widening it to Mac and other file types. 

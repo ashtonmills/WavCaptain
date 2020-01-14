@@ -31,7 +31,7 @@ class MainComponent;
 
 
 class LocalTableList : public Component, public FileDragAndDropTarget,
-	public TableListBoxModel
+	public TableListBoxModel, public MouseListener
 {
 public:
 	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel,String sInitFile);
@@ -97,6 +97,11 @@ public:
 	void backFolderButtonClicked();
 
 	void openInExplorerButtonClicked();
+
+	void openInExplorerButtonMouseEnter();
+
+	void mouseEnter(const MouseEvent& event) override;
+	void mouseExit(const MouseEvent& event) override;
 
 	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
 	{

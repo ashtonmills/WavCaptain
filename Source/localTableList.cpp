@@ -30,19 +30,23 @@ LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool 
 	setSize(500, 750);
 	addAndMakeVisible(loadDirButton);
 	loadDirButton.onClick = [this] {chooseDir(); };
+	loadDirButton.addMouseListener(this, false);
 
 	refreshButton.onClick = [this] {refreshButtonClicked(); };
 	refreshButton.setLookAndFeel(&unicodeLookAndFeel);
 	addAndMakeVisible(refreshButton);
+	refreshButton.addMouseListener(this, false);
 
 	backFolderButton.onClick = [this] {backFolderButtonClicked(); };
 	backFolderButton.setLookAndFeel(&unicodeLookAndFeel);
 	addAndMakeVisible(backFolderButton);
+	backFolderButton.addMouseListener(this, false);
 
 	
 	openInExplorerButton.onClick = [this] {openInExplorerButtonClicked(); };
 	openInExplorerButton.setLookAndFeel(&unicodeLookAndFeel);
 	addAndMakeVisible(openInExplorerButton);
+	openInExplorerButton.addMouseListener(this, false);
 
 	addAndMakeVisible(table);
 
@@ -672,3 +676,44 @@ void LocalTableList::openInExplorerButtonClicked()
 		localDirWavs[0].revealToUser();
 	}
 }
+
+void LocalTableList::mouseEnter(const MouseEvent& event)
+{
+	if (event.originalComponent == &openInExplorerButton)
+	{
+		mainComp.setDebugText("Open directory in Windows Explorer",false);
+	}
+	if (event.originalComponent == &backFolderButton)
+	{
+		mainComp.setDebugText("Back up to partent directory", false);
+	}
+	if (event.originalComponent == &refreshButton)
+	{
+		mainComp.setDebugText("Refresh this directory", false);
+	}
+	if (event.originalComponent == &loadDirButton)
+	{
+		mainComp.setDebugText("Browse for directory", false);
+	}
+}
+
+void LocalTableList::mouseExit(const MouseEvent& event)
+{
+	if (event.originalComponent == &openInExplorerButton)
+	{
+		mainComp.setDebugText("", false);
+	}
+	if (event.originalComponent == &backFolderButton)
+	{
+		mainComp.setDebugText("", false);
+	}
+	if (event.originalComponent == &refreshButton)
+	{
+		mainComp.setDebugText("", false);
+	}
+	if (event.originalComponent == &loadDirButton)
+	{
+		mainComp.setDebugText("", false);
+	}
+}
+

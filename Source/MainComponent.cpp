@@ -39,6 +39,10 @@ buttonPanel(*this)
 
 	addAndMakeVisible(buttonPanel);
 
+	addAndMakeVisible(aboutButton);
+	aboutButton.onClick = [this] {aboutButtonClicked(); };
+
+
 	// Some platforms require permissions to open input channels so request that here
 	if (RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
 		&& !RuntimePermissions::isGranted(RuntimePermissions::recordAudio))
@@ -140,10 +144,13 @@ void MainComponent::openButtonClicked()
 
 }
 
-void MainComponent::setDebugText(String textToDisplay)
+void MainComponent::setDebugText(String textToDisplay,bool flash)
 {
-	timerFlashCount = 0;
-	startTimer(50);
+	if (flash)
+	{
+		timerFlashCount = 0;
+		startTimer(50);
+	}
 	debugLabel.setText(textToDisplay, dontSendNotification);
 }
 
@@ -238,6 +245,19 @@ void MainComponent::saveData()
 	}
 
 }
+
+void MainComponent::aboutButtonClicked()
+{
+	//	auto aboutWindow  = std::make_unique<DialogWindow> ("About WavCaptain", Colours::lightgrey, true);
+//	DialogWindow aboutWindow("About WavCaptain", Colours::lightgrey, true);
+	DialogWindow::LaunchOptions launchOptions;
+	launchOptions.content.setOwned(new TextButton("WavCaptain by BioMannequin \n \n Version 1.1.3 \n \n Click here to check for updates"));
+	launchOptions.content->setSize(640, 480); 
+	launchOptions.launchAsync();
+
+}
+
+
 
 void MainComponent::changeListenerCallback(ChangeBroadcaster* source)
 {
@@ -337,13 +357,15 @@ int MainComponent::getTargetSampleRate()
 
 void MainComponent::resized()
 {
-	
 	int border = 10;
-	Rectangle<int> area (0,border,getWidth(),getHeight()-border);
+	int bottomPanelHeight = 30;
+	Rectangle<int> area (0,border,getWidth(),(getHeight()-border)-bottomPanelHeight);
+	Rectangle<int> bottomPanel(0, area.getHeight()+border, getWidth(), bottomPanelHeight);
 	thumbnailComponent.setBounds(area.removeFromTop(100));
 	positionOverlay.setBounds(thumbnailComponent.getBounds());
 	buttonPanel.setBounds(area.removeFromTop(20));
-	debugLabel.setBounds(area.removeFromBottom(30));
+	aboutButton.setBounds(bottomPanel.removeFromRight(75));
+	debugLabel.setBounds(bottomPanel.removeFromLeft(getWidth() - aboutButton.getWidth()));
 	localTableList.setBounds(area.removeFromLeft(getWidth() / 2));
 	destinationRepoList.setBounds(area.removeFromLeft(localTableList.getWidth()));
 	//auto wavPlayerBounds = area.removeFromLeft(getWidth() / 3);

@@ -162,15 +162,17 @@ public:
 	void resized() override;
 	void readFile(File myFile);
 	void openButtonClicked();
-	void setDebugText(String textToDisplay);
+	void setDebugText(String textToDisplay, bool flash = true);
 	void play();
 	void stop();
 	void timerCallback() override;
 	void saveData();
+	void aboutButtonClicked();
+	void updateButtonClicked();
 	int getTargetSampleRate();
 
 
-	class ButtonPanel : public Component, public Slider::Listener
+	class ButtonPanel : public Component, public Slider::Listener, public MouseListener
 	{
 	public:
 		ButtonPanel(MainComponent& mc) : mainComp(mc)
@@ -199,17 +201,21 @@ public:
 	
 			deployButton.onClick = [this] {deployButtonClicked(); };
 			addAndMakeVisible(&deployButton);
+			deployButton.addMouseListener(this, false);
 
 			deployAllButton.onClick = [this] {deployAllButtonClicked(); };
 			addAndMakeVisible(&deployAllButton);
+			deployAllButton.addMouseListener(this, false);
 
 			addAndMakeVisible(convertSRButton);
 			convertSRButton.onClick = [this] {convertSRButtonClicked(); };
+			convertSRButton.addMouseListener(this, false);
 
 			addAndMakeVisible(SRMenu);
 			Array<String> rates = { "22.05Khz","44.1Khz","48Khz","96Khz" };
 			SRMenu.addItemList(rates, 1);
 			SRMenu.setSelectedId(1);
+			SRMenu.addMouseListener(this, false);
 
 			addAndMakeVisible(gainSlider);
 			gainSlider.setSliderStyle(Slider::LinearHorizontal);
@@ -224,6 +230,7 @@ public:
 			muteButton.setLookAndFeel(&unicodeLookAndFeel);
 			addAndMakeVisible(muteButton);
 			muteButton.onClick = [this] {muteButtonClicked(); };
+			gainSlider.addMouseListener(this, false);
 
 
 		}
@@ -284,6 +291,42 @@ public:
 				gainSlider.setValue(gain);
 				muteButton.setButtonText(gainLabelSymbol);
 				isMuted = false;
+			}
+		}
+
+		void mouseEnter(const MouseEvent& event) override
+		{
+			if (event.originalComponent == &deployAllButton)
+			{
+				mainComp.setDebugText("Copy contents of source directory to destination directory", false);
+			}
+			if (event.originalComponent == &deployButton)
+			{
+				mainComp.setDebugText("Copy selected files to destination directory", false);
+			}
+			if (event.originalComponent == &convertSRButton)
+			{
+				mainComp.setDebugText("Downsample selected files to chosen sample rate", false);
+			}
+			if (event.originalComponent == &SRMenu)
+			{
+				mainComp.setDebugText("Choose sample rate to convert to", false);
+			}
+			if (event.originalComponent == &muteButton)
+			{
+				mainComp.setDebugText("Mute", false);
+			}
+		}
+
+		void mouseExit(const MouseEvent& event) override
+		{
+			if (event.originalComponent == &deployAllButton ||
+				event.originalComponent == &deployButton ||
+				event.originalComponent == &muteButton ||
+				event.originalComponent == &SRMenu ||
+				event.originalComponent == &convertSRButton)
+			{
+				mainComp.setDebugText("", false);
 			}
 		}
 
@@ -374,6 +417,7 @@ private:
 	ThumbnailComponent thumbnailComponent;
 	PositionOverlay positionOverlay;
 
+	TextButton aboutButton{ "About" };
 
 	Label debugLabel;
 	int timerFlashCount;
