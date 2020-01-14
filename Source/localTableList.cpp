@@ -667,5 +667,8 @@ void LocalTableList::backFolderButtonClicked()
 
 void LocalTableList::openInExplorerButtonClicked()
 {
-	directory.revealToUser();
+	if (localDirWavs[0].exists())
+	{
+		localDirWavs[0].revealToUser();
+	}
 }
