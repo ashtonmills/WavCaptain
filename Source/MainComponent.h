@@ -121,7 +121,7 @@ public:
 	PositionOverlay(AudioTransportSource& transportSourcetoUse)
 		: transportSource(transportSourcetoUse)
 	{
-		startTimer(40);
+		startTimer(1);
 	}
 
 	void paint(Graphics& g) override
@@ -131,7 +131,7 @@ public:
 		if (duration > 0.0)
 		{
 			auto audioPosition = (float) transportSource.getCurrentPosition();  //why here do he have (float) in brackets? 
-			auto drawPosition =  (audioPosition / duration) * getWidth();
+			drawPosition =  (audioPosition / duration) * getWidth();
 			g.setColour(Colours::black);
 			g.drawLine(drawPosition, 0.0f, (float)drawPosition, getHeight(), 1.0);
 		}
@@ -148,7 +148,19 @@ public:
 		MouseCursor mc(MouseCursor::StandardCursorType::NormalCursor);
 		this->setMouseCursor(mc);
 	}
-	void mouseDown(const MouseEvent& event) override
+	//void mouseDown(const MouseEvent& event) override
+	//{
+	//	auto duration = transportSource.getLengthInSeconds();
+
+	//	if (duration > 0.0f)
+	//	{
+	//		auto clickPosition = event.position.x;
+	//		auto audioPosition = (clickPosition / getWidth()) * duration;
+
+	//		transportSource.setPosition(audioPosition);
+	//	}
+	//}
+	void mouseUp(const MouseEvent& event) override
 	{
 		auto duration = transportSource.getLengthInSeconds();
 
@@ -177,15 +189,35 @@ public:
 			}
 		}
 	}
-
+	bool getLooping()
+	{
+		return shouldLoop;
+	}
+	void setLooping(bool shallItLoop)
+	{
+		shouldLoop = shallItLoop;
+	}
 private:
 
 	void timerCallback()override
 	{
 		repaint();
+		//do looping if you made a region
+		String curPos(drawPosition);
+		DBG("drawPositonis " + curPos);
+		String selRegEnd(selectionRegion.getRight());
+		DBG("SelectionRegionEndis: " + selRegEnd);
+		if (selectionRegion.isVisible() && drawPosition >= selectionRegion.getRight() && shouldLoop == true)
+		{
+			DBG("should Loop");
+			transportSource.setPosition((selectionRegion.getX() * transportSource.getLengthInSeconds()) / getWidth());
+		//	shouldLoop = false;
+		}
 	}
 	AudioTransportSource& transportSource;
 	SelectionRegion selectionRegion;
+	float drawPosition = 0.0;
+	bool shouldLoop = false;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
 
@@ -357,8 +389,9 @@ public:
 			muteButton.onClick = [this] {muteButtonClicked(); };
 			gainSlider.addMouseListener(this, false);
 
-			addAndMakeVisible(editModeButton);
-
+			addAndMakeVisible(loopButton);
+			loopButton.setLookAndFeel(&unicodeLookAndFeel);
+			loopButton.onClick = [this] {loopButttonClicked(); };
 
 
 		}
@@ -378,6 +411,20 @@ public:
 		void playButtonClicked()
 		{
 			mainComp.play();
+		}
+
+		void loopButttonClicked()
+		{
+			if (!mainComp.positionOverlay.getLooping())
+			{
+				mainComp.positionOverlay.setLooping(true);
+				loopButton.setButtonText(loopSymbol);
+			}
+			else
+			{
+				mainComp.positionOverlay.setLooping(false);
+				loopButton.setButtonText(stopAtEndSymbol);
+			}
 		}
 
 		void rewindButtonClicked()
@@ -461,9 +508,10 @@ public:
 		void resized() override
 		{
 			auto panelBounds = getLocalBounds();
-			playButton.setBounds(panelBounds.removeFromLeft(100));
-			stopButton.setBounds(panelBounds.removeFromLeft(100));
-			rewindButton.setBounds(panelBounds.removeFromLeft(100));
+			playButton.setBounds(panelBounds.removeFromLeft(70));
+			stopButton.setBounds(panelBounds.removeFromLeft(70));
+			rewindButton.setBounds(panelBounds.removeFromLeft(70));
+			loopButton.setBounds(panelBounds.removeFromLeft(70));
 			deployButton.setBounds(panelBounds.removeFromLeft(100));
 			deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 			convertSRButton.setBounds(panelBounds.removeFromLeft(100));
@@ -501,6 +549,9 @@ public:
 		ComboBox SRMenu;
 		String gainLabelSymbol = CharPointer_UTF8("\xf0\x9f\x94\x8a");
 		TextButton muteButton{gainLabelSymbol};
+		String loopSymbol = CharPointer_UTF8("\xe2\x88\x9e");
+		String stopAtEndSymbol = CharPointer_UTF8("\xe2\x87\xa5");
+		TextButton loopButton{ stopAtEndSymbol };
 		String muteSymbol = CharPointer_UTF8("\xf0\x9f\x94\x87");
 		Slider gainSlider;
 		float gain = 1;

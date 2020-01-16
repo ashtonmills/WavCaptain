@@ -318,8 +318,6 @@ void MainComponent::changeState(TransportState newState)
 }
 
 
-
-
 //
 //void MainComponent::filesDropped(const StringArray& files, int x, int y)
 //{
