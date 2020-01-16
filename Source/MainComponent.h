@@ -22,6 +22,58 @@ class buttonPanel;
 // child component that controls what we paint in the thumnbnail box.
 //or telling us no file is loaded is there is no file opened. 
 
+class EditOverlay : public Component
+{
+public :
+	EditOverlay()
+	{
+
+	}
+	void paint(Graphics& g) override
+	{
+		g.setColour(Colours::white);
+		g.fillAll();
+		if (drawingRect)
+		{
+			if (selection.getWidth()>0)
+			{
+				selection = Rectangle<float>(0, 0, 0, 0);
+			}
+			selection = Rectangle<float>(selectionStartPosition, getY(), selectionEndPosition - selectionStartPosition,getHeight());
+			g.drawRect(selection);
+			g.setColour(Colours::blue);
+			g.fillRect(selection);
+		//	g.setColour(Colours::white);
+			DBG("painting");
+			//drawingRect = false;
+		}
+	}
+	void mouseDown(const MouseEvent& event) override
+	{
+		if (this->isEnabled())
+		{
+			selectionStartPosition = event.position.x;
+			DBG("selectionStartPosition= " + std::to_string(selectionStartPosition));
+		}
+	}
+	void mouseUp(const MouseEvent& event) override
+	{
+		if (this->isEnabled())
+		{
+			selectionEndPosition = event.position.x;
+			DBG("selectionEndPosition= " + std::to_string(selectionEndPosition));
+			drawingRect = true;
+			repaint();
+		}
+	}
+
+private :
+	double selectionStartPosition;
+	double selectionEndPosition;
+	Rectangle<float> selection;
+	bool drawingRect = false;
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EditOverlay)
+};
 
 class ThumbnailComponent : public Component, private ChangeListener
 {
@@ -312,6 +364,9 @@ public:
 			muteButton.onClick = [this] {muteButtonClicked(); };
 			gainSlider.addMouseListener(this, false);
 
+			addAndMakeVisible(editModeButton);
+			editModeButton.onClick = [this] {editModeClicked(); };
+
 
 		}
 
@@ -355,6 +410,25 @@ public:
 		void sliderValueChanged(Slider* slider) override
 		{
 			mainComp.transportSource.setGain(slider->getValue());
+		}
+		void editModeClicked()
+		{
+
+			
+			if (!isInEditMode)
+			{
+				mainComp.editOverlay.setEnabled(true);
+				mainComp.editOverlay.setVisible(true);
+				isInEditMode = true;
+				DBG("Editmode activated");
+			}
+			else
+			{
+				mainComp.editOverlay.setEnabled(false);
+				mainComp.editOverlay.setVisible(false);
+				isInEditMode = false;
+				DBG("Editmode Deactivated");
+			}
 		}
 
 		void muteButtonClicked()
@@ -422,6 +496,7 @@ public:
 			SRMenu.setBounds(panelBounds.removeFromLeft(150));
 			gainSlider.setBounds(panelBounds.removeFromRight(150));
 			muteButton.setBounds(panelBounds.removeFromRight(30));
+			editModeButton.setBounds(panelBounds.removeFromRight(100));
 		}
 
 		class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
@@ -444,6 +519,7 @@ public:
 		TextButton deployButton{ "Deploy Selected" };
 		TextButton deployAllButton{ "Deploy All" };
 		TextButton convertSRButton{ "Convert Sample Rate" };
+		TextButton editModeButton{ "Edit" };
 		KeyPress keyPressPlay{ KeyPress::spaceKey };
 		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
 		MainComponent& mainComp;
@@ -455,7 +531,7 @@ public:
 		Slider gainSlider;
 		float gain = 1;
 		bool isMuted = false;
-
+		bool isInEditMode = false;
 		
 
 	};
@@ -496,11 +572,13 @@ private:
 
 	ThumbnailComponent thumbnailComponent;
 	PositionOverlay positionOverlay;
+	EditOverlay editOverlay;
 
 	TextButton aboutButton{ "About" };
 
 	Label debugLabel;
 	int timerFlashCount;
+	
 
 	ButtonPanel buttonPanel;
 
