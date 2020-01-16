@@ -31,10 +31,6 @@ buttonPanel(*this)
 
 	addAndMakeVisible(positionOverlay);
 
-	addAndMakeVisible(editOverlay);
-	editOverlay.setVisible(false);
-	editOverlay.setEnabled(false);
-	editOverlay.setAlpha(0.25);
 
 	addAndMakeVisible(debugLabel);
 	debugLabel.setText("Display debug messages here", dontSendNotification);
@@ -362,7 +358,6 @@ void MainComponent::resized()
 	Rectangle<int> bottomPanel(0, area.getHeight()+border, getWidth(), bottomPanelHeight);
 	thumbnailComponent.setBounds(area.removeFromTop(100));
 	positionOverlay.setBounds(thumbnailComponent.getBounds());
-	editOverlay.setBounds(thumbnailComponent.getBounds());
 	buttonPanel.setBounds(area.removeFromTop(20));
 	aboutButton.setBounds(bottomPanel.removeFromRight(75));
 	debugLabel.setBounds(bottomPanel.removeFromLeft(getWidth() - aboutButton.getWidth()));

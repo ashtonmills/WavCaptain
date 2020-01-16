@@ -22,58 +22,25 @@ class buttonPanel;
 // child component that controls what we paint in the thumnbnail box.
 //or telling us no file is loaded is there is no file opened. 
 
-class EditOverlay : public Component
+class SelectionRegion : public Component
 {
 public :
-	EditOverlay()
+	SelectionRegion()
+	{
+		this->setAlpha(0.25);
+	}
+	~SelectionRegion()
 	{
 
 	}
 	void paint(Graphics& g) override
 	{
-		g.setColour(Colours::white);
+		g.setColour(Colours::teal);
 		g.fillAll();
-		if (drawingRect)
-		{
-			if (selection.getWidth()>0)
-			{
-				selection = Rectangle<float>(0, 0, 0, 0);
-			}
-			selection = Rectangle<float>(selectionStartPosition, getY(), selectionEndPosition - selectionStartPosition,getHeight());
-			g.drawRect(selection);
-			g.setColour(Colours::blue);
-			g.fillRect(selection);
-		//	g.setColour(Colours::white);
-			DBG("painting");
-			//drawingRect = false;
-		}
-	}
-	void mouseDown(const MouseEvent& event) override
-	{
-		if (this->isEnabled())
-		{
-			selectionStartPosition = event.position.x;
-			DBG("selectionStartPosition= " + std::to_string(selectionStartPosition));
-		}
-	}
-	void mouseUp(const MouseEvent& event) override
-	{
-		if (this->isEnabled())
-		{
-			selectionEndPosition = event.position.x;
-			DBG("selectionEndPosition= " + std::to_string(selectionEndPosition));
-			drawingRect = true;
-			repaint();
-		}
 	}
 
-private :
-	double selectionStartPosition;
-	double selectionEndPosition;
-	Rectangle<float> selection;
-	bool drawingRect = false;
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EditOverlay)
 };
+
 
 class ThumbnailComponent : public Component, private ChangeListener
 {
@@ -170,7 +137,17 @@ public:
 		}
 	}
 
+	void mouseEnter(const MouseEvent& event) override
+	{
+		MouseCursor mc(MouseCursor::StandardCursorType::IBeamCursor);
 
+		this->setMouseCursor(mc);
+	}
+	void mouseExit(const MouseEvent& event) override
+	{
+		MouseCursor mc(MouseCursor::StandardCursorType::NormalCursor);
+		this->setMouseCursor(mc);
+	}
 	void mouseDown(const MouseEvent& event) override
 	{
 		auto duration = transportSource.getLengthInSeconds();
@@ -183,7 +160,23 @@ public:
 			transportSource.setPosition(audioPosition);
 		}
 	}
-
+	void mouseDrag(const MouseEvent& event) override
+	{
+		this->removeAllChildren();
+		if (this->isEnabled())
+		{
+			addAndMakeVisible(selectionRegion);
+			auto selectionStartPosition = event.mouseDownPosition.x;
+			if (event.getOffsetFromDragStart().x > 0)
+			{
+				selectionRegion.setBounds(selectionStartPosition, 0, event.getOffsetFromDragStart().x, getHeight());
+			}
+			if (event.getOffsetFromDragStart().x < 0)
+			{
+				selectionRegion.setBounds(event.getPosition().x, 0, event.getOffsetFromDragStart().x * -1, getHeight());
+			}
+		}
+	}
 
 private:
 
@@ -192,7 +185,7 @@ private:
 		repaint();
 	}
 	AudioTransportSource& transportSource;
-
+	SelectionRegion selectionRegion;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
 
@@ -365,7 +358,7 @@ public:
 			gainSlider.addMouseListener(this, false);
 
 			addAndMakeVisible(editModeButton);
-			editModeButton.onClick = [this] {editModeClicked(); };
+
 
 
 		}
@@ -410,25 +403,6 @@ public:
 		void sliderValueChanged(Slider* slider) override
 		{
 			mainComp.transportSource.setGain(slider->getValue());
-		}
-		void editModeClicked()
-		{
-
-			
-			if (!isInEditMode)
-			{
-				mainComp.editOverlay.setEnabled(true);
-				mainComp.editOverlay.setVisible(true);
-				isInEditMode = true;
-				DBG("Editmode activated");
-			}
-			else
-			{
-				mainComp.editOverlay.setEnabled(false);
-				mainComp.editOverlay.setVisible(false);
-				isInEditMode = false;
-				DBG("Editmode Deactivated");
-			}
 		}
 
 		void muteButtonClicked()
@@ -572,7 +546,6 @@ private:
 
 	ThumbnailComponent thumbnailComponent;
 	PositionOverlay positionOverlay;
-	EditOverlay editOverlay;
 
 	TextButton aboutButton{ "About" };
 
