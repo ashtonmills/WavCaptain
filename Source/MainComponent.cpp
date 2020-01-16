@@ -43,6 +43,7 @@ buttonPanel(*this)
 	aboutButton.onClick = [this] {aboutButtonClicked(); };
 
 
+
 	// Some platforms require permissions to open input channels so request that here
 	if (RuntimePermissions::isRequired(RuntimePermissions::recordAudio)
 		&& !RuntimePermissions::isGranted(RuntimePermissions::recordAudio))
@@ -248,13 +249,7 @@ void MainComponent::saveData()
 
 void MainComponent::aboutButtonClicked()
 {
-	//	auto aboutWindow  = std::make_unique<DialogWindow> ("About WavCaptain", Colours::lightgrey, true);
-//	DialogWindow aboutWindow("About WavCaptain", Colours::lightgrey, true);
-	DialogWindow::LaunchOptions launchOptions;
-	launchOptions.content.setOwned(new TextButton("WavCaptain by BioMannequin \n \n Version 1.1.3 \n \n Click here to check for updates"));
-	launchOptions.content->setSize(640, 480); 
-	launchOptions.launchAsync();
-
+	auto aboutWindow = new AboutWindow ("About");
 }
 
 

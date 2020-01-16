@@ -144,6 +144,86 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
 
+
+
+//About window class
+//-------------------------------------------------------------------
+
+class AboutComponent : public Component
+{
+public:
+	AboutComponent()
+	{
+		setSize(600, 600);
+		addAndMakeVisible(updateButton);
+		updateButton.onClick = [this] {updateButtonClicked(); };
+	}
+	~AboutComponent()
+	{
+
+	}
+	void updateButtonClicked()
+	{
+		DBG("update Button Clicked");
+		URL updateLink("https://www.dropbox.com/sh/gyj376qz42zyiz8/AAC7-i3AwXAr4Aw5yCu8xaota?dl=0");
+		updateLink.launchInDefaultBrowser();
+	}
+	void resized()
+	{
+		updateButton.setBounds(getLocalBounds());
+	}
+
+private:
+	String currentVersion = "1.1.3";
+	TextButton updateButton{ "WavCaptain by BioMannequin (Ashton Mills)\n\n"+ currentVersion +"\n\nClick in this window to check for updates" };
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AboutComponent)
+};
+
+class AboutWindow : public DocumentWindow
+{
+public:
+	AboutWindow(String name) : DocumentWindow(name,
+		Desktop::getInstance().getDefaultLookAndFeel()
+		.findColour(ResizableWindow::backgroundColourId),
+		DocumentWindow::allButtons)
+	{
+		setUsingNativeTitleBar(false);
+		setResizable(true, true);
+
+		setContentOwned(new AboutComponent(), true);
+		centreWithSize(600, 600);
+		setVisible(true);
+
+	}
+
+	void closeButtonPressed() override
+	{
+		// This is called when the user tries to close this window. Here, we'll just
+		// ask the app to quit when this happens, but you can change this to do
+		// whatever you need.
+		delete this;
+
+	}
+
+	/* Note: Be careful if you override any DocumentWindow methods - the base
+	   class uses a lot of them, so by overriding you might break its functionality.
+	   It's best to do all your work in your content component instead, but if
+	   you really have to override any DocumentWindow methods, make sure your
+	   subclass also calls the superclass's method.
+	*/
+
+private:
+
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AboutWindow)
+};
+
+
+
+//Main component
+//_________________________________________________________________________________
+
 class MainComponent : public AudioAppComponent, public ChangeListener, private Timer
 {
 public:
