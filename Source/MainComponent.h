@@ -71,7 +71,7 @@ public :
 		g.setColour(Colours::darkgrey);
 		g.fillAll();
 		g.setColour(Colours::white);
-		g.drawFittedText("No file loaded", getLocalBounds(), Justification::centred, 1.0f);
+		g.drawFittedText("No file loaded", getLocalBounds(), Justification::centred, 1, 1.0f);
 	}
 
 	void paintIfFileLoaded(Graphics& g)
@@ -133,17 +133,17 @@ public:
 			auto audioPosition = (float) transportSource.getCurrentPosition();  //why here do he have (float) in brackets? 
 			drawPosition =  (audioPosition / duration) * getWidth();
 			g.setColour(Colours::black);
-			g.drawLine(drawPosition, 0.0f, (float)drawPosition, getHeight(), 1.0);
+			g.drawLine(drawPosition, 0.0f, drawPosition, (float)getHeight(), 1.0);
 		}
 	}
 
-	void mouseEnter(const MouseEvent& event) override
+	void mouseEnter(const MouseEvent& /*event*/) override
 	{
 		MouseCursor mc(MouseCursor::StandardCursorType::IBeamCursor);
 
 		this->setMouseCursor(mc);
 	}
-	void mouseExit(const MouseEvent& event) override
+	void mouseExit(const MouseEvent& /*event*/) override
 	{
 		MouseCursor mc(MouseCursor::StandardCursorType::NormalCursor);
 		this->setMouseCursor(mc);
@@ -181,7 +181,7 @@ public:
 			auto selectionStartPosition = event.mouseDownPosition.x;
 			if (event.getOffsetFromDragStart().x > 0)
 			{
-				selectionRegion.setBounds(selectionStartPosition, 0, event.getOffsetFromDragStart().x, getHeight());
+				selectionRegion.setBounds((int)selectionStartPosition, 0, event.getOffsetFromDragStart().x, getHeight());
 			}
 			if (event.getOffsetFromDragStart().x < 0)
 			{
@@ -329,7 +329,7 @@ public:
 	int getTargetSampleRate();
 
 
-	class ButtonPanel : public Component, public Slider::Listener, public MouseListener
+	class ButtonPanel : public Component, public Slider::Listener
 	{
 	public:
 		ButtonPanel(MainComponent& mc) : mainComp(mc)
@@ -449,14 +449,14 @@ public:
 
 		void sliderValueChanged(Slider* slider) override
 		{
-			mainComp.transportSource.setGain(slider->getValue());
+			mainComp.transportSource.setGain((float)slider->getValue());
 		}
 
 		void muteButtonClicked()
 		{
 			if (!isMuted)
 			{
-				gain = gainSlider.getValue();
+				gain = (float)gainSlider.getValue();
 				gainSlider.setValue(0);
 				muteButton.setButtonText(muteSymbol);
 				isMuted = true;
@@ -527,7 +527,7 @@ public:
 			UnicodeSymbolsLookAndFeel()
 			{
 			}
-			Font getTextButtonFont(TextButton&, int buttonHeight) override
+			Font getTextButtonFont(TextButton&, int /*buttonHeight*/) override
 			{
 				return Font("Segoe UI Symbol", 20, Font::plain);
 			}

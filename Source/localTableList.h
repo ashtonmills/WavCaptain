@@ -31,7 +31,7 @@ class MainComponent;
 
 
 class LocalTableList : public Component, public FileDragAndDropTarget,
-	public TableListBoxModel, public MouseListener
+	public TableListBoxModel
 {
 public:
 	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel,String sInitFile);
@@ -109,7 +109,7 @@ public:
 		UnicodeSymbolsLookAndFeel()
 		{
 		}
-		Font getTextButtonFont(TextButton&, int buttonHeight) override
+		Font getTextButtonFont(TextButton&, int /*buttonHeight*/) override
 		{
 			return Font("Segoe UI Symbol", 20, Font::plain);
 		}
@@ -143,8 +143,6 @@ private:
 	MainComponent& mainComp;
 	File directory;
 	bool bIsLeftPanel;
-	XmlElement* saveDirColumnList = nullptr;
-	XmlElement* saveDirDataList = nullptr;
 	UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="vhm16g" name="WavCaptain" projectType="guiapp" jucerVersion="5.4.4">
+<JUCERPROJECT id="vhm16g" name="WavCaptain" projectType="guiapp" jucerVersion="5.4.5">
   <MAINGROUP id="CnRjED" name="WavCaptain">
     <GROUP id="{2A0018B1-5D29-DCDA-011D-173409231A51}" name="Source">
       <FILE id="cYV9gM" name="wavCap.png" compile="0" resource="1" file="icons/wavCap.png"/>
