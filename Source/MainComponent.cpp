@@ -249,7 +249,7 @@ void MainComponent::saveData()
 
 void MainComponent::aboutButtonClicked()
 {
-	auto aboutWindow = new AboutWindow ("About");
+	new AboutWindow ("About");
 }
 
 
@@ -334,17 +334,16 @@ void MainComponent::changeState(TransportState newState)
 //}
 int MainComponent::getTargetSampleRate()
 {
+	int SRSelection = buttonPanel.SRMenu.getSelectedItemIndex() +1;
 
-		int SRSelection = buttonPanel.SRMenu.getSelectedItemIndex() +1;
-
-		switch (SRSelection)
-		{
+	switch (SRSelection)
+	{
 		case 1: return 22050;
 		case 2: return 44100;
 		case 3: return 48000;
 		case 4: return 96000;
-		}
-	
+		default: return 0;
+	}	
 }
 
 

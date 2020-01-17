@@ -78,10 +78,10 @@ LocalTableList::~LocalTableList()
 
 void LocalTableList::initDirectoryLoad()
 {
+	//@todo these also conflict with the corresponding data members
 	//TODO get ride of these afterwards? make them smart pointers?
 	XmlElement* saveDirColumnList = nullptr;
 	XmlElement* saveDirDataList = nullptr;
-	
 
 	File savedDirFile = File::getCurrentWorkingDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
 	if (savedDirFile.exists())
@@ -371,7 +371,7 @@ File LocalTableList::makeXml(File& dir)
 		auto reader = std::unique_ptr<AudioFormatReader>(formatManager.createReaderFor(localDirWavs[i]));
 		if (reader)
 		{
-			float fileSampleRate = reader->sampleRate / 1000;
+			float fileSampleRate = (float)reader->sampleRate / 1000.0f;
 			String sampleRateString(fileSampleRate);
 			sampleRateString += " khz";
 			String numChannels;
@@ -493,7 +493,7 @@ void LocalTableList::convertSampleRate()
 		mainComp.setDebugText("No source directory selected");
 		return;
 	}
-	int targetSampleRate = mainComp.getTargetSampleRate();
+	unsigned int targetSampleRate = (unsigned int)mainComp.getTargetSampleRate();
 
 	for (int row = 0; row < table.getNumRows(); ++row)
 	{
@@ -504,7 +504,7 @@ void LocalTableList::convertSampleRate()
 			//make reader to load the file
 			AudioFormatReader* reader = formatManager.createReaderFor(targetFile);
 			//check the sample rate of the file and skip over this iteration if it's already the sample rate we want
-			unsigned int initialSampleRate = reader->sampleRate;
+			unsigned int initialSampleRate = (unsigned int)reader->sampleRate;
 			if (initialSampleRate < targetSampleRate)
 			{
 				mainComp.setDebugText("Sorry, WavCaptain can downsample but it can't upsample.");
@@ -514,7 +514,7 @@ void LocalTableList::convertSampleRate()
 			if (initialSampleRate != targetSampleRate)
 			{
 				unsigned int numChans = reader->numChannels;
-				unsigned int numSamples = reader->lengthInSamples;
+				unsigned int numSamples = (unsigned int)reader->lengthInSamples;
 				double SRRatio = initialSampleRate / targetSampleRate;
 
 				//create an audiosource that can read from the reader, read from the reader then delete the reader
@@ -528,7 +528,7 @@ void LocalTableList::convertSampleRate()
 				auto fos = std::unique_ptr<FileOutputStream>(temp.getFile().createOutputStream());
 				auto writer = std::unique_ptr<AudioFormatWriter>(WavAudioFormat().createWriterFor(fos.release(), targetSampleRate, numChans, 16, StringPairArray(), 0)); //note here that to be able to use the unique_ptr as a parameter I need to do .get()
 				resamplingAudioSource->prepareToPlay(512, targetSampleRate);
-				writer->writeFromAudioSource(*resamplingAudioSource, numSamples / SRRatio);
+				writer->writeFromAudioSource(*resamplingAudioSource, (int)(numSamples / SRRatio));
 				String fileName = targetFile.getFileName();
 				fos = nullptr;
 				writer = nullptr;
@@ -567,7 +567,7 @@ void LocalTableList::convertSampleRate()
 
 
 
-void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
+void LocalTableList::cellClicked(int rowNumber, int /*columnId*/, const MouseEvent&)
 {
 	//if you click a cell and it's not a directory, play the relevent file
 	if (!localDirWavs[rowNumber].isDirectory())
@@ -577,7 +577,7 @@ void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 	}
 }
 
-void LocalTableList::cellDoubleClicked(int rowNumber, int columnId, const MouseEvent&)
+void LocalTableList::cellDoubleClicked(int rowNumber, int /*columnId*/, const MouseEvent&)
 {
 	if (localDirWavs[rowNumber].isDirectory())
 	{
@@ -609,7 +609,7 @@ void LocalTableList::chooseDir()
 	}
 }
 
-void LocalTableList::filesDropped(const StringArray& files, int x, int y)
+void LocalTableList::filesDropped(const StringArray& files, int /*x*/, int /*y*/)
 {
 	if (isInterestedInFileDrag(files))
 	{
@@ -645,17 +645,16 @@ bool LocalTableList::isInterestedInFileDrag(const StringArray& files)
 	for (int i = 0; i < files.size(); ++i)
 	{
 		File iFile = File(files[i]);
-	 if	((iFile.isDirectory()) && (iFile.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav").size()>0))
+		if	((iFile.isDirectory()) && (iFile.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.wav").size()>0))
 		{
-		 return true;
+			return true;
 		}
-
-	 else if (iFile.getFileExtension()==".wav")
-	 {
-		 return true;
-	 }
-	 else return false;
+		else if (iFile.getFileExtension()==".wav")
+		{
+			return true;
+		}
 	}
+    return false;
 }
 
 void LocalTableList::refreshButtonClicked()
