@@ -40,7 +40,7 @@ public:
 
 	void loadData(bool isInitLoad);
 
-	void LocalTableList::initDirectoryLoad();
+	void initDirectoryLoad();
 
 	int getNumRows() override;
 
@@ -83,16 +83,16 @@ public:
 
 	String getAttributeNameForColumnId(const int columnId) const;
 
-	void cellClicked(int rowNumber, int columnId, const MouseEvent&);
+	void cellClicked(int rowNumber, int columnId, const MouseEvent&) override;
 
-	void cellDoubleClicked(int rowNumber, int columnId, const MouseEvent&);
+	void cellDoubleClicked(int rowNumber, int columnId, const MouseEvent&) override;
 
 	void filesDropped(const StringArray& files, int x, int y) override;
 
 	bool isInterestedInFileDrag(const StringArray& files) override;
 
 
-	void LocalTableList::refreshButtonClicked();
+	void refreshButtonClicked();
 
 	void backFolderButtonClicked();
 
