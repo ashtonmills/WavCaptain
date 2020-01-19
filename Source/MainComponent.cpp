@@ -1,26 +1,19 @@
-/*
-  ==============================================================================
-
-	This file was auto-generated!
-
-  ==============================================================================
-*/
 
 #include "MainComponent.h"
+
 #define PLAYTEXT CharPointer_UTF8("\xe2\x96\xb6")
 #define STOPTEXT CharPointer_UTF8("\xe2\x96\xa0")
 #define PAUSETEXT CharPointer_UTF8 ("\xe2\x8f\xb8")
+
 //==============================================================================
-MainComponent::MainComponent(String commandLineParam) :state(Stopped),thumbnailCache(5),
+MainComponent::MainComponent(String commandLineParam) :state(Stopped),
+thumbnailCache(5),
 thumbnailComponent(1024,formatManager,thumbnailCache), 
 positionOverlay(transportSource),
 localTableList(*this,"Source Directory",true,commandLineParam),
 destinationRepoList(*this,"Destination Repo Directory",false,""),
 buttonPanel(*this)
 {
-	// Make sure you set the size of the component after
-	// you add any child components.
-
 	setSize(1200, 900);
 
 	transportSource.addChangeListener(this);
@@ -41,7 +34,9 @@ buttonPanel(*this)
 	addAndMakeVisible(buttonPanel);
 
 	addAndMakeVisible(aboutButton);
-	aboutButton.onClick = [this] {aboutButtonClicked(); };
+	aboutButton.onClick = [this] {aboutButtonClicked(); 
+	
+	};
 
 
 	// Some platforms require permissions to open input channels so request that here
@@ -96,17 +91,11 @@ void MainComponent::releaseResources()
 	transportSource.releaseResources();
 }
 
-//==============================================================================
 void MainComponent::paint(Graphics& g)
 {
-	// (Our component is opaque, so we must completely fill the background with a solid colour)
 	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
-	//g.setFont(Font("Arial", 12, Font::plain));
-	// You can add your drawing code here!
-//	Rectangle<int> thumbnailBounds(10, 100, getWidth() - 20, getHeight() - 120);
 
 }
-
 
 void MainComponent::readFile(File myFile)
 {
@@ -121,7 +110,6 @@ void MainComponent::readFile(File myFile)
 			playSource.reset(newSource.release());
 			buttonPanel.playButton.setButtonText(PLAYTEXT);
 			thumbnailComponent.setFile(myFile);
-		//	setDebugText("You loaded a file, arean't you clever?");
 		}
 	
 }
@@ -230,19 +218,6 @@ void MainComponent::saveData()
 
 		File saveDirFile = File::getCurrentWorkingDirectory().getChildFile("Resources").getChildFile("savedDirectories.xml");
 		saveData.writeTo(saveDirFile);
-
-		/*Let's have another think through this one.
-		Obviously the best thing to do would be to have a recent files option.
-		But for now Iwant the simple option, where it will load up whaterver was last in the direcrtorries when th project loads.
-		So let's just ovewrite the file each time for now. It will bring back the same as it was before, even if that was empty.
-		(Though at the minute there is no option for it to be selected as empty,
-		so when you open one file, with the basic save feature it will always then have a file loaded)
-
-		SO change this function instead of passing in variables, the function itslf just looks at the two directory members and saves the full file path as a string and writes the XML doc.
-		Then when we first open the app we parse that document and set thoise members and load the data.
-
-		After that is working we add a recent places feature
-		*/
 	}
 
 }
@@ -251,7 +226,6 @@ void MainComponent::aboutButtonClicked()
 {
 	auto aboutWindow = new AboutWindow ("About");
 }
-
 
 
 void MainComponent::changeListenerCallback(ChangeBroadcaster* source)
@@ -317,21 +291,6 @@ void MainComponent::changeState(TransportState newState)
 	}
 }
 
-
-//
-//void MainComponent::filesDropped(const StringArray& files, int x, int y)
-//{
-//	 (isInterestedInFileDrag (files))
-//	
-//	readFile(files[0]);
-//	debugLabel.setText("you tried to drop a file in, that's adventurous!",dontSendNotification);
-//}
-//
-//bool MainComponent::isInterestedInFileDrag(const StringArray& files)
-//
-//{
-//	return true;
-//}
 int MainComponent::getTargetSampleRate()
 {
 
@@ -347,7 +306,6 @@ int MainComponent::getTargetSampleRate()
 	
 }
 
-
 void MainComponent::resized()
 {
 	int border = 10;
@@ -361,17 +319,4 @@ void MainComponent::resized()
 	debugLabel.setBounds(bottomPanel.removeFromLeft(getWidth() - aboutButton.getWidth()));
 	localTableList.setBounds(area.removeFromLeft(getWidth() / 2));
 	destinationRepoList.setBounds(area.removeFromLeft(localTableList.getWidth()));
-	//auto wavPlayerBounds = area.removeFromLeft(getWidth() / 3);
-//	openButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border, wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
-	/*playButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + (wavPlayerBounds.getHeight() / 6), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8 );
-	stopButton.setBounds(wavPlayerBounds.getX() , wavPlayerBounds.getY() + border + ((wavPlayerBounds.getHeight() / 6)*2), wavPlayerBounds.getWidth(), wavPlayerBounds.getHeight() / 8);*/
-
-	//Rectangle<int>thumbnailBounds(10, 100, getWidth() - 60, getHeight() - 160);
-
-
-	//gainSlider.setBounds(thumbnailBounds.getWidth() + 20, thumbnailBounds.getHeight() - 150, 40, thumbnailBounds.getHeight() + 10);
-
-
-	
-
 }

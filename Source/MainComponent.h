@@ -1,26 +1,15 @@
-/*
 
-  ==============================================================================
-
-	This file was auto-generated!
-
-  ==============================================================================
-*/
 
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "localTableList.h"
 
+//Forward declare the buttonPanel for linking reasons
 class buttonPanel;
-//==============================================================================
-/*
-	This component lives inside our window, and this is where you should put all
-	your controls and content.
-*/
 
-// child component that controls what we paint in the thumnbnail box.
-//or telling us no file is loaded is there is no file opened. 
+//==============================================================================
+//Component for selection regions of the waveform
 
 class SelectionRegion : public Component
 {
@@ -41,6 +30,8 @@ public :
 
 };
 
+//===============================================================================
+//Component for displaying the waveform
 
 class ThumbnailComponent : public Component, private ChangeListener
 {
@@ -85,11 +76,6 @@ public :
 			0.0f,
 			thumbnail.getTotalLength(),
 			1.0f);
-		//g.setColour(Colours::black);
-		//auto audioPosition(transportSource.getCurrentPosition());
-		//auto drawPosition((audioPosition / audioLength) * thumbnailBounds.getWidth()
-		//	+ thumbnailBounds.getX());
-	//	g.drawLine(drawPosition, thumbnailBounds.getY(), drawPosition, thumbnailBounds.getBottom(), 2.0);
 	}
 
 	void changeListenerCallback(ChangeBroadcaster* source) override
@@ -97,8 +83,6 @@ public :
 		if (source == &thumbnail)
 			thumbnailChanged();
 	}
-
-
 
 private:
 	void thumbnailChanged()
@@ -111,9 +95,9 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThumbnailComponent)
 };
 
-//______________________________________________________________________________________________________________________
 
-//child component that handles the playback position line
+//=====================================================================
+//Component that handles interfacing with the waveform
 
 class PositionOverlay : public Component, public Timer
 {
@@ -148,18 +132,7 @@ public:
 		MouseCursor mc(MouseCursor::StandardCursorType::NormalCursor);
 		this->setMouseCursor(mc);
 	}
-	//void mouseDown(const MouseEvent& event) override
-	//{
-	//	auto duration = transportSource.getLengthInSeconds();
 
-	//	if (duration > 0.0f)
-	//	{
-	//		auto clickPosition = event.position.x;
-	//		auto audioPosition = (clickPosition / getWidth()) * duration;
-
-	//		transportSource.setPosition(audioPosition);
-	//	}
-	//}
 	void mouseUp(const MouseEvent& event) override
 	{
 		auto duration = transportSource.getLengthInSeconds();
@@ -198,20 +171,16 @@ public:
 		shouldLoop = shallItLoop;
 	}
 private:
-
+	//Looping is very primitive at the moment.
+	//TODO improve the looping and region selection with float precision. 
 	void timerCallback()override
 	{
 		repaint();
 		//do looping if you made a region
-		String curPos(drawPosition);
-		DBG("drawPositonis " + curPos);
-		String selRegEnd(selectionRegion.getRight());
-		DBG("SelectionRegionEndis: " + selRegEnd);
 		if (selectionRegion.isVisible() && drawPosition >= selectionRegion.getRight() && shouldLoop == true)
 		{
 			DBG("should Loop");
 			transportSource.setPosition((selectionRegion.getX() * transportSource.getLengthInSeconds()) / getWidth());
-		//	shouldLoop = false;
 		}
 	}
 	AudioTransportSource& transportSource;
@@ -223,8 +192,8 @@ private:
 
 
 
-//About window class
-//-------------------------------------------------------------------
+//=========================================================================
+// Display the version number and click to check for updates in internet browser
 
 class AboutComponent : public Component
 {
@@ -235,10 +204,7 @@ public:
 		addAndMakeVisible(updateButton);
 		updateButton.onClick = [this] {updateButtonClicked(); };
 	}
-	~AboutComponent()
-	{
 
-	}
 	void updateButtonClicked()
 	{
 		DBG("update Button Clicked");
@@ -308,13 +274,9 @@ public:
 	MainComponent(String commandLineParams);
 	~MainComponent();
 
-	//==============================================================================
 	void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
 	void getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override;
 	void releaseResources() override;
-	//void filesDropped(const StringArray& files, int x, int y) override;
-	//bool isInterestedInFileDrag(const StringArray& files) override;
-	//==============================================================================
 	void paint(Graphics& g) override;
 	void resized() override;
 	void readFile(File myFile);
@@ -325,7 +287,6 @@ public:
 	void timerCallback() override;
 	void saveData();
 	void aboutButtonClicked();
-	void updateButtonClicked();
 	int getTargetSampleRate();
 
 
@@ -335,8 +296,6 @@ public:
 		ButtonPanel(MainComponent& mc) : mainComp(mc)
 		{
 			setSize(getParentWidth(), 30);
-
-		//	setLookAndFeel(&unicodeLookAndFeel);
 
 			playButton.onClick = [this] {playButtonClicked(); };
 			playButton.setLookAndFeel(&unicodeLookAndFeel);
@@ -355,7 +314,6 @@ public:
 			rewindButton.setEnabled(false);
 			rewindButton.addShortcut(keyPressRewind);
 
-	
 			deployButton.onClick = [this] {deployButtonClicked(); };
 			addAndMakeVisible(&deployButton);
 			deployButton.addMouseListener(this, false);
@@ -393,11 +351,12 @@ public:
 			loopButton.setLookAndFeel(&unicodeLookAndFeel);
 			loopButton.onClick = [this] {loopButttonClicked(); };
 
-
 		}
 
 		~ButtonPanel()
 		{
+			//We need to make sure nothing is using UnicodeLookAndFeel because it gets destroyed
+			//before the components that reference it. 
 			playButton.setLookAndFeel(nullptr);
 			stopButton.setLookAndFeel(nullptr);
 			rewindButton.setLookAndFeel(nullptr);
@@ -468,7 +427,7 @@ public:
 				isMuted = false;
 			}
 		}
-
+		//Mouse hover text for the buttons
 		void mouseEnter(const MouseEvent& event) override
 		{
 			if (event.originalComponent == &deployAllButton)
@@ -493,6 +452,7 @@ public:
 			}
 		}
 
+		//Delete the mouse hover text 
 		void mouseExit(const MouseEvent& event) override
 		{
 			if (event.originalComponent == &deployAllButton ||
@@ -533,8 +493,14 @@ public:
 			}
 		};
 
+		//Unicode symbols for buttons
 		String stopSymbol = CharPointer_UTF8("\xe2\x96\xa0");
 		String playSymbol = CharPointer_UTF8("\xe2\x96\xb6");
+		String loopSymbol = CharPointer_UTF8("\xe2\x88\x9e");
+		String stopAtEndSymbol = CharPointer_UTF8("\xe2\x87\xa5");
+		String gainLabelSymbol = CharPointer_UTF8("\xf0\x9f\x94\x8a");
+
+		//Buttons
 		TextButton playButton{ playSymbol};
 		TextButton stopButton{ stopSymbol };
 		TextButton rewindButton{ CharPointer_UTF8("\xe2\x8f\xae") };
@@ -542,15 +508,17 @@ public:
 		TextButton deployAllButton{ "Deploy All" };
 		TextButton convertSRButton{ "Convert Sample Rate" };
 		TextButton editModeButton{ "Edit" };
+
 		KeyPress keyPressPlay{ KeyPress::spaceKey };
 		KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
-		MainComponent& mainComp;
+
 		UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
 		ComboBox SRMenu;
-		String gainLabelSymbol = CharPointer_UTF8("\xf0\x9f\x94\x8a");
+
+		MainComponent& mainComp;
+
 		TextButton muteButton{gainLabelSymbol};
-		String loopSymbol = CharPointer_UTF8("\xe2\x88\x9e");
-		String stopAtEndSymbol = CharPointer_UTF8("\xe2\x87\xa5");
+
 		TextButton loopButton{ stopAtEndSymbol };
 		String muteSymbol = CharPointer_UTF8("\xf0\x9f\x94\x87");
 		Slider gainSlider;
@@ -566,8 +534,7 @@ public:
 
 
 private:
-	//==============================================================================
-	// Your private member variables go here...
+
 	enum TransportState
 	{
 		Stopped,
@@ -585,9 +552,6 @@ private:
 	void changeState(TransportState newState);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
 
-
-
-
 	AudioTransportSource transportSource;
 
 	AudioFormatManager formatManager;
@@ -602,10 +566,8 @@ private:
 
 	Label debugLabel;
 	int timerFlashCount;
-	
 
 	ButtonPanel buttonPanel;
-
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

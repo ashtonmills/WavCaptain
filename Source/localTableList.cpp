@@ -78,7 +78,6 @@ LocalTableList::~LocalTableList()
 
 void LocalTableList::initDirectoryLoad()
 {
-	//TODO get ride of these afterwards? make them smart pointers?
 	XmlElement* saveDirColumnList = nullptr;
 	XmlElement* saveDirDataList = nullptr;
 	
@@ -99,13 +98,11 @@ void LocalTableList::initDirectoryLoad()
 				if ((child->getAttributeValue(1) == "Local") && (bIsLeftPanel))
 				{
 					directory = dirFile;
-					//loadDirButton.setButtonText(cellData);
 					break;
 				}
 				if ((child->getAttributeValue(1) == "Repo") && (!bIsLeftPanel))
 				{
 					directory = dirFile;
-					//loadData(false);
 					break;
 				}
 
@@ -117,11 +114,6 @@ void LocalTableList::initDirectoryLoad()
 
 	void LocalTableList::loadData(bool isInitLoad)
 	{
-		//	while (!dir.getChildFile("Resources").exists() && numTries++ < 15)
-		//		dir = dir.getParentDirectory();
-
-		//	auto tableFile = dir.getChildFile("Resources").getChildFile("localDirData.xml");
-
 		table.getHeader().removeAllColumns();
 		auto tableFile = makeXml(directory);
 
@@ -130,8 +122,6 @@ void LocalTableList::initDirectoryLoad()
 			playlistData = XmlDocument::parse(tableFile);
 			columnList = playlistData->getChildByName("HEADERS");
 			dataList = playlistData->getChildByName("DATA");
-
-
 			numRows = dataList->getNumChildElements();
 		}
 
@@ -148,22 +138,12 @@ void LocalTableList::initDirectoryLoad()
 			}
 		}
 
-
-		/*	addAndMakeVisible(debugLabel);
-			debugLabel.setText("default debug message", dontSendNotification);*/
 		table.setMultipleSelectionEnabled(true);
 		if (!isInitLoad)
 		{
 			mainComp.saveData();
 		}
 	}
-//	loadData(false);  maybe we want to call load load data or maybe just handle it seperatly as it's the init load
-
-//	Or we overLoad loadData(false)!!  Do a sencind version of load data that takes a direcotry paramter and misses out all of the stuff to do with finding the file. 
-
-//or or we just separate the load data function, picking the directory and loading the data are separate concerns. 
-
-	// I do that anyway lol. don't need to change anything. 
 
 
 int LocalTableList::getNumRows()
@@ -186,15 +166,15 @@ void LocalTableList::paintRowBackground(Graphics& g, int rowNumber, int, int, bo
 
 void LocalTableList::paintCell(Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) 
 {
-	g.setColour(rowIsSelected ? Colours::darkblue : getLookAndFeel().findColour(ListBox::textColourId)); // [5]
+	g.setColour(rowIsSelected ? Colours::darkblue : getLookAndFeel().findColour(ListBox::textColourId)); 
 	g.setFont(Font("Segoe UI Symbol",17,Font::plain));
 	if (auto* rowElement = dataList->getChildElement(rowNumber))
 	{
 		auto text = rowElement->getStringAttribute(getAttributeNameForColumnId(columnId));
-		g.drawText(text, 2, 0, width - 4, height, Justification::centredLeft, true); // [6]
+		g.drawText(text, 2, 0, width - 4, height, Justification::centredLeft, true); 
 	}
 	g.setColour(getLookAndFeel().findColour(ListBox::backgroundColourId));
-	g.fillRect(width - 1, 0, 1, height);                                             // [7]
+	g.fillRect(width - 1, 0, 1, height);                                             
 }
 
 Component* LocalTableList::refreshComponentForCell(int rowNumber, int columnId, bool, Component* existingComponentToUpdate)
@@ -211,19 +191,6 @@ Component* LocalTableList::refreshComponentForCell(int rowNumber, int columnId, 
 		mySelectionBox->setRowAndColumn(rowNumber, columnId);
 		return mySelectionBox;
 	}
-
-	//if (columnId == 1)
-	//{
-	//	auto* textLabel = dynamic_cast<EditableTextCustomComponent*> (existingComponentToUpdate);
-
-	//	if (textLabel == nullptr)
-	//	{
-	//		textLabel = new EditableTextCustomComponent(*this);
-	//	}
-
-	//	textLabel->setRowAndColumn(rowNumber, columnId);
-	//	return textLabel;
-	//}
 
 	jassert(existingComponentToUpdate == nullptr);
 	return nullptr;
@@ -401,7 +368,6 @@ File LocalTableList::makeXml(File& dir)
 
 void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 {
-//	mainComp.setDebugText("deployFiles() called on local table");
 	PopupMenu popup;
 	popup.addItem(1, "Don't deploy files that already exist in destination directory");
 	popup.addItem(2, "Overwrite files that already exist in destination directory");
@@ -456,23 +422,6 @@ void LocalTableList::deploySelectedFiles(bool bDeployingAll)
 
 		}
 	}
-//	if (filesCopied == 0)
-	//{
-	//	if (!bDeployingAll) { mainComp.setDebugText("No files selected"); }
-		//else { mainComp.setDebugText("No files in local directory to copy"); }
-
-	//}
-//	else
-	//{
-		//String message = message.formatted("Copied %s files to %s.", filesCopied, mainComp.destinationRepoList.directory.getFileName());
-
-	/*	String message = "Copied ";
-		message += filesCopied;
-		message += " files to ";
-		message += mainComp.destinationRepoList.directory.getFullPathName();
-		mainComp.setDebugText(message);
-		mainComp.destinationRepoList.loadData(false);*/
-	//}
 }
 
 

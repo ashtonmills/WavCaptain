@@ -9,25 +9,12 @@
 */
 
 #pragma once
-/*
-  ==============================================================================
-
-	This file was auto-generated!
-
-  ==============================================================================
-*/
 
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
 class MainComponent;
-
-//==============================================================================
-/*
-	This component lives inside our window, and this is where you should put all
-	your controls and content.
-*/
 
 
 class LocalTableList : public Component, public FileDragAndDropTarget,
@@ -39,13 +26,9 @@ public:
 	
 
 	void loadData(bool isInitLoad);
-
 	void LocalTableList::initDirectoryLoad();
-
 	int getNumRows() override;
-
 	void paintRowBackground(Graphics& g, int rowNumber, int /*width*/, int /*height*/, bool rowIsSelected) override;
-	
 
 	void paintCell(Graphics& g, int rowNumber, int columnId,
 		int width, int height, bool rowIsSelected) override;
@@ -55,51 +38,26 @@ public:
 		Component* existingComponentToUpdate) override;
 
 	int getColumnAutoSizeWidth(int columnId) override;
-	
-
 	int getSelection(const int rowNumber) const;
-	
-
 	void setSelection(const int rowNumber, const int newSelection);
-	
 	String getText(const int columnNumber, const int rowNumber) const;
-
-
 	void setText(const int columnNumber, const int rowNumber, const String& newText) const;
-
 	void resized() override;
-
 	File getDirectory();
-
 	void debugLabelMsg(String message);
-	
 	File makeXml(File& localDir);
-
 	void convertSampleRate();
-
 	void chooseDir();
-
 	void deploySelectedFiles(bool bDeployingAll);
-
 	String getAttributeNameForColumnId(const int columnId) const;
-
 	void cellClicked(int rowNumber, int columnId, const MouseEvent&);
-
 	void cellDoubleClicked(int rowNumber, int columnId, const MouseEvent&);
-
 	void filesDropped(const StringArray& files, int x, int y) override;
-
 	bool isInterestedInFileDrag(const StringArray& files) override;
-
-
 	void LocalTableList::refreshButtonClicked();
-
 	void backFolderButtonClicked();
-
 	void openInExplorerButtonClicked();
-
 	void openInExplorerButtonMouseEnter();
-
 	void mouseEnter(const MouseEvent& event) override;
 	void mouseExit(const MouseEvent& event) override;
 
@@ -114,9 +72,6 @@ public:
 			return Font("Segoe UI Symbol", 20, Font::plain);
 		}
 	};
-
-
-
 
 private:
 	//member variables
