@@ -189,7 +189,58 @@ private:
 	bool shouldLoop = false;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
+//=========================================================================
+// Dialog window for labeling assets
+class LabellingComponent : public Component
+{
+public:
+	
 
+
+private:
+
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
+};
+
+class LabellingWindow : public DocumentWindow
+{
+public:
+	LabellingWindow(String name) : DocumentWindow(name,
+		Desktop::getInstance().getDefaultLookAndFeel()
+		.findColour(ResizableWindow::backgroundColourId),
+		DocumentWindow::allButtons)
+	{
+		setUsingNativeTitleBar(false);
+		setResizable(true, true);
+
+		setContentOwned(new LabellingComponent(), true);
+		centreWithSize(600, 600);
+		setVisible(true);
+
+	}
+
+	void closeButtonPressed() override
+	{
+		// This is called when the user tries to close this window. Here, we'll just
+		// ask the app to quit when this happens, but you can change this to do
+		// whatever you need.
+		delete this;
+
+	}
+
+	/* Note: Be careful if you override any DocumentWindow methods - the base
+	   class uses a lot of them, so by overriding you might break its functionality.
+	   It's best to do all your work in your content component instead, but if
+	   you really have to override any DocumentWindow methods, make sure your
+	   subclass also calls the superclass's method.
+	*/
+
+private:
+
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingWindow)
+};
 
 
 //=========================================================================
@@ -240,27 +291,6 @@ public:
 
 	}
 
-	void closeButtonPressed() override
-	{
-		// This is called when the user tries to close this window. Here, we'll just
-		// ask the app to quit when this happens, but you can change this to do
-		// whatever you need.
-		delete this;
-
-	}
-
-	/* Note: Be careful if you override any DocumentWindow methods - the base
-	   class uses a lot of them, so by overriding you might break its functionality.
-	   It's best to do all your work in your content component instead, but if
-	   you really have to override any DocumentWindow methods, make sure your
-	   subclass also calls the superclass's method.
-	*/
-
-private:
-
-
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AboutWindow)
-};
 
 
 
