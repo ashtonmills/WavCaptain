@@ -194,7 +194,7 @@ private:
 class LabellingComponent : public Component
 {
 public:
-	LabellingComponent()
+	LabellingComponent(LabellingWindow& window): parentWindow(window)
 	{
 		setSize(600, 600);
 		addAndMakeVisible(labelField);
@@ -231,6 +231,12 @@ public:
 		outputPreviewLabel.attachToComponent(&outputPreview, true);
 		outputPreviewLabel.setText("Output preview",dontSendNotification);
 
+		addAndMakeVisible(okButton);
+		okButton.onClick = [this] {okButtonClicked(); };
+
+		addAndMakeVisible(cancelButton);
+		cancelButton.onClick = [this] {cancelButtonClicked(); };
+
 		
 	}
 	~LabellingComponent()
@@ -255,12 +261,24 @@ public:
 		}
 	}
 
+	void okButtonClicked()
+	{
+		//Proceed with labelling assets
+	}
+	void cancelButtonClicked()
+	{
+		//get the window this is child of and closeButtonpresed it
+		dynamic_cast<LabellingWindow>
+	}
+
 	void resized()
 	{
+
 		labelField.setBounds(100, 100, 300, 25);
 		digitsSelection.setBounds(190, 150, 70, 30);
 		outputPreview.setBounds(100, 200, 300, 30);
 	}
+
 
 
 private:
@@ -270,6 +288,9 @@ private:
 	Label digitSelectionLabel;
 	Label outputPreview;
 	Label outputPreviewLabel;
+	TextButton okButton{ "OK" };
+	TextButton cancelButton{ "Cancel" };
+	LabellingWindow& parentWindow;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
 };
@@ -285,7 +306,7 @@ public:
 		setUsingNativeTitleBar(false);
 		setResizable(true, true);
 
-		setContentOwned(new LabellingComponent(), true);
+		setContentOwned(new LabellingWindow(), true);
 		centreWithSize(600, 600);
 		setVisible(true);
 
