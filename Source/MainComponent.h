@@ -7,6 +7,154 @@
 
 //Forward declare the buttonPanel for linking reasons
 class buttonPanel;
+class MainComponent;
+//=========================================================================
+// Dialog window for labeling assets
+class LabellingComponent : public Component
+{
+public:
+	LabellingComponent(MainComponent& mc) : mainComp(mc)
+	{
+		setSize(600, 600);
+		addAndMakeVisible(labelField);
+		labelField.setEditable(true);
+		labelField.setColour(Label::ColourIds::textColourId, Colours::black);
+		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
+		labelField.setColour(Label::backgroundColourId, Colours::white);
+		labelField.onTextChange = [this] {onLabelFieldTextChange(); };
+
+		addAndMakeVisible(labelLabel);
+		labelLabel.attachToComponent(&labelField, true);
+		labelLabel.setText("New File Name", dontSendNotification);
+		labelLabel.setColour(Label::ColourIds::textColourId, Colours::white);
+
+		addAndMakeVisible(digitsSelection);
+		digitsSelection.addItem("1", 1);
+		digitsSelection.addItem("2", 2);
+		digitsSelection.addItem("3", 3);
+		digitsSelection.setSelectedId(2);
+		digitsSelection.onChange = [this] {onLabelFieldTextChange(); };
+
+		addAndMakeVisible(digitSelectionLabel);
+		digitSelectionLabel.setText("Number of digits in increment", dontSendNotification);
+		digitSelectionLabel.attachToComponent(&digitsSelection, true);
+
+
+		addAndMakeVisible(outputPreview);
+		outputPreview.setColour(Label::ColourIds::textColourId, Colours::black);
+		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
+		outputPreview.setColour(Label::backgroundColourId, Colours::white);
+
+		addAndMakeVisible(outputPreviewLabel);
+		outputPreviewLabel.setColour(Label::ColourIds::textColourId, Colours::white);
+		outputPreviewLabel.attachToComponent(&outputPreview, true);
+		outputPreviewLabel.setText("Output preview", dontSendNotification);
+
+		addAndMakeVisible(okButton);
+		okButton.onClick = [this] {okButtonClicked(); };
+
+		addAndMakeVisible(cancelButton);
+		cancelButton.onClick = [this] {cancelButtonClicked(); };
+
+
+	}
+	~LabellingComponent()
+	{
+
+	}
+	void onLabelFieldTextChange()
+	{
+		if (labelField.getText() == "")
+		{
+			outputPreview.setText("", dontSendNotification);
+			return;
+		}
+		switch (digitsSelection.getSelectedId())
+		{
+		case 1: outputPreview.setText(labelField.getText() + "1.wav", dontSendNotification);
+			break;
+		case 2: outputPreview.setText(labelField.getText() + "01.wav", dontSendNotification);
+			break;
+		case 3: outputPreview.setText(labelField.getText() + "001.wav", dontSendNotification);
+			break;
+		}
+	}
+
+	void okButtonClicked()
+	{
+		//Proceed with labelling assets
+	}
+	void cancelButtonClicked()
+	{
+		//mainComp.getLabellingWindow()->closeButtonPressed();
+	//	mainComp.setDebugText("cancelButtonClicked()");
+	}
+
+	void resized()
+	{
+
+		labelField.setBounds(100, 100, 300, 25);
+		digitsSelection.setBounds(190, 150, 70, 30);
+		outputPreview.setBounds(100, 200, 300, 30);
+	}
+
+
+
+private:
+	Label labelField;
+	Label labelLabel{ "New Filename" }; //I made it so confusing by calling it labelling instead of renaming lol
+	ComboBox digitsSelection;
+	Label digitSelectionLabel;
+	Label outputPreview;
+	Label outputPreviewLabel;
+	TextButton okButton{ "OK" };
+	TextButton cancelButton{ "Cancel" };
+	MainComponent& mainComp;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
+};
+
+class LabellingWindow : public DocumentWindow
+{
+public:
+	LabellingWindow(String name, MainComponent& mc) : DocumentWindow(name,
+		Desktop::getInstance().getDefaultLookAndFeel()
+		.findColour(ResizableWindow::backgroundColourId),
+		DocumentWindow::allButtons), mainComp(mc)
+	{
+		setUsingNativeTitleBar(false);
+		setResizable(true, true);
+
+		setContentOwned(new LabellingComponent(mainComp), true);
+		centreWithSize(600, 600);
+		setVisible(true);
+
+	}
+
+	void closeButtonPressed() override
+	{
+		// This is called when the user tries to close this window. Here, we'll just
+		// ask the app to quit when this happens, but you can change this to do
+		// whatever you need.
+		delete this;
+
+	}
+
+	/* Note: Be careful if you override any DocumentWindow methods - the base
+	   class uses a lot of them, so by overriding you might break its functionality.
+	   It's best to do all your work in your content component instead, but if
+	   you really have to override any DocumentWindow methods, make sure your
+	   subclass also calls the superclass's method.
+	*/
+
+private:
+
+	MainComponent& mainComp;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingWindow)
+};
+
+
 
 //==============================================================================
 //Component for selection regions of the waveform
@@ -170,6 +318,9 @@ public:
 	{
 		shouldLoop = shallItLoop;
 	}
+
+
+	
 private:
 	//Looping is very primitive at the moment.
 	//TODO improve the looping and region selection with float precision. 
@@ -187,151 +338,8 @@ private:
 	SelectionRegion selectionRegion;
 	float drawPosition = 0.0;
 	bool shouldLoop = false;
+	Label timeLabel;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
-};
-//=========================================================================
-// Dialog window for labeling assets
-class LabellingComponent : public Component
-{
-public:
-	LabellingComponent(LabellingWindow& window): parentWindow(window)
-	{
-		setSize(600, 600);
-		addAndMakeVisible(labelField);
-		labelField.setEditable(true);
-		labelField.setColour(Label::ColourIds::textColourId, Colours::black);
-		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
-		labelField.setColour(Label::backgroundColourId, Colours::white);
-		labelField.onTextChange = [this] {onLabelFieldTextChange(); };
-
-		addAndMakeVisible(labelLabel);
-		labelLabel.attachToComponent(&labelField, true);
-		labelLabel.setText("New File Name", dontSendNotification);
-		labelLabel.setColour(Label::ColourIds::textColourId, Colours::white);
-
-		addAndMakeVisible(digitsSelection);
-		digitsSelection.addItem("1", 1);
-		digitsSelection.addItem("2", 2);
-		digitsSelection.addItem("3", 3);
-		digitsSelection.setSelectedId(2);
-		digitsSelection.onChange = [this] {onLabelFieldTextChange(); };
-
-		addAndMakeVisible(digitSelectionLabel);
-		digitSelectionLabel.setText("Number of digits in increment", dontSendNotification);
-		digitSelectionLabel.attachToComponent(&digitsSelection,true);
-
-
-		addAndMakeVisible(outputPreview);
-		outputPreview.setColour(Label::ColourIds::textColourId, Colours::black);
-		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
-		outputPreview.setColour(Label::backgroundColourId, Colours::white);
-
-		addAndMakeVisible(outputPreviewLabel);
-		outputPreviewLabel.setColour(Label::ColourIds::textColourId, Colours::white);
-		outputPreviewLabel.attachToComponent(&outputPreview, true);
-		outputPreviewLabel.setText("Output preview",dontSendNotification);
-
-		addAndMakeVisible(okButton);
-		okButton.onClick = [this] {okButtonClicked(); };
-
-		addAndMakeVisible(cancelButton);
-		cancelButton.onClick = [this] {cancelButtonClicked(); };
-
-		
-	}
-	~LabellingComponent()
-	{
-
-	}
-	void onLabelFieldTextChange()
-	{
-		if (labelField.getText() == "")
-		{
-			outputPreview.setText("", dontSendNotification);
-			return;
-		}
-		switch (digitsSelection.getSelectedId())
-		{
-		case 1 : outputPreview.setText(labelField.getText() + "1.wav", dontSendNotification);
-			break;
-		case 2 : outputPreview.setText(labelField.getText() + "01.wav", dontSendNotification);
-			break;
-		case 3 : outputPreview.setText(labelField.getText() + "001.wav", dontSendNotification);
-			break;
-		}
-	}
-
-	void okButtonClicked()
-	{
-		//Proceed with labelling assets
-	}
-	void cancelButtonClicked()
-	{
-		//get the window this is child of and closeButtonpresed it
-		dynamic_cast<LabellingWindow>
-	}
-
-	void resized()
-	{
-
-		labelField.setBounds(100, 100, 300, 25);
-		digitsSelection.setBounds(190, 150, 70, 30);
-		outputPreview.setBounds(100, 200, 300, 30);
-	}
-
-
-
-private:
-	Label labelField;
-	Label labelLabel{"New Filename"}; //I made it so confusing by calling it labelling instead of renaming lol
-	ComboBox digitsSelection;
-	Label digitSelectionLabel;
-	Label outputPreview;
-	Label outputPreviewLabel;
-	TextButton okButton{ "OK" };
-	TextButton cancelButton{ "Cancel" };
-	LabellingWindow& parentWindow;
-
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
-};
-
-class LabellingWindow : public DocumentWindow
-{
-public:
-	LabellingWindow(String name) : DocumentWindow(name,
-		Desktop::getInstance().getDefaultLookAndFeel()
-		.findColour(ResizableWindow::backgroundColourId),
-		DocumentWindow::allButtons)
-	{
-		setUsingNativeTitleBar(false);
-		setResizable(true, true);
-
-		setContentOwned(new LabellingWindow(), true);
-		centreWithSize(600, 600);
-		setVisible(true);
-
-	}
-
-	void closeButtonPressed() override
-	{
-		// This is called when the user tries to close this window. Here, we'll just
-		// ask the app to quit when this happens, but you can change this to do
-		// whatever you need.
-		delete this;
-
-	}
-
-	/* Note: Be careful if you override any DocumentWindow methods - the base
-	   class uses a lot of them, so by overriding you might break its functionality.
-	   It's best to do all your work in your content component instead, but if
-	   you really have to override any DocumentWindow methods, make sure your
-	   subclass also calls the superclass's method.
-	*/
-
-private:
-
-
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingWindow)
 };
 
 
@@ -422,6 +430,7 @@ public:
 		void saveData();
 		void aboutButtonClicked();
 		int getTargetSampleRate();
+	
 
 
 		class ButtonPanel : public Component, public Slider::Listener, public MouseListener
@@ -488,6 +497,9 @@ public:
 				loopButton.setLookAndFeel(&unicodeLookAndFeel);
 				loopButton.onClick = [this] {loopButttonClicked(); };
 
+				addAndMakeVisible(timeLabel);
+				timeLabel.setText("00:00:00", dontSendNotification);
+
 			}
 
 			~ButtonPanel()
@@ -545,7 +557,7 @@ public:
 
 			void labelButtonClicked()
 			{
-				auto labellingWindow = new LabellingWindow("Label Selected Assets");
+			 auto labellingWindow =new LabellingWindow("Label Selected Assets", mainComp);
 			}
 
 			void sliderValueChanged(Slider* slider) override
@@ -621,7 +633,9 @@ public:
 				labelButton.setBounds(panelBounds.removeFromLeft(70));
 				gainSlider.setBounds(panelBounds.removeFromRight(150));
 				muteButton.setBounds(panelBounds.removeFromRight(30));
+				timeLabel.setBounds(panelBounds.removeFromRight(100));
 				editModeButton.setBounds(panelBounds.removeFromRight(100));
+
 			}
 
 			class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
@@ -652,6 +666,8 @@ public:
 			TextButton convertSRButton{ "Convert Sample Rate" };
 			TextButton editModeButton{ "Edit" };
 			TextButton labelButton{ "Label" };
+
+			Label timeLabel;
 
 			KeyPress keyPressPlay{ KeyPress::spaceKey };
 			KeyPress keyPressRewind{ KeyPress::createFromDescription("w") };
@@ -715,5 +731,4 @@ public:
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 	};
-
 

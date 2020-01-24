@@ -306,6 +306,7 @@ int MainComponent::getTargetSampleRate()
 	
 }
 
+
 void MainComponent::resized()
 {
 	int border = 10;

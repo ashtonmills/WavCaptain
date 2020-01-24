@@ -1,0 +1,2 @@
+To display the time label, ideally I want it to be on the button pan el but to update using the timer that's on position overlay. 
+Really I need to set up this value tree system for passing my references and then I can do it wiht that .

@@ -476,7 +476,7 @@ void LocalTableList::convertSampleRate()
 				TemporaryFile temp(targetFile);
 				auto fos = std::unique_ptr<FileOutputStream>(temp.getFile().createOutputStream());
 				auto writer = std::unique_ptr<AudioFormatWriter>(WavAudioFormat().createWriterFor(fos.release(), targetSampleRate, numChans, 16, StringPairArray(), 0)); //note here that to be able to use the unique_ptr as a parameter I need to do .get()
-				resamplingAudioSource->prepareToPlay(512, targetSampleRate);
+				resamplingAudioSource->prepareToPlay(targetSampleRate*SRRatio, targetSampleRate);
 				writer->writeFromAudioSource(*resamplingAudioSource, numSamples / SRRatio);
 				String fileName = targetFile.getFileName();
 				fos = nullptr;
