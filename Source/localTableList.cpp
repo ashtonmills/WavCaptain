@@ -453,10 +453,12 @@ void LocalTableList::convertSampleRate()
 			//make reader to load the file
 			AudioFormatReader* reader = formatManager.createReaderFor(targetFile);
 			//check the sample rate of the file and skip over this iteration if it's already the sample rate we want
-			unsigned int initialSampleRate = reader->sampleRate;
+			double initialSampleRate = reader->sampleRate;
+			DBG ("\ninitial sample rate =");
+			DBG (initialSampleRate);
 			if (initialSampleRate < targetSampleRate)
 			{
-				mainComp.setDebugText("Sorry, WavCaptain can downsample but it can't upsample.");
+				mainComp.setDebugText("WavCaptain was designed to downsample, not upsample your files.");
 				delete reader;
 				return;
 			}

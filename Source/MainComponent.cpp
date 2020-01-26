@@ -291,17 +291,17 @@ void MainComponent::changeState(TransportState newState)
 	}
 }
 
-int MainComponent::getTargetSampleRate()
+double MainComponent::getTargetSampleRate()
 {
 
 		int SRSelection = buttonPanel.SRMenu.getSelectedItemIndex() +1;
 
 		switch (SRSelection)
 		{
-		case 1: return 22050;
-		case 2: return 44100;
-		case 3: return 48000;
-		case 4: return 96000;
+		case 1: return 22050.00;
+		case 2: return 44100.00;
+		case 3: return 48000.00;
+		case 4: return 96000.00;
 		}
 	
 }

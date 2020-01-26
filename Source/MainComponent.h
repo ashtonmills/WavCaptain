@@ -368,7 +368,7 @@ public:
 	}
 
 private:
-	String currentVersion = "1.1.3";
+	String currentVersion = "1.1.4";
 	TextButton updateButton{ "WavCaptain by BioMannequin (Ashton Mills)\n\n"+ currentVersion +"\n\nClick in this window to check for updates" };
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AboutComponent)
@@ -429,7 +429,7 @@ public:
 		void timerCallback() override;
 		void saveData();
 		void aboutButtonClicked();
-		int getTargetSampleRate();
+		double getTargetSampleRate();
 	
 
 
@@ -630,11 +630,11 @@ public:
 				deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 				convertSRButton.setBounds(panelBounds.removeFromLeft(100));
 				SRMenu.setBounds(panelBounds.removeFromLeft(150));
-				labelButton.setBounds(panelBounds.removeFromLeft(70));
+			//	labelButton.setBounds(panelBounds.removeFromLeft(70)); taking out incomplete feature while I push out sample rate conversion fix
 				gainSlider.setBounds(panelBounds.removeFromRight(150));
 				muteButton.setBounds(panelBounds.removeFromRight(30));
-				timeLabel.setBounds(panelBounds.removeFromRight(100));
-				editModeButton.setBounds(panelBounds.removeFromRight(100));
+			//	timeLabel.setBounds(panelBounds.removeFromRight(100));taking out incomplete feature while I push out sample rate conversion fix
+				//editModeButton.setBounds(panelBounds.removeFromRight(100));
 
 			}
 
