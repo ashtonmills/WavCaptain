@@ -243,15 +243,26 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThumbnailComponent)
 };
 
-
+class TempComponent : public Component
+{
+public:
+	TempComponent(int number,ValueTree vt) : mainVT(vt)
+	{
+	int numProps=	mainVT.getNumProperties();
+	DBG(numProps);
+	}
+private:
+	ValueTree mainVT;
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TempComponent)
+};
 //=====================================================================
 //Component that handles interfacing with the waveform
 
 class PositionOverlay : public Component, public Timer
 {
 public:
-	PositionOverlay(AudioTransportSource& transportSourcetoUse)
-		: transportSource(transportSourcetoUse)
+	PositionOverlay(AudioTransportSource& transportSourcetoUse,ValueTree vt)
+		: transportSource(transportSourcetoUse),mainVT(vt)
 	{
 		startTimer(1);
 	}
@@ -262,11 +273,42 @@ public:
 
 		if (duration > 0.0)
 		{
-			auto audioPosition = (float) transportSource.getCurrentPosition();  //why here do he have (float) in brackets? 
+			float audioPosition = (float) transportSource.getCurrentPosition();  //why here do he have (float) in brackets? 
+			//update the valuetree with audioposition.
+			//This is not really a good place to do this, inside a paint function, TODO refector to make it tidier. 
+			Identifier timeCode("timeCode");
+			auto transportTime = floatToTimecode(audioPosition);
+			mainVT.setProperty(timeCode, transportTime, nullptr);
+
 			drawPosition =  (audioPosition / duration) * getWidth();
 			g.setColour(Colours::black);
 			g.drawLine(drawPosition, 0.0f, (float)drawPosition, getHeight(), 1.0);
 		}
+	}
+	String floatToTimecode(float rawTime)
+	{
+		int rawMilSecs, rawSecs, rawMins;
+		String milSecs,secs, mins;
+		float fRawSecs;
+		float fRawMilSec = std::modf(rawTime, &fRawSecs);
+		rawMilSecs = fRawMilSec *100;
+		rawMilSecs %= 100;
+		milSecs = zeroFormat(rawMilSecs);
+		rawSecs = fRawSecs;
+		rawSecs %= 60;
+		secs = zeroFormat(rawSecs);
+		rawMins = rawTime / 60;
+		mins = zeroFormat(rawMins);
+		
+		String timeCode = mins + ":" + secs + ":" + milSecs;
+		DBG(timeCode);
+		return timeCode;
+	}
+	//helper function to return an int as string with a zero at the front if it's less than 10, or without if not
+	String zeroFormat(int input)
+	{
+		String formattedNum = (input < 10) ? ("0" + std::to_string(input)) : std::to_string(input);
+		return formattedNum;
 	}
 
 	void mouseEnter(const MouseEvent& event) override
@@ -333,12 +375,15 @@ private:
 			DBG("should Loop");
 			transportSource.setPosition((selectionRegion.getX() * transportSource.getLengthInSeconds()) / getWidth());
 		}
+
 	}
 	AudioTransportSource& transportSource;
+	ValueTree mainVT;
 	SelectionRegion selectionRegion;
 	float drawPosition = 0.0;
 	bool shouldLoop = false;
 	Label timeLabel;
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
 
@@ -436,7 +481,7 @@ public:
 		class ButtonPanel : public Component, public Slider::Listener, public MouseListener
 		{
 		public:
-			ButtonPanel(MainComponent& mc) : mainComp(mc)
+			ButtonPanel(MainComponent& mc,ValueTree vt) : mainComp(mc), mainVT(vt)
 			{
 				setSize(getParentWidth(), 30);
 
@@ -497,8 +542,9 @@ public:
 				loopButton.setLookAndFeel(&unicodeLookAndFeel);
 				loopButton.onClick = [this] {loopButttonClicked(); };
 
+				Identifier timeCode("timeCode");
 				addAndMakeVisible(timeLabel);
-				timeLabel.setText("00:00:00", dontSendNotification);
+				timeLabel.getTextValue().referTo(mainVT.getPropertyAsValue(timeCode, nullptr));
 
 			}
 
@@ -633,7 +679,7 @@ public:
 			//	labelButton.setBounds(panelBounds.removeFromLeft(70)); taking out incomplete feature while I push out sample rate conversion fix
 				gainSlider.setBounds(panelBounds.removeFromRight(150));
 				muteButton.setBounds(panelBounds.removeFromRight(30));
-			//	timeLabel.setBounds(panelBounds.removeFromRight(100));taking out incomplete feature while I push out sample rate conversion fix
+				timeLabel.setBounds(panelBounds.removeFromRight(100));
 				//editModeButton.setBounds(panelBounds.removeFromRight(100));
 
 			}
@@ -686,6 +732,7 @@ public:
 			bool isMuted = false;
 			bool isInEditMode = false;
 
+			ValueTree mainVT;
 
 		};
 
@@ -720,14 +767,19 @@ public:
 		AudioThumbnailCache thumbnailCache;
 
 		ThumbnailComponent thumbnailComponent;
-		PositionOverlay positionOverlay;
-
+	
 		TextButton aboutButton{ "About" };
 
 		Label debugLabel;
 		int timerFlashCount;
+		const Identifier mainVTtype{ "mainVT" };
 
+		ValueTree mainVT{ mainVTtype };
 		ButtonPanel buttonPanel;
+
+
+		TempComponent tc;
+		PositionOverlay positionOverlay;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 	};

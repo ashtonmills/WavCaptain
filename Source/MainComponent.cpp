@@ -9,10 +9,10 @@
 MainComponent::MainComponent(String commandLineParam) :state(Stopped),
 thumbnailCache(5),
 thumbnailComponent(1024,formatManager,thumbnailCache), 
-positionOverlay(transportSource),
+positionOverlay(transportSource,mainVT),
 localTableList(*this,"Source Directory",true,commandLineParam),
 destinationRepoList(*this,"Destination Repo Directory",false,""),
-buttonPanel(*this)
+buttonPanel(*this,mainVT),tc(2,mainVT)
 {
 	setSize(1200, 900);
 
@@ -24,7 +24,7 @@ buttonPanel(*this)
 
 	addAndMakeVisible(positionOverlay);
 
-
+	addAndMakeVisible(tc);
 	addAndMakeVisible(debugLabel);
 	debugLabel.setText("Display debug messages here", dontSendNotification);
 
