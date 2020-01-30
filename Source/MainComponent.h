@@ -8,12 +8,25 @@
 //Forward declare the buttonPanel for linking reasons
 class buttonPanel;
 class MainComponent;
+
+
+struct CoreData
+{
+	CoreData(ValueTree vt) : mainVT(vt)
+	{
+		mainVT.setProperty(loadSwitch, 0, nullptr);
+	}
+	Array<File> sourceFiles;
+	Array<File> repoFiles;
+	const Identifier loadSwitch{ "load" };
+	ValueTree mainVT;
+};
 //=========================================================================
 // Dialog window for labeling assets
 class LabellingComponent : public Component
 {
 public:
-	LabellingComponent(MainComponent& mc) : mainComp(mc)
+	LabellingComponent(ValueTree vt, const Identifier canID, CoreData& data) : cancelVT(vt), cancelId(canID), coreData(data)
 	{
 		setSize(600, 600);
 		addAndMakeVisible(labelField);
@@ -53,9 +66,10 @@ public:
 		addAndMakeVisible(okButton);
 		okButton.onClick = [this] {okButtonClicked(); };
 
+		cancelVT.setProperty(cancelId, false, nullptr);
+
 		addAndMakeVisible(cancelButton);
 		cancelButton.onClick = [this] {cancelButtonClicked(); };
-
 
 	}
 	~LabellingComponent()
@@ -86,8 +100,7 @@ public:
 	}
 	void cancelButtonClicked()
 	{
-		//mainComp.getLabellingWindow()->closeButtonPressed();
-	//	mainComp.setDebugText("cancelButtonClicked()");
+		cancelVT.setProperty(cancelId, true, nullptr);
 	}
 
 	void resized()
@@ -96,6 +109,8 @@ public:
 		labelField.setBounds(100, 100, 300, 25);
 		digitsSelection.setBounds(190, 150, 70, 30);
 		outputPreview.setBounds(100, 200, 300, 30);
+		okButton.setBounds(200, 400, 70, 40);
+		cancelButton.setBounds(300, 400, 70, 40);
 	}
 
 
@@ -109,27 +124,39 @@ private:
 	Label outputPreviewLabel;
 	TextButton okButton{ "OK" };
 	TextButton cancelButton{ "Cancel" };
-	MainComponent& mainComp;
-
+	ValueTree cancelVT;
+	const Identifier cancelId;
+	CoreData& coreData;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
 };
 
-class LabellingWindow : public DocumentWindow
+class LabellingWindow : public DocumentWindow, ValueTree::Listener
 {
 public:
-	LabellingWindow(String name, MainComponent& mc) : DocumentWindow(name,
+	LabellingWindow(String name, CoreData& data) : DocumentWindow(name,
 		Desktop::getInstance().getDefaultLookAndFeel()
 		.findColour(ResizableWindow::backgroundColourId),
-		DocumentWindow::allButtons), mainComp(mc)
+		DocumentWindow::allButtons)
 	{
 		setUsingNativeTitleBar(false);
 		setResizable(true, true);
 
-		setContentOwned(new LabellingComponent(mainComp), true);
+		setContentOwned(new LabellingComponent(cancelVT, cancelId, data), true);
 		centreWithSize(600, 600);
 		setVisible(true);
 
+		cancelVT.addListener(this);
+
 	}
+	
+	void valueTreePropertyChanged(ValueTree& tree ,const Identifier& property) override
+	{
+		if (tree == cancelVT && property == cancelId)
+		{
+			closeButtonPressed();
+		}
+	}
+	
 
 	void closeButtonPressed() override
 	{
@@ -148,9 +175,8 @@ public:
 	*/
 
 private:
-
-	MainComponent& mainComp;
-
+	const Identifier cancelId{ "cancel" };
+	ValueTree cancelVT{cancelId};
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingWindow)
 };
 
@@ -481,7 +507,7 @@ public:
 		class ButtonPanel : public Component, public Slider::Listener, public MouseListener
 		{
 		public:
-			ButtonPanel(MainComponent& mc,ValueTree vt) : mainComp(mc), mainVT(vt)
+			ButtonPanel(MainComponent& mc,ValueTree vt, CoreData& data) : mainComp(mc), mainVT(vt), coreData(data)
 			{
 				setSize(getParentWidth(), 30);
 
@@ -603,7 +629,7 @@ public:
 
 			void labelButtonClicked()
 			{
-			 auto labellingWindow =new LabellingWindow("Label Selected Assets", mainComp);
+				 auto labellingWindow =new LabellingWindow("Label Selected Assets",coreData);
 			}
 
 			void sliderValueChanged(Slider* slider) override
@@ -676,7 +702,7 @@ public:
 				deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 				convertSRButton.setBounds(panelBounds.removeFromLeft(100));
 				SRMenu.setBounds(panelBounds.removeFromLeft(150));
-			//	labelButton.setBounds(panelBounds.removeFromLeft(70)); taking out incomplete feature while I push out sample rate conversion fix
+				labelButton.setBounds(panelBounds.removeFromLeft(70)); 
 				gainSlider.setBounds(panelBounds.removeFromRight(150));
 				muteButton.setBounds(panelBounds.removeFromRight(30));
 				timeLabel.setBounds(panelBounds.removeFromRight(100));
@@ -733,7 +759,7 @@ public:
 			bool isInEditMode = false;
 
 			ValueTree mainVT;
-
+			CoreData& coreData;
 		};
 
 		LocalTableList localTableList;
@@ -755,7 +781,7 @@ public:
 		TransportState state;
 
 		void transportSourceChanged();
-
+		
 		void changeState(TransportState newState);
 		void changeListenerCallback(ChangeBroadcaster* source) override;
 
@@ -777,10 +803,10 @@ public:
 		ValueTree mainVT{ mainVTtype };
 		ButtonPanel buttonPanel;
 
+		CoreData coreData{ mainVT };
 
 		TempComponent tc;
 		PositionOverlay positionOverlay;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 	};
-

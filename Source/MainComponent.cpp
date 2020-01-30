@@ -12,7 +12,7 @@ thumbnailComponent(1024,formatManager,thumbnailCache),
 positionOverlay(transportSource,mainVT),
 localTableList(*this,"Source Directory",true,commandLineParam),
 destinationRepoList(*this,"Destination Repo Directory",false,""),
-buttonPanel(*this,mainVT),tc(2,mainVT)
+buttonPanel(*this,mainVT,coreData),tc(2,mainVT)
 {
 	setSize(1200, 900);
 
@@ -35,7 +35,7 @@ buttonPanel(*this,mainVT),tc(2,mainVT)
 
 	addAndMakeVisible(aboutButton);
 	aboutButton.onClick = [this] {aboutButtonClicked(); 
-	
+
 	};
 
 
