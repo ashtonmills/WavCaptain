@@ -10,8 +10,8 @@ MainComponent::MainComponent(String commandLineParam) :state(Stopped),
 thumbnailCache(5),
 thumbnailComponent(1024,formatManager,thumbnailCache), 
 positionOverlay(transportSource,mainVT),
-localTableList(*this,"Source Directory",true,commandLineParam),
-destinationRepoList(*this,"Destination Repo Directory",false,""),
+localTableList(*this,mainVT,"Source Directory",true,commandLineParam),
+destinationRepoList(*this,mainVT,"Destination Repo Directory",false,""),
 buttonPanel(*this,mainVT,coreData),tc(2,mainVT)
 {
 	setSize(1200, 900);

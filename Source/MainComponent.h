@@ -327,7 +327,6 @@ public:
 		mins = zeroFormat(rawMins);
 		
 		String timeCode = mins + ":" + secs + ":" + milSecs;
-		DBG(timeCode);
 		return timeCode;
 	}
 	//helper function to return an int as string with a zero at the front if it's less than 10, or without if not
@@ -761,7 +760,8 @@ public:
 			ValueTree mainVT;
 			CoreData& coreData;
 		};
-
+		const Identifier mainVTType{ "mainVT" };
+		ValueTree mainVT{ mainVTType };
 		LocalTableList localTableList;
 		LocalTableList destinationRepoList;
 
@@ -800,7 +800,7 @@ public:
 		int timerFlashCount;
 		const Identifier mainVTtype{ "mainVT" };
 
-		ValueTree mainVT{ mainVTtype };
+
 		ButtonPanel buttonPanel;
 
 		CoreData coreData{ mainVT };

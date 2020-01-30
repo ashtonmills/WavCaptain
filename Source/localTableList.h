@@ -21,10 +21,10 @@ class LocalTableList : public Component, public FileDragAndDropTarget,
 	public TableListBoxModel, public MouseListener
 {
 public:
-	LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel,String sInitFile);
+	LocalTableList(MainComponent& mc, ValueTree vt, String chooseButtonText, bool isLeftPanel,String sInitFile);
 	~LocalTableList();
 	
-
+	void populateValTree();
 	void loadData(bool isInitLoad);
 	void LocalTableList::initDirectoryLoad();
 	int getNumRows() override;
@@ -61,6 +61,7 @@ public:
 	void mouseEnter(const MouseEvent& event) override;
 	void mouseExit(const MouseEvent& event) override;
 
+
 	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
 	{
 	public:
@@ -75,6 +76,11 @@ public:
 
 private:
 	//member variables
+	ValueTree mainVT;
+	const Identifier sourceFilesNode{ "sourceFiles" };
+	const Identifier repoFilesNode{ "repoFiles" };
+	ValueTree sourceFiles{ sourceFilesNode };
+	ValueTree repoFiles{ repoFilesNode };
 	AudioFormatManager formatManager;
 	std::unique_ptr<AudioFormatReaderSource> playSource;
 	TableListBox table{ {}, this };
@@ -101,6 +107,8 @@ private:
 	XmlElement* saveDirColumnList = nullptr;
 	XmlElement* saveDirDataList = nullptr;
 	UnicodeSymbolsLookAndFeel unicodeLookAndFeel;
+
+
 
 
 

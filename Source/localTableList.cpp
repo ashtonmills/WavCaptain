@@ -12,7 +12,7 @@
 #include "localTableList.h"
 
 
-LocalTableList::LocalTableList(MainComponent& mc, String chooseButtonText, bool isLeftPanel,String sInitFile) : mainComp (mc), loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
+LocalTableList::LocalTableList(MainComponent& mc, ValueTree vt,String chooseButtonText, bool isLeftPanel,String sInitFile) : mainComp (mc), mainVT(vt),loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
 {
 	//set the current working directory for the program and add a resources folder. 
 	File workingDir = File::getSpecialLocation(File::SpecialLocationType::userApplicationDataDirectory).getChildFile("wavCaptain");
@@ -142,8 +142,59 @@ void LocalTableList::initDirectoryLoad()
 		if (!isInitLoad)
 		{
 			mainComp.saveData();
+			populateValTree();
 		}
 	}
+	void LocalTableList::populateValTree()
+	{
+		if (localDirWavs.size() != 0)
+		{
+	
+			ValueTree nodeToUse = (bIsLeftPanel) ? sourceFiles : repoFiles;
+			if (!nodeToUse.isAChildOf(mainVT))
+			{
+				mainVT.addChild(nodeToUse, -1, nullptr);
+			}
+			for (int file = 0; file < localDirWavs.size(); ++file)
+			{
+				String fileName = localDirWavs[file].getFullPathName();
+				Identifier VTID(localDirWavs[file].getFileNameWithoutExtension());
+				nodeToUse.setProperty(VTID, fileName, nullptr);
+			}
+			//some useful debugging 
+			DBG("mainVt has " + std::to_string(mainVT.getNumChildren()) + " children");
+			if (nodeToUse == sourceFiles)
+			{
+				DBG("sourceFiles node contains:\n ");
+				int sourceProps = sourceFiles.getNumProperties();
+				for (int file = 0; file < sourceProps; ++file)
+				{
+					Identifier id = mainVT.getChildWithName(sourceFilesNode).getPropertyName(file);
+					String name = mainVT.getChildWithName(sourceFilesNode).getProperty(id);
+					if (name.contains(".wav"))
+					{
+						DBG(name);
+					}
+				}
+			}
+			else
+			{
+				DBG("repoFiles node contains:\n ");
+				int repoProps = repoFiles.getNumProperties();
+				for (int file = 0; file < repoProps; ++file)
+				{
+					Identifier id = mainVT.getChildWithName(repoFilesNode).getPropertyName(file);
+					String name = mainVT.getChildWithName(repoFilesNode).getProperty(id);
+					if (name.contains(".wav"))
+					{
+						DBG(name);
+					}
+				}
+			}
+			
+		}
+	}
+
 
 
 int LocalTableList::getNumRows()
