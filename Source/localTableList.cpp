@@ -571,6 +571,13 @@ void LocalTableList::convertSampleRate()
 
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
+	const Identifier oneClickBoolID("oneClickBool");
+	const Identifier oneClickToggleID("oneClickToggle");
+	bool isInOneClickMode = mainVT.getChildWithName(oneClickToggleID).getProperty(oneClickBoolID);
+	if (isInOneClickMode == false)
+	{
+		return;
+	}
 	//if you click a cell and it's not a directory, play the relevent file
 	if (!localDirWavs[rowNumber].isDirectory())
 	{
@@ -586,6 +593,15 @@ void LocalTableList::cellDoubleClicked(int rowNumber, int columnId, const MouseE
 		directory = localDirWavs[rowNumber];
 		loadData(false);
 	}
+	const Identifier oneClickBoolID("oneClickBool");
+	const Identifier oneClickToggleID("oneClickToggle");
+	bool isInOneClickMode = mainVT.getChildWithName(oneClickToggleID).getProperty(oneClickBoolID);
+	if (isInOneClickMode == false)
+	{
+		mainComp.readFile(localDirWavs[rowNumber]);
+		mainComp.play();
+	}
+
 }
 
 String LocalTableList::getAttributeNameForColumnId(const int columnId) const

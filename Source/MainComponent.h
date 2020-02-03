@@ -571,6 +571,14 @@ public:
 				addAndMakeVisible(timeLabel);
 				timeLabel.getTextValue().referTo(mainVT.getPropertyAsValue(timeCode, nullptr));
 
+				addAndMakeVisible(clickPlayButton);
+				clickPlayButton.onClick = [this] {clickPlayButtonPressed(); };
+				oneClickToggleVT.setProperty(oneClickBoolID, true, nullptr);
+				clickPlayButton.setLookAndFeel(&unicodeLookAndFeel);
+				String oneClickToggleState = oneClickToggleVT.getProperty(oneClickToggleID);
+				DBG("one Click toggle state is " + oneClickToggleState);
+
+				mainVT.addChild(oneClickToggleVT, -1, nullptr);
 			}
 
 			~ButtonPanel()
@@ -580,6 +588,7 @@ public:
 				playButton.setLookAndFeel(nullptr);
 				stopButton.setLookAndFeel(nullptr);
 				rewindButton.setLookAndFeel(nullptr);
+				clickPlayButton.setLookAndFeel(nullptr);
 			}
 
 			void stopButtonClicked()
@@ -629,6 +638,23 @@ public:
 			void labelButtonClicked()
 			{
 				 auto labellingWindow =new LabellingWindow("Label Selected Assets",coreData);
+			}
+
+			void clickPlayButtonPressed()
+			{
+				String oneClickToggleState = oneClickToggleVT.getProperty(oneClickBoolID);
+				DBG("one Click toggle state is " + oneClickToggleState);
+				bool isSetToOneClickMode = oneClickToggleVT.getProperty(oneClickBoolID);
+				if (isSetToOneClickMode)
+				{
+					clickPlayButton.setButtonText(twoClickPlay);
+					oneClickToggleVT.setProperty(oneClickBoolID, false, nullptr);
+				}
+				else
+				{
+					clickPlayButton.setButtonText(oneClickPlay);
+					oneClickToggleVT.setProperty(oneClickBoolID, true, nullptr);
+				}
 			}
 
 			void sliderValueChanged(Slider* slider) override
@@ -697,6 +723,7 @@ public:
 				stopButton.setBounds(panelBounds.removeFromLeft(70));
 				rewindButton.setBounds(panelBounds.removeFromLeft(70));
 				loopButton.setBounds(panelBounds.removeFromLeft(70));
+				clickPlayButton.setBounds(panelBounds.removeFromLeft(70));
 				deployButton.setBounds(panelBounds.removeFromLeft(100));
 				deployAllButton.setBounds(panelBounds.removeFromLeft(100));
 				convertSRButton.setBounds(panelBounds.removeFromLeft(100));
@@ -705,6 +732,7 @@ public:
 				gainSlider.setBounds(panelBounds.removeFromRight(150));
 				muteButton.setBounds(panelBounds.removeFromRight(30));
 				timeLabel.setBounds(panelBounds.removeFromRight(100));
+
 				//editModeButton.setBounds(panelBounds.removeFromRight(100));
 
 			}
@@ -721,12 +749,21 @@ public:
 				}
 			};
 
+			ValueTree mainVT;
+			CoreData& coreData;
+			const Identifier oneClickToggleID{ "oneClickToggle" };
+			const Identifier oneClickBoolID{ "oneClickBool" };
+			ValueTree oneClickToggleVT{ oneClickToggleID };
+
 			//Unicode symbols for buttons
 			String stopSymbol = CharPointer_UTF8("\xe2\x96\xa0");
 			String playSymbol = CharPointer_UTF8("\xe2\x96\xb6");
 			String loopSymbol = CharPointer_UTF8("\xe2\x88\x9e");
 			String stopAtEndSymbol = CharPointer_UTF8("\xe2\x87\xa5");
 			String gainLabelSymbol = CharPointer_UTF8("\xf0\x9f\x94\x8a");
+			String mouseSymbol = CharPointer_UTF8("\xf0\x9f\x96\xaf");
+			String oneClickPlay = "1" + mouseSymbol + playSymbol;
+			String twoClickPlay = "2" + mouseSymbol + playSymbol;
 
 			//Buttons
 			TextButton playButton{ playSymbol };
@@ -737,6 +774,7 @@ public:
 			TextButton convertSRButton{ "Convert Sample Rate" };
 			TextButton editModeButton{ "Edit" };
 			TextButton labelButton{ "Label" };
+			TextButton clickPlayButton{oneClickPlay};
 
 			Label timeLabel;
 
@@ -757,8 +795,8 @@ public:
 			bool isMuted = false;
 			bool isInEditMode = false;
 
-			ValueTree mainVT;
-			CoreData& coreData;
+
+
 		};
 		const Identifier mainVTType{ "mainVT" };
 		ValueTree mainVT{ mainVTType };
