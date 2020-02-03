@@ -12,6 +12,8 @@
 #include "localTableList.h"
 
 
+
+
 LocalTableList::LocalTableList(MainComponent& mc, ValueTree vt,String chooseButtonText, bool isLeftPanel,String sInitFile) : mainComp (mc), mainVT(vt),loadDirButton(chooseButtonText), bIsLeftPanel(isLeftPanel)
 {
 	//set the current working directory for the program and add a resources folder. 
@@ -53,6 +55,17 @@ LocalTableList::LocalTableList(MainComponent& mc, ValueTree vt,String chooseButt
 
 	table.setRowHeight(25);
 	formatManager.registerBasicFormats();
+
+	//add the 3 nodes of this class to the main Valuetree, based on which panel it is
+	if (bIsLeftPanel)
+	{
+		mainVT.addChild(sourceFiles, -1, nullptr);
+		mainVT.addChild(selectedFiles, -1, nullptr);
+	}
+	else
+	{
+		mainVT.addChild(repoFiles, -1, nullptr);
+	}
 	
 	//if no string was passed in, or if we're constructing the destination panel, do the init load which will 
 	//look for a saved directory. This means that if we do 'open with' it will still load the destination table as normal
@@ -169,8 +182,8 @@ void LocalTableList::initDirectoryLoad()
 				int sourceProps = sourceFiles.getNumProperties();
 				for (int file = 0; file < sourceProps; ++file)
 				{
-					Identifier id = mainVT.getChildWithName(sourceFilesNode).getPropertyName(file);
-					String name = mainVT.getChildWithName(sourceFilesNode).getProperty(id);
+					Identifier id = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode).getPropertyName(file);
+					String name = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode).getProperty(id);
 					if (name.contains(".wav"))
 					{
 						DBG(name);
@@ -183,8 +196,8 @@ void LocalTableList::initDirectoryLoad()
 				int repoProps = repoFiles.getNumProperties();
 				for (int file = 0; file < repoProps; ++file)
 				{
-					Identifier id = mainVT.getChildWithName(repoFilesNode).getPropertyName(file);
-					String name = mainVT.getChildWithName(repoFilesNode).getProperty(id);
+					Identifier id = mainVT.getChildWithName(ValTreeIDs::repoFilesNode).getPropertyName(file);
+					String name = mainVT.getChildWithName(ValTreeIDs::repoFilesNode).getProperty(id);
 					if (name.contains(".wav"))
 					{
 						DBG(name);
@@ -262,6 +275,7 @@ int LocalTableList::getColumnAutoSizeWidth(int columnId)
 
 			widest = jmax(widest, font.getStringWidth(text));
 		}
+
 	}
 
 	return widest + 8;
@@ -276,7 +290,28 @@ int LocalTableList::getSelection(const int rowNumber) const
 void LocalTableList::setSelection(const int rowNumber, const int newSelection)
 {
 	dataList->getChildElement(rowNumber)->setAttribute("Select", newSelection);
-	DBG("toggle was pressed");
+	//update selectedFiles ValueTree to include all files with this box ticked (delete all contents first so we don't double up anything
+	selectedFiles.removeAllProperties(nullptr);
+	for (int row = 0; row < table.getNumRows(); ++row)
+	{
+		Identifier VTID(localDirWavs[row].getFileNameWithoutExtension());
+		//if the respective box is ticked 
+		if (getSelection(row) != 0)
+		{
+			//create a propety on the value tree called the file name and the value of that property is the full path name 
+			String fileName = localDirWavs[row].getFullPathName();
+			selectedFiles.setProperty(VTID, fileName, nullptr);
+		}
+
+	}
+	//debug print the list of selected files
+	DBG("selected files val tree contains:\n");
+	for (int i = 0; i < mainVT.getChildWithName(ValTreeIDs::selectedFiles).getNumProperties(); ++i)
+	{
+		Identifier id = mainVT.getChildWithName(ValTreeIDs::selectedFiles).getPropertyName(i);
+		String name = mainVT.getChildWithName(ValTreeIDs::selectedFiles).getProperty(id);
+		DBG(name);
+	}
 }
 
 String LocalTableList::getText(const int columnNumber, const int rowNumber) const
@@ -572,9 +607,7 @@ void LocalTableList::convertSampleRate()
 
 void LocalTableList::cellClicked(int rowNumber, int columnId, const MouseEvent&)
 {
-	const Identifier oneClickBoolID("oneClickBool");
-	const Identifier oneClickToggleID("oneClickToggle");
-	bool isInOneClickMode = mainVT.getChildWithName(oneClickToggleID).getProperty(oneClickBoolID);
+	bool isInOneClickMode = mainVT.getChildWithName(ValTreeIDs::oneClickToggleID).getProperty(ValTreeIDs::oneClickBoolID);
 	if (isInOneClickMode == false)
 	{
 		return;
@@ -594,9 +627,8 @@ void LocalTableList::cellDoubleClicked(int rowNumber, int columnId, const MouseE
 		directory = localDirWavs[rowNumber];
 		loadData(false);
 	}
-	const Identifier oneClickBoolID("oneClickBool");
-	const Identifier oneClickToggleID("oneClickToggle");
-	bool isInOneClickMode = mainVT.getChildWithName(oneClickToggleID).getProperty(oneClickBoolID);
+
+	bool isInOneClickMode = mainVT.getChildWithName(ValTreeIDs::oneClickToggleID).getProperty(ValTreeIDs::oneClickBoolID);
 	if (isInOneClickMode == false)
 	{
 		mainComp.readFile(localDirWavs[rowNumber]);

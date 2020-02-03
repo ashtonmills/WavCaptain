@@ -5,29 +5,46 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "localTableList.h"
 #include "LabellingComponent.h"
+#include "ValTreeIds.h"
 
 //Forward declare the buttonPanel for linking reasons
 class buttonPanel;
 class MainComponent;
-class LabellingComponent;
-
-namespace ValTreeIDs
-{
-//put all the valuetree identifiers in here as static Identfier and then we don't have to fuck abotu all the time. 
-}
 
 struct CoreData
 {
 	CoreData(ValueTree vt) : mainVT(vt)
 	{
-		mainVT.setProperty(loadSwitch, 0, nullptr);
+		mainVT.setProperty(ValTreeIDs::loadSwitch, 0, nullptr);
 	}
 	Array<File> sourceFiles;
 	Array<File> repoFiles;
-	const Identifier loadSwitch{ "load" };
+
 	ValueTree mainVT;
 };
 
+
+//==============================================================================
+//Component for selection regions of the waveform
+
+class SelectionRegion : public Component
+{
+public:
+	SelectionRegion()
+	{
+		this->setAlpha(0.25);
+	}
+	~SelectionRegion()
+	{
+
+	}
+	void paint(Graphics& g) override
+	{
+		g.setColour(Colours::teal);
+		g.fillAll();
+	}
+
+};
 //===============================================================================
 //Component for displaying the waveform
 
@@ -126,9 +143,9 @@ public:
 			float audioPosition = (float) transportSource.getCurrentPosition();  //why here do he have (float) in brackets? 
 			//update the valuetree with audioposition.
 			//This is not really a good place to do this, inside a paint function, TODO refector to make it tidier. 
-			Identifier timeCode("timeCode");
+
 			auto transportTime = floatToTimecode(audioPosition);
-			mainVT.setProperty(timeCode, transportTime, nullptr);
+			mainVT.setProperty(ValTreeIDs::timeCode, transportTime, nullptr);
 
 			drawPosition =  (audioPosition / duration) * getWidth();
 			g.setColour(Colours::black);
@@ -391,15 +408,15 @@ public:
 				loopButton.setLookAndFeel(&unicodeLookAndFeel);
 				loopButton.onClick = [this] {loopButttonClicked(); };
 
-				Identifier timeCode("timeCode");
+			
 				addAndMakeVisible(timeLabel);
-				timeLabel.getTextValue().referTo(mainVT.getPropertyAsValue(timeCode, nullptr));
+				timeLabel.getTextValue().referTo(mainVT.getPropertyAsValue(ValTreeIDs::timeCode, nullptr));
 
 				addAndMakeVisible(clickPlayButton);
 				clickPlayButton.onClick = [this] {clickPlayButtonPressed(); };
-				oneClickToggleVT.setProperty(oneClickBoolID, true, nullptr);
+				oneClickToggleVT.setProperty(ValTreeIDs::oneClickBoolID, true, nullptr);
 				clickPlayButton.setLookAndFeel(&unicodeLookAndFeel);
-				String oneClickToggleState = oneClickToggleVT.getProperty(oneClickToggleID);
+				String oneClickToggleState = oneClickToggleVT.getProperty(ValTreeIDs::oneClickToggleID);
 				DBG("one Click toggle state is " + oneClickToggleState);
 
 				mainVT.addChild(oneClickToggleVT, -1, nullptr);
@@ -461,23 +478,23 @@ public:
 
 			void labelButtonClicked()
 			{
-				 auto labellingWindow =new LabellingWindow("Label Selected Assets",coreData);
+				 auto labellingWindow =new LabellingWindow("Label Selected Assets",coreData,mainVT);
 			}
 
 			void clickPlayButtonPressed()
 			{
-				String oneClickToggleState = oneClickToggleVT.getProperty(oneClickBoolID);
+				String oneClickToggleState = oneClickToggleVT.getProperty(ValTreeIDs::oneClickBoolID);
 				DBG("one Click toggle state is " + oneClickToggleState);
-				bool isSetToOneClickMode = oneClickToggleVT.getProperty(oneClickBoolID);
+				bool isSetToOneClickMode = oneClickToggleVT.getProperty(ValTreeIDs::oneClickBoolID);
 				if (isSetToOneClickMode)
 				{
 					clickPlayButton.setButtonText(twoClickPlay);
-					oneClickToggleVT.setProperty(oneClickBoolID, false, nullptr);
+					oneClickToggleVT.setProperty(ValTreeIDs::oneClickBoolID, false, nullptr);
 				}
 				else
 				{
 					clickPlayButton.setButtonText(oneClickPlay);
-					oneClickToggleVT.setProperty(oneClickBoolID, true, nullptr);
+					oneClickToggleVT.setProperty(ValTreeIDs::oneClickBoolID, true, nullptr);
 				}
 			}
 
@@ -575,9 +592,8 @@ public:
 
 			ValueTree mainVT;
 			CoreData& coreData;
-			const Identifier oneClickToggleID{ "oneClickToggle" };
-			const Identifier oneClickBoolID{ "oneClickBool" };
-			ValueTree oneClickToggleVT{ oneClickToggleID };
+	
+			ValueTree oneClickToggleVT{ ValTreeIDs::oneClickToggleID };
 
 			//Unicode symbols for buttons
 			String stopSymbol = CharPointer_UTF8("\xe2\x96\xa0");
@@ -622,8 +638,8 @@ public:
 
 
 		};
-		const Identifier mainVTType{ "mainVT" };
-		ValueTree mainVT{ mainVTType };
+
+		ValueTree mainVT{ ValTreeIDs::mainVTType };
 		LocalTableList localTableList;
 		LocalTableList destinationRepoList;
 
@@ -660,7 +676,6 @@ public:
 
 		Label debugLabel;
 		int timerFlashCount;
-		const Identifier mainVTtype{ "mainVT" };
 
 
 		ButtonPanel buttonPanel;

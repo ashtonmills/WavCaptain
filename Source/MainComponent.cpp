@@ -1,9 +1,11 @@
 
 #include "MainComponent.h"
 
+
 #define PLAYTEXT CharPointer_UTF8("\xe2\x96\xb6")
 #define STOPTEXT CharPointer_UTF8("\xe2\x96\xa0")
 #define PAUSETEXT CharPointer_UTF8 ("\xe2\x8f\xb8")
+
 
 //==============================================================================
 MainComponent::MainComponent(String commandLineParam) :state(Stopped),

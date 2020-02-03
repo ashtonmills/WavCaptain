@@ -13,6 +13,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "ValTreeIds.h"
 
 class MainComponent;
 
@@ -79,10 +80,10 @@ public:
 private:
 	//member variables
 	ValueTree mainVT;
-	const Identifier sourceFilesNode{ "sourceFiles" };
-	const Identifier repoFilesNode{ "repoFiles" };
-	ValueTree sourceFiles{ sourceFilesNode };
-	ValueTree repoFiles{ repoFilesNode };
+
+	ValueTree sourceFiles{ ValTreeIDs::sourceFilesNode };
+	ValueTree repoFiles{ ValTreeIDs::repoFilesNode };
+	ValueTree selectedFiles{ ValTreeIDs::selectedFiles };
 	AudioFormatManager formatManager;
 	std::unique_ptr<AudioFormatReaderSource> playSource;
 	TableListBox table{ {}, this };
