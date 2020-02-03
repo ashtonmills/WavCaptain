@@ -61,17 +61,19 @@ public:
 	void mouseEnter(const MouseEvent& event) override;
 	void mouseExit(const MouseEvent& event) override;
 
-
+	
 	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
 	{
 	public:
 		UnicodeSymbolsLookAndFeel()
 		{
+
 		}
 		Font getTextButtonFont(TextButton&, int buttonHeight) override
 		{
 			return Font("Segoe UI Symbol", 20, Font::plain);
 		}
+
 	};
 
 private:
@@ -154,7 +156,8 @@ private:
 		{
 			addAndMakeVisible(toggleButton);
 
-			toggleButton.onClick = [this] { owner.setSelection(row, (int)toggleButton.getToggleState()); };
+			toggleButton.onClick = [this]
+			{ owner.setSelection(row, (int)toggleButton.getToggleState()); };
 		}
 
 		void resized() override

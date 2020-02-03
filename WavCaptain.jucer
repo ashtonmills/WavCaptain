@@ -4,6 +4,8 @@
               version="1.1.4">
   <MAINGROUP id="CnRjED" name="WavCaptain 1_1_4">
     <GROUP id="{2A0018B1-5D29-DCDA-011D-173409231A51}" name="Source">
+      <FILE id="BQGZPu" name="LabellingComponent.h" compile="0" resource="0"
+            file="Source/LabellingComponent.h"/>
       <FILE id="cYV9gM" name="wavCap.png" compile="0" resource="1" file="icons/wavCap.png"/>
       <FILE id="HxmvDR" name="localTableList.cpp" compile="1" resource="0"
             file="Source/localTableList.cpp"/>

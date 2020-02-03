@@ -4,11 +4,17 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "localTableList.h"
+#include "LabellingComponent.h"
 
 //Forward declare the buttonPanel for linking reasons
 class buttonPanel;
 class MainComponent;
+class LabellingComponent;
 
+namespace ValTreeIDs
+{
+//put all the valuetree identifiers in here as static Identfier and then we don't have to fuck abotu all the time. 
+}
 
 struct CoreData
 {
@@ -20,188 +26,6 @@ struct CoreData
 	Array<File> repoFiles;
 	const Identifier loadSwitch{ "load" };
 	ValueTree mainVT;
-};
-//=========================================================================
-// Dialog window for labeling assets
-class LabellingComponent : public Component
-{
-public:
-	LabellingComponent(ValueTree vt, const Identifier canID, CoreData& data) : cancelVT(vt), cancelId(canID), coreData(data)
-	{
-		setSize(600, 600);
-		addAndMakeVisible(labelField);
-		labelField.setEditable(true);
-		labelField.setColour(Label::ColourIds::textColourId, Colours::black);
-		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
-		labelField.setColour(Label::backgroundColourId, Colours::white);
-		labelField.onTextChange = [this] {onLabelFieldTextChange(); };
-
-		addAndMakeVisible(labelLabel);
-		labelLabel.attachToComponent(&labelField, true);
-		labelLabel.setText("New File Name", dontSendNotification);
-		labelLabel.setColour(Label::ColourIds::textColourId, Colours::white);
-
-		addAndMakeVisible(digitsSelection);
-		digitsSelection.addItem("1", 1);
-		digitsSelection.addItem("2", 2);
-		digitsSelection.addItem("3", 3);
-		digitsSelection.setSelectedId(2);
-		digitsSelection.onChange = [this] {onLabelFieldTextChange(); };
-
-		addAndMakeVisible(digitSelectionLabel);
-		digitSelectionLabel.setText("Number of digits in increment", dontSendNotification);
-		digitSelectionLabel.attachToComponent(&digitsSelection, true);
-
-
-		addAndMakeVisible(outputPreview);
-		outputPreview.setColour(Label::ColourIds::textColourId, Colours::black);
-		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
-		outputPreview.setColour(Label::backgroundColourId, Colours::white);
-
-		addAndMakeVisible(outputPreviewLabel);
-		outputPreviewLabel.setColour(Label::ColourIds::textColourId, Colours::white);
-		outputPreviewLabel.attachToComponent(&outputPreview, true);
-		outputPreviewLabel.setText("Output preview", dontSendNotification);
-
-		addAndMakeVisible(okButton);
-		okButton.onClick = [this] {okButtonClicked(); };
-
-		cancelVT.setProperty(cancelId, false, nullptr);
-
-		addAndMakeVisible(cancelButton);
-		cancelButton.onClick = [this] {cancelButtonClicked(); };
-
-	}
-	~LabellingComponent()
-	{
-
-	}
-	void onLabelFieldTextChange()
-	{
-		if (labelField.getText() == "")
-		{
-			outputPreview.setText("", dontSendNotification);
-			return;
-		}
-		switch (digitsSelection.getSelectedId())
-		{
-		case 1: outputPreview.setText(labelField.getText() + "1.wav", dontSendNotification);
-			break;
-		case 2: outputPreview.setText(labelField.getText() + "01.wav", dontSendNotification);
-			break;
-		case 3: outputPreview.setText(labelField.getText() + "001.wav", dontSendNotification);
-			break;
-		}
-	}
-
-	void okButtonClicked()
-	{
-		//Proceed with labelling assets
-	}
-	void cancelButtonClicked()
-	{
-		cancelVT.setProperty(cancelId, true, nullptr);
-	}
-
-	void resized()
-	{
-
-		labelField.setBounds(100, 100, 300, 25);
-		digitsSelection.setBounds(190, 150, 70, 30);
-		outputPreview.setBounds(100, 200, 300, 30);
-		okButton.setBounds(200, 400, 70, 40);
-		cancelButton.setBounds(300, 400, 70, 40);
-	}
-
-
-
-private:
-	Label labelField;
-	Label labelLabel{ "New Filename" }; //I made it so confusing by calling it labelling instead of renaming lol
-	ComboBox digitsSelection;
-	Label digitSelectionLabel;
-	Label outputPreview;
-	Label outputPreviewLabel;
-	TextButton okButton{ "OK" };
-	TextButton cancelButton{ "Cancel" };
-	ValueTree cancelVT;
-	const Identifier cancelId;
-	CoreData& coreData;
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
-};
-
-class LabellingWindow : public DocumentWindow, ValueTree::Listener
-{
-public:
-	LabellingWindow(String name, CoreData& data) : DocumentWindow(name,
-		Desktop::getInstance().getDefaultLookAndFeel()
-		.findColour(ResizableWindow::backgroundColourId),
-		DocumentWindow::allButtons)
-	{
-		setUsingNativeTitleBar(false);
-		setResizable(true, true);
-
-		setContentOwned(new LabellingComponent(cancelVT, cancelId, data), true);
-		centreWithSize(600, 600);
-		setVisible(true);
-
-		cancelVT.addListener(this);
-
-	}
-	
-	void valueTreePropertyChanged(ValueTree& tree ,const Identifier& property) override
-	{
-		if (tree == cancelVT && property == cancelId)
-		{
-			closeButtonPressed();
-		}
-	}
-	
-
-	void closeButtonPressed() override
-	{
-		// This is called when the user tries to close this window. Here, we'll just
-		// ask the app to quit when this happens, but you can change this to do
-		// whatever you need.
-		delete this;
-
-	}
-
-	/* Note: Be careful if you override any DocumentWindow methods - the base
-	   class uses a lot of them, so by overriding you might break its functionality.
-	   It's best to do all your work in your content component instead, but if
-	   you really have to override any DocumentWindow methods, make sure your
-	   subclass also calls the superclass's method.
-	*/
-
-private:
-	const Identifier cancelId{ "cancel" };
-	ValueTree cancelVT{cancelId};
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingWindow)
-};
-
-
-
-//==============================================================================
-//Component for selection regions of the waveform
-
-class SelectionRegion : public Component
-{
-public :
-	SelectionRegion()
-	{
-		this->setAlpha(0.25);
-	}
-	~SelectionRegion()
-	{
-
-	}
-	void paint(Graphics& g) override
-	{
-		g.setColour(Colours::teal);
-		g.fillAll();
-	}
-
 };
 
 //===============================================================================

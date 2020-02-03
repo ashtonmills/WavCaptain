@@ -276,6 +276,7 @@ int LocalTableList::getSelection(const int rowNumber) const
 void LocalTableList::setSelection(const int rowNumber, const int newSelection)
 {
 	dataList->getChildElement(rowNumber)->setAttribute("Select", newSelection);
+	DBG("toggle was pressed");
 }
 
 String LocalTableList::getText(const int columnNumber, const int rowNumber) const
@@ -693,6 +694,7 @@ void LocalTableList::openInExplorerButtonClicked()
 	{
 		localDirWavs[0].revealToUser();
 	}
+
 }
 
 void LocalTableList::mouseEnter(const MouseEvent& event)
