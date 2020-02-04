@@ -15,7 +15,6 @@ struct CoreData
 {
 	CoreData(ValueTree vt) : mainVT(vt)
 	{
-		mainVT.setProperty(ValTreeIDs::loadSwitch, 0, nullptr);
 	}
 	Array<File> sourceFiles;
 	Array<File> repoFiles;

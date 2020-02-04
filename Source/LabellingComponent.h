@@ -122,11 +122,11 @@ public:
 		ValueTree sourceFiles = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode);
 		
 
-		for (int file = 1; file != files.getNumProperties(); ++file)
+		for (int file = 1; file <= files.getNumProperties(); ++file)
 		{	
 			//Loop through the source file assets to make sure the name is not going to overwrite anything
 			Identifier iId(newName);
-			for (int i = 1; i != sourceFiles.getNumProperties(); ++i)
+			for (int i = 0; i < sourceFiles.getNumProperties(); ++i)
 			{
 				Identifier iId = sourceFiles.getPropertyName(i);
 				DBG("name in source Files: " +sourceFiles.getPropertyName(i).toString());
