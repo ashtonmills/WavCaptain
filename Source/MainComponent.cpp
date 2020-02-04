@@ -17,6 +17,7 @@ destinationRepoList(*this,mainVT,"Destination Repo Directory",false,""),
 buttonPanel(*this,mainVT,coreData),tc(2,mainVT)
 {
 	setSize(1200, 900);
+	mainVT.addListener(this);
 
 	transportSource.addChangeListener(this);
 
@@ -306,6 +307,14 @@ double MainComponent::getTargetSampleRate()
 		case 4: return 96000.00;
 		}
 	
+}
+
+void MainComponent::valueTreePropertyChanged(ValueTree& tree, const Identifier& property)
+{
+	if (property == ValTreeIDs::debugMsg)
+	{
+		setDebugText(tree.getProperty(ValTreeIDs::debugMsg));
+	}
 }
 
 

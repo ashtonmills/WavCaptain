@@ -34,6 +34,9 @@ public:
 		labelLabel.setText("New File Name", dontSendNotification);
 		labelLabel.setColour(Label::ColourIds::textColourId, Colours::white);
 
+		if (mainVT.getChildWithName(ValTreeIDs::selectedFiles).getNumProperties() > 1)
+		{ 
+
 		addAndMakeVisible(digitsSelection);
 		digitsSelection.addItem("1", 1);
 		digitsSelection.addItem("2", 2);
@@ -44,6 +47,7 @@ public:
 		addAndMakeVisible(digitSelectionLabel);
 		digitSelectionLabel.setText("Number of digits in increment", dontSendNotification);
 		digitSelectionLabel.attachToComponent(&digitsSelection, true);
+		}
 
 
 		addAndMakeVisible(outputPreview);
@@ -58,6 +62,7 @@ public:
 
 		addAndMakeVisible(okButton);
 		okButton.onClick = [this] {okButtonClicked(); };
+		okButton.setEnabled(false);
 
 		cancelVT.setProperty(ValTreeIDs::closeLabellingDialog, false, nullptr);
 
@@ -78,20 +83,119 @@ public:
 			outputPreview.setText("", dontSendNotification);
 			return;
 		}
-		switch (digitsSelection.getSelectedId())
+		okButton.setEnabled(true);
+		if(mainVT.getChildWithName(ValTreeIDs::selectedFiles).getNumProperties()>1)
 		{
-		case 1: outputPreview.setText(labelField.getText() + "1.wav", dontSendNotification);
-			break;
-		case 2: outputPreview.setText(labelField.getText() + "01.wav", dontSendNotification);
-			break;
-		case 3: outputPreview.setText(labelField.getText() + "001.wav", dontSendNotification);
-			break;
+			switch (digitsSelection.getSelectedId())
+			{
+			case 1: outputPreview.setText(labelField.getText() + "1.wav", dontSendNotification);
+				break;
+			case 2: outputPreview.setText(labelField.getText() + "01.wav", dontSendNotification);
+				break;
+			case 3: outputPreview.setText(labelField.getText() + "001.wav", dontSendNotification);
+				break;
+			}
+		}
+		else
+		{
+			outputPreview.setText(labelField.getText(),dontSendNotification);
+		}
+		ValueTree sourceFiles = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode);
+		Identifier iId(outputPreview.getText());
+		if (sourceFiles.hasProperty(iId))
+		{
+			okButton.setEnabled(false);
+			outputPreview.setText("Name already taken", dontSendNotification);
 		}
 	}
 
 	void okButtonClicked()
 	{
-		//Proceed with labelling assets
+		//do nothing if label is empty
+		if (labelField.getText() == "")
+		{
+			cancelVT.setProperty(ValTreeIDs::closeLabellingDialog, "close", nullptr);
+		}
+		String newName = labelField.getText();
+		String newNameCaseInsensitive = newName.toLowerCase();
+		ValueTree files = mainVT.getChildWithName(ValTreeIDs::selectedFiles);
+		ValueTree sourceFiles = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode);
+		
+
+		for (int file = 1; file != files.getNumProperties(); ++file)
+		{	
+			//Loop through the source file assets to make sure the name is not going to overwrite anything
+			Identifier iId(newName);
+			for (int i = 1; i != sourceFiles.getNumProperties(); ++i)
+			{
+				Identifier iId = sourceFiles.getPropertyName(i);
+				DBG("name in source Files: " +sourceFiles.getPropertyName(i).toString());
+				DBG("newNAme is : " + newName);
+				if ((sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive) || 
+					(sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive + std::to_string(file)) || 
+					(sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive + "0" + std::to_string(file)) || 
+					(sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive + "00" + std::to_string(file)))
+				{
+					//	String msg = "Labelling stopped at iteration number " + std::to_string(file) + " because it would have overwritten files.";
+				//	mainVT.setProperty(ValTreeIDs::debugMsg, "Labelling cancelled because it would have overwritten files", nullptr);
+				//	auto aw = new AlertWindow("Filename(s) already in use", "Labelling Aborted because it would have overwritten files.", AlertWindow::AlertIconType::WarningIcon, this);
+	
+					AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Filename(s) already in use", "Labelling Aborted because it would have overwritten files.","ok",this);
+					cancelVT.setProperty(ValTreeIDs::closeLabellingDialog, "close", nullptr);
+
+					return;
+				}
+			}
+			//Proceed with labelling assets
+			Identifier iFileID = files.getPropertyName(file-1);
+			File iFile(files.getProperty(iFileID));
+			DBG("existing filename is: " + iFile.getFileName());
+
+			String iPath = iFile.getParentDirectory().getFullPathName() + "\\";
+
+			String newFullPath = iPath + "\\" + newName;
+			//sort out the increments based on selected number of digits in the increment
+
+			if (files.getNumProperties() > 1)
+			{
+				String incr2 = (file < 10) ? "0" + std::to_string(file) : std::to_string(file);
+				String incr3;
+				if (file < 10)
+				{
+					incr3 = "00" + std::to_string(file);
+				}
+				else if (file >= 10 && file < 100)
+				{
+					incr3 = "0" + std::to_string(file);
+				}
+				else
+				{
+					incr3 = std::to_string(file);
+				}
+				
+				switch (digitsSelection.getSelectedId())
+					{
+						case 1: newFullPath += (file);
+							break;
+						case 2: newFullPath += incr2;
+							break;
+						case 3: newFullPath += incr3;
+							break;
+					}
+			}
+			newFullPath += ".wav";
+
+			if (iFile.moveFileTo(File(newFullPath)))
+			{
+				DBG("renamed to: " + newFullPath );
+			}
+
+		}
+
+		files.removeAllChildren(nullptr);
+		mainVT.setProperty(ValTreeIDs::loadSwitch, true,nullptr);
+		mainVT.setProperty(ValTreeIDs::loadSwitch, false, nullptr);
+		cancelVT.setProperty(ValTreeIDs::closeLabellingDialog,"close",nullptr);
 	}
 	void cancelButtonClicked()
 	{

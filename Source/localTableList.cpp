@@ -52,6 +52,7 @@ LocalTableList::LocalTableList(MainComponent& mc, ValueTree vt,String chooseButt
 
 	addAndMakeVisible(table);
 
+	mainVT.addListener(this);
 
 	table.setRowHeight(25);
 	formatManager.registerBasicFormats();
@@ -155,8 +156,9 @@ void LocalTableList::initDirectoryLoad()
 		if (!isInitLoad)
 		{
 			mainComp.saveData();
-			populateValTree();
+
 		}
+		populateValTree();
 	}
 	void LocalTableList::populateValTree()
 	{
@@ -175,33 +177,26 @@ void LocalTableList::initDirectoryLoad()
 				nodeToUse.setProperty(VTID, fileName, nullptr);
 			}
 			//some useful debugging 
-			DBG("mainVt has " + std::to_string(mainVT.getNumChildren()) + " children");
+
 			if (nodeToUse == sourceFiles)
 			{
-				DBG("sourceFiles node contains:\n ");
+
 				int sourceProps = sourceFiles.getNumProperties();
 				for (int file = 0; file < sourceProps; ++file)
 				{
 					Identifier id = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode).getPropertyName(file);
 					String name = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode).getProperty(id);
-					if (name.contains(".wav"))
-					{
-						DBG(name);
-					}
+
 				}
 			}
 			else
 			{
-				DBG("repoFiles node contains:\n ");
+
 				int repoProps = repoFiles.getNumProperties();
 				for (int file = 0; file < repoProps; ++file)
 				{
 					Identifier id = mainVT.getChildWithName(ValTreeIDs::repoFilesNode).getPropertyName(file);
 					String name = mainVT.getChildWithName(ValTreeIDs::repoFilesNode).getProperty(id);
-					if (name.contains(".wav"))
-					{
-						DBG(name);
-					}
 				}
 			}
 			
@@ -766,6 +761,14 @@ void LocalTableList::mouseExit(const MouseEvent& event)
 	if (event.originalComponent == &loadDirButton)
 	{
 		mainComp.setDebugText("", false);
+	}
+}
+
+void LocalTableList::valueTreePropertyChanged(ValueTree& tree, const Identifier& property)
+{
+	if (property == ValTreeIDs::loadSwitch)
+	{
+		loadData(false);
 	}
 }
 

@@ -320,7 +320,7 @@ public:
 	//Main component
 	//_________________________________________________________________________________
 
-	class MainComponent : public AudioAppComponent, public ChangeListener, private Timer
+	class MainComponent : public AudioAppComponent, public ChangeListener, private Timer, public ValueTree::Listener
 	{
 	public:
 		//==============================================================================
@@ -341,7 +341,7 @@ public:
 		void saveData();
 		void aboutButtonClicked();
 		double getTargetSampleRate();
-	
+		void valueTreePropertyChanged(ValueTree& tree, const Identifier& property);
 
 
 		class ButtonPanel : public Component, public Slider::Listener, public MouseListener
@@ -542,6 +542,10 @@ public:
 				{
 					mainComp.setDebugText("Mute", false);
 				}
+				if (event.originalComponent == &labelButton)
+				{
+					mainComp.setDebugText("Rename selected assets", false);
+				}
 			}
 
 			//Delete the mouse hover text 
@@ -551,7 +555,8 @@ public:
 					event.originalComponent == &deployButton ||
 					event.originalComponent == &muteButton ||
 					event.originalComponent == &SRMenu ||
-					event.originalComponent == &convertSRButton)
+					event.originalComponent == &convertSRButton ||
+					event.originalComponent == &labelButton)
 				{
 					mainComp.setDebugText("", false);
 				}

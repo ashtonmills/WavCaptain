@@ -22,7 +22,9 @@ namespace ValTreeIDs
 	static Identifier oneClickBoolID("oneClickBool");
 	static Identifier closeLabellingDialog("close");
 
-	const Identifier sourceFilesNode( "sourceFiles" );
-	const Identifier repoFilesNode("repoFiles" );
+	static Identifier sourceFilesNode( "sourceFiles" );
+	static Identifier repoFilesNode("repoFiles" );
+
+	static Identifier debugMsg("debugMsg");
 }
 

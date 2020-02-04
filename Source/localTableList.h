@@ -19,7 +19,7 @@ class MainComponent;
 
 
 class LocalTableList : public Component, public FileDragAndDropTarget,
-	public TableListBoxModel, public MouseListener
+	public TableListBoxModel, public MouseListener, public ValueTree::Listener
 {
 public:
 	LocalTableList(MainComponent& mc, ValueTree vt, String chooseButtonText, bool isLeftPanel,String sInitFile);
@@ -61,6 +61,10 @@ public:
 	void openInExplorerButtonMouseEnter();
 	void mouseEnter(const MouseEvent& event) override;
 	void mouseExit(const MouseEvent& event) override;
+	void valueTreePropertyChanged(ValueTree& tree,
+		const Identifier& property);
+
+
 
 	
 	class UnicodeSymbolsLookAndFeel : public LookAndFeel_V4
