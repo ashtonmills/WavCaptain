@@ -125,6 +125,20 @@ public:
 		for (int file = 1; file <= files.getNumProperties(); ++file)
 		{	
 			//Loop through the source file assets to make sure the name is not going to overwrite anything
+			
+			/*This check system doesn't work because it finds a false positive, becasue I've just tried to find a way to do the 
+			checks on the non-incremented file name. 
+			New system: use output preview and change what you do per loop iteration.
+			loop 1 just use output preview
+			loops 2-9 tkae off the last digit and replace with loop number
+			loops 10-99  tkae off the last 2 digits and replace with loop number
+			loops 100-999 take off the last 3 digits and replace with loop number
+			
+			I'm going to force the options on increment so you can'thave fewer digits than you need in in the incrementing
+			so I shouldn't have to check against the digitsSelection when I implement this new system. 
+			
+			DON'T FORGET TO TAKE .wav OUT first then put it back in to the string!*/
+			
 			Identifier iId(newName);
 			for (int i = 0; i < sourceFiles.getNumProperties(); ++i)
 			{

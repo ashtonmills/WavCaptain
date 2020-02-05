@@ -170,6 +170,10 @@ void LocalTableList::initDirectoryLoad()
 			{
 				mainVT.addChild(nodeToUse, -1, nullptr);
 			}
+
+			//flush the respective value tree node first 
+			nodeToUse.removeAllProperties(nullptr);
+
 			for (int file = 0; file < localDirWavs.size(); ++file)
 			{
 				String fileName = localDirWavs[file].getFullPathName();
