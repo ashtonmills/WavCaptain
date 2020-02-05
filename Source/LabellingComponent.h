@@ -21,9 +21,10 @@ class LabellingComponent : public Component
 public:
 	LabellingComponent(ValueTree vt, CoreData& data) : mainVT(vt), coreData(data)
 	{
+
 		setSize(600, 600);
 		addAndMakeVisible(labelField);
-		labelField.setEditable(true);
+
 		labelField.setColour(Label::ColourIds::textColourId, Colours::black);
 		labelField.setColour(Label::ColourIds::textWhenEditingColourId, Colours::black);
 		labelField.setColour(Label::backgroundColourId, Colours::white);
@@ -70,7 +71,7 @@ public:
 		cancelButton.onClick = [this] {cancelButtonClicked(); };
 
 		mainVT.addChild(cancelVT, -1, nullptr);
-
+		labelField.setExplicitFocusOrder(1);
 	}
 	~LabellingComponent()
 	{
@@ -98,7 +99,7 @@ public:
 		}
 		else
 		{
-			outputPreview.setText(labelField.getText(),dontSendNotification);
+			outputPreview.setText(labelField.getText()+".wav",dontSendNotification);
 		}
 		ValueTree sourceFiles = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode);
 		Identifier iId(outputPreview.getText());
@@ -120,56 +121,48 @@ public:
 		String newNameCaseInsensitive = newName.toLowerCase();
 		ValueTree files = mainVT.getChildWithName(ValTreeIDs::selectedFiles);
 		ValueTree sourceFiles = mainVT.getChildWithName(ValTreeIDs::sourceFilesNode);
-		
-
+		//drop .wav from the string
+		String newNameWithIncr = outputPreview.getText().dropLastCharacters(4);
 		for (int file = 1; file <= files.getNumProperties(); ++file)
 		{	
-			//Loop through the source file assets to make sure the name is not going to overwrite anything
-			
-			/*This check system doesn't work because it finds a false positive, becasue I've just tried to find a way to do the 
-			checks on the non-incremented file name. 
-			New system: use output preview and change what you do per loop iteration.
-			loop 1 just use output preview
-			loops 2-9 tkae off the last digit and replace with loop number
-			loops 10-99  tkae off the last 2 digits and replace with loop number
-			loops 100-999 take off the last 3 digits and replace with loop number
-			
-			I'm going to force the options on increment so you can'thave fewer digits than you need in in the incrementing
-			so I shouldn't have to check against the digitsSelection when I implement this new system. 
-			
-			DON'T FORGET TO TAKE .wav OUT first then put it back in to the string!*/
-			
+			if (file >= 2 && file <= 9)
+			{
+				newNameWithIncr = newNameWithIncr.dropLastCharacters(1);
+				newNameWithIncr += file;
+			}
+			if (file >= 10 && file <= 99)
+			{
+				newNameWithIncr = newNameWithIncr.dropLastCharacters(2);
+				newNameWithIncr += file;
+			}
+			if (file >= 100 && file <= 999)
+			{
+				newNameWithIncr = newNameWithIncr.dropLastCharacters(3);
+				newNameWithIncr += file;
+			}
+		
+			//Loop through the source file assets to make sure the name is not going to overwrite anything		
 			Identifier iId(newName);
 			for (int i = 0; i < sourceFiles.getNumProperties(); ++i)
 			{
 				Identifier iId = sourceFiles.getPropertyName(i);
-				DBG("name in source Files: " +sourceFiles.getPropertyName(i).toString());
-				DBG("newNAme is : " + newName);
-				if ((sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive) || 
-					(sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive + std::to_string(file)) || 
-					(sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive + "0" + std::to_string(file)) || 
-					(sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameCaseInsensitive + "00" + std::to_string(file)))
+				if (sourceFiles.getPropertyName(i).toString().toLowerCase() == newNameWithIncr.toLowerCase())
 				{
-					//	String msg = "Labelling stopped at iteration number " + std::to_string(file) + " because it would have overwritten files.";
-				//	mainVT.setProperty(ValTreeIDs::debugMsg, "Labelling cancelled because it would have overwritten files", nullptr);
-				//	auto aw = new AlertWindow("Filename(s) already in use", "Labelling Aborted because it would have overwritten files.", AlertWindow::AlertIconType::WarningIcon, this);
-	
-					AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Filename(s) already in use", "Labelling Aborted because it would have overwritten files.","ok",this);
-					cancelVT.setProperty(ValTreeIDs::closeLabellingDialog, "close", nullptr);
-
+					AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Filename(s) already in use", "Labelling Aborted because it would have overwritten files.", "ok", this);
+					cancelVT.setProperty(ValTreeIDs::closeLabellingDialog, "close", nullptr);			
 					return;
 				}
 			}
 			//Proceed with labelling assets
 			Identifier iFileID = files.getPropertyName(file-1);
 			File iFile(files.getProperty(iFileID));
-			DBG("existing filename is: " + iFile.getFileName());
+			//DBG("existing filename is: " + iFile.getFileName());
 
 			String iPath = iFile.getParentDirectory().getFullPathName() + "\\";
 
 			String newFullPath = iPath + "\\" + newName;
+			
 			//sort out the increments based on selected number of digits in the increment
-
 			if (files.getNumProperties() > 1)
 			{
 				String incr2 = (file < 10) ? "0" + std::to_string(file) : std::to_string(file);
@@ -226,10 +219,8 @@ public:
 		cancelButton.setBounds(300, 400, 70, 40);
 	}
 
-
-
 private:
-	Label labelField;
+	TextEditor labelField;
 	Label labelLabel{ "New Filename" }; //I made it so confusing by calling it labelling instead of renaming lol
 	ComboBox digitsSelection;
 	Label digitSelectionLabel;
@@ -257,7 +248,8 @@ public:
 		setContentOwned(new LabellingComponent(mainVT, data), true);
 		centreWithSize(600, 600);
 		setVisible(true);
-
+		setWantsKeyboardFocus(false);
+		this->getContentComponent()->grabKeyboardFocus();
 		mainVT.addListener(this);
 
 	}
