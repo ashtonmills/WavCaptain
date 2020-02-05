@@ -12,14 +12,13 @@
 #include "MainComponent.h"
 #include "ValTreeIds.h"
 
-struct CoreData;
 
 //=========================================================================
 // Dialog window for labeling assets
 class LabellingComponent : public Component
 {
 public:
-	LabellingComponent(ValueTree vt, CoreData& data) : mainVT(vt), coreData(data)
+	LabellingComponent(ValueTree vt) : mainVT(vt)
 	{
 
 		setSize(600, 600);
@@ -230,14 +229,13 @@ private:
 	TextButton cancelButton{ "Cancel" };
 	ValueTree mainVT;
 	ValueTree cancelVT{ ValTreeIDs::closeLabellingDialog };
-	CoreData& coreData;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabellingComponent)
 };
 
 class LabellingWindow : public DocumentWindow, ValueTree::Listener
 {
 public:
-	LabellingWindow(String name, CoreData& data, ValueTree vt) : DocumentWindow(name,
+	LabellingWindow(String name, ValueTree vt) : DocumentWindow(name,
 		Desktop::getInstance().getDefaultLookAndFeel()
 		.findColour(ResizableWindow::backgroundColourId),
 		DocumentWindow::allButtons), mainVT (vt)
@@ -245,7 +243,7 @@ public:
 		setUsingNativeTitleBar(false);
 		setResizable(true, true);
 
-		setContentOwned(new LabellingComponent(mainVT, data), true);
+		setContentOwned(new LabellingComponent(mainVT), true);
 		centreWithSize(600, 600);
 		setVisible(true);
 		setWantsKeyboardFocus(false);
