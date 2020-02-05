@@ -53,6 +53,10 @@ public:
 	{
 		return Font("Segoe UI Symbol", 25, Font::bold);
 	}
+	BorderSize<int> getLabelBorderSize(Label&)
+	{
+		return BorderSize<int>(0);
+	}
 };
 
 //==============================================================================
@@ -66,6 +70,7 @@ public:
 		symbolLabel.setName("fadeOut Widget");
 		symbolLabel.setText(symbol, dontSendNotification);
 		symbolLabel.setLookAndFeel(&unicodeLF);
+		symbolLabel.setColour(0x1000281, Colours::black);
 		//symbolLabel.setAlpha(0.5);
 	}
 	~FadeoutWidget()
@@ -115,6 +120,11 @@ public:
 			g.setColour(Colours::black);
 			g.drawLine(drawPosition, 0.0f, (float)drawPosition, getHeight(), 1.0);
 		}
+		g.setColour(Colours::black);
+		Line<float> fadeoutLine(Point<float>(getWidth()+3, getHeight()),
+			Point<float>(fadeoutWidget.getRight()-3, fadeoutWidget.getBottom()));
+
+		g.drawLine(fadeoutLine, 1.0f);
 	}
 	String floatToTimecode(float rawTime)
 	{
@@ -199,6 +209,7 @@ public:
 			//}
 			mainVT.setProperty(ValTreeIDs::fadeoutXPosition, event.getPosition().getX(), nullptr);
 			mainVT.setProperty(ValTreeIDs::fadeoutYPosition, event.getPosition().getY(), nullptr);
+			repaint();
 		}
 		//else
 		//{
@@ -225,15 +236,13 @@ public:
 			int x = mainVT.getProperty(ValTreeIDs::fadeoutXPosition);
 			if (x < 0)
 			{
-				DBG("x = " + std::to_string(x));
-				fadeoutWidget.setBounds(0, -3, 30, 15);
+				fadeoutWidget.setBounds(0, -3, fadeWidgetWidth, fadeWidgetHeight);
 				mainVT.setProperty(ValTreeIDs::fadeoutXPosition,0 , nullptr);
 				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
 			}
-			if ( x > getWidth() - 20)
+			if ( x > getWidth() - fadeoutWidgetRightEdgeOffset)
 			{
-				DBG("x = " + std::to_string(x));
-				fadeoutWidget.setBounds(getWidth() - 20, -3, 30, 15);
+				fadeoutWidget.setBounds(getWidth() - fadeoutWidgetRightEdgeOffset, -3, fadeWidgetWidth, fadeWidgetHeight);
 				mainVT.setProperty(ValTreeIDs::fadeoutXPosition, getParentWidth() - 20, nullptr);
 				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
 			}
@@ -243,10 +252,9 @@ public:
 		{
 	
 			int y = mainVT.getProperty(ValTreeIDs::fadeoutYPosition);
-			DBG("y = " + std::to_string(y));
 			if (y > -3 || y < -3)
 			{
-				fadeoutWidget.setBounds(fadeoutWidget.getBounds().getX(), -3, 30, 15);
+				fadeoutWidget.setBounds(fadeoutWidget.getBounds().getX(), -3, fadeWidgetWidth, fadeWidgetHeight);
 				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
 				mainVT.setProperty(ValTreeIDs::fadeoutXPosition, fadeoutWidget.getBounds().getX(), nullptr);
 			}
@@ -263,7 +271,7 @@ public:
 	}
 	void resized()
 	{
-		fadeoutWidget.setBounds(getWidth() - 20, -3, 30, 15);
+		fadeoutWidget.setBounds(getWidth() - fadeoutWidgetRightEdgeOffset, -3, fadeWidgetWidth, fadeWidgetHeight);
 	}
 
 
@@ -288,7 +296,9 @@ private:
 	bool shouldLoop = false;
 	Label timeLabel;
 	FadeoutWidget fadeoutWidget;
-
+	int fadeWidgetWidth = 17;
+	int fadeWidgetHeight = 15;
+	int fadeoutWidgetRightEdgeOffset = 12;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PositionOverlay)
 };
