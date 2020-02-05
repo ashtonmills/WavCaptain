@@ -26,5 +26,7 @@ namespace ValTreeIDs
 	static Identifier repoFilesNode("repoFiles" );
 
 	static Identifier debugMsg("debugMsg");
+	static Identifier fadeoutXPosition{ "fadeoutXPosition" };
+	static Identifier fadeoutYPosition{ "fadeoutYPosition" };
 }
 

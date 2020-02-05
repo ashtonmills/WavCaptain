@@ -86,7 +86,7 @@ private:
 
 //==============================================================================
 
-class PositionOverlay : public Component, public Timer, public ComponentDragger
+class PositionOverlay : public Component, public Timer, public ComponentDragger, public ValueTree::Listener
 {
 public:
 	PositionOverlay(AudioTransportSource& transportSourcetoUse, ValueTree vt)
@@ -95,6 +95,7 @@ public:
 		startTimer(1);
 		addAndMakeVisible(fadeoutWidget);
 		fadeoutWidget.addMouseListener(this,true);
+		mainVT.addListener(this);
 	}
 
 	void paint(Graphics& g) override
@@ -181,22 +182,23 @@ public:
 		{
 			//int newX = event.getPosition().getX();
 			//fadeoutWidget.setBounds(newX, 0, 30, 15);
-			auto bc = std::make_unique<ComponentBoundsConstrainer>();
+			//auto bc = std::make_unique<ComponentBoundsConstrainer>();
 			//bc->setMinimumOnscreenAmounts(10, 10, 30, 30);
-			dragComponent(&fadeoutWidget, event,bc.get());
-			if (fadeoutWidget.getBounds().getY() > -3 || fadeoutWidget.getBounds().getY() < -3)
-			{
-				fadeoutWidget.setBounds(fadeoutWidget.getBounds().getX(), -3, 30, 15);
-			}
-			if (fadeoutWidget.getBounds().getX() < 0)
-			{
-				fadeoutWidget.setBounds(0, -3, 30, 15);
-			}
-			if (fadeoutWidget.getBounds().getX() > getParentWidth()-20)
-			{
-				fadeoutWidget.setBounds(getParentWidth()-20, -3, 30, 15);
-			}
-			
+			dragComponent(&fadeoutWidget, event,nullptr);
+			//if (fadeoutWidget.getBounds().getY() > -3 || fadeoutWidget.getBounds().getY() < -3)
+			//{
+			//	fadeoutWidget.setBounds(fadeoutWidget.getBounds().getX(), -3, 30, 15);
+			//}
+			//if (fadeoutWidget.getBounds().getX() < 0)
+			//{
+			//	fadeoutWidget.setBounds(0, -3, 30, 15);
+			//}
+			//if (fadeoutWidget.getBounds().getX() > getParentWidth()-20)
+			//{
+			//	fadeoutWidget.setBounds(getParentWidth()-20, -3, 30, 15);
+			//}
+			mainVT.setProperty(ValTreeIDs::fadeoutXPosition, event.getPosition().getX(), nullptr);
+			mainVT.setProperty(ValTreeIDs::fadeoutYPosition, event.getPosition().getY(), nullptr);
 		}
 		//else
 		//{
@@ -216,6 +218,41 @@ public:
 		//	}
 		//}
 	}
+	void valueTreePropertyChanged(ValueTree& tree, const Identifier& property)
+	{
+		if (property == ValTreeIDs::fadeoutXPosition)
+		{
+			int x = mainVT.getProperty(ValTreeIDs::fadeoutXPosition);
+			if (x < 0)
+			{
+				DBG("x = " + std::to_string(x));
+				fadeoutWidget.setBounds(0, -3, 30, 15);
+				mainVT.setProperty(ValTreeIDs::fadeoutXPosition,0 , nullptr);
+				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
+			}
+			if ( x > getWidth() - 20)
+			{
+				DBG("x = " + std::to_string(x));
+				fadeoutWidget.setBounds(getWidth() - 20, -3, 30, 15);
+				mainVT.setProperty(ValTreeIDs::fadeoutXPosition, getParentWidth() - 20, nullptr);
+				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
+			}
+
+		}
+		if (property == ValTreeIDs::fadeoutYPosition)
+		{
+	
+			int y = mainVT.getProperty(ValTreeIDs::fadeoutYPosition);
+			DBG("y = " + std::to_string(y));
+			if (y > -3 || y < -3)
+			{
+				fadeoutWidget.setBounds(fadeoutWidget.getBounds().getX(), -3, 30, 15);
+				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
+				mainVT.setProperty(ValTreeIDs::fadeoutXPosition, fadeoutWidget.getBounds().getX(), nullptr);
+			}
+		}
+	}
+
 	bool getLooping()
 	{
 		return shouldLoop;
