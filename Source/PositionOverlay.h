@@ -190,25 +190,9 @@ public:
 	
 		if (event.originalComponent->getName() == "fadeOut Widget")
 		{
-			//int newX = event.getPosition().getX();
-			//fadeoutWidget.setBounds(newX, 0, 30, 15);
-			//auto bc = std::make_unique<ComponentBoundsConstrainer>();
-			//bc->setMinimumOnscreenAmounts(10, 10, 30, 30);
 			dragComponent(&fadeoutWidget, event,nullptr);
-			//if (fadeoutWidget.getBounds().getY() > -3 || fadeoutWidget.getBounds().getY() < -3)
-			//{
-			//	fadeoutWidget.setBounds(fadeoutWidget.getBounds().getX(), -3, 30, 15);
-			//}
-			//if (fadeoutWidget.getBounds().getX() < 0)
-			//{
-			//	fadeoutWidget.setBounds(0, -3, 30, 15);
-			//}
-			//if (fadeoutWidget.getBounds().getX() > getParentWidth()-20)
-			//{
-			//	fadeoutWidget.setBounds(getParentWidth()-20, -3, 30, 15);
-			//}
-			mainVT.setProperty(ValTreeIDs::fadeoutXPosition, event.getPosition().getX(), nullptr);
-			mainVT.setProperty(ValTreeIDs::fadeoutYPosition, event.getPosition().getY(), nullptr);
+			mainVT.setProperty(ValTreeIDs::fadeoutXPosition, fadeoutWidget.getBounds().getX(), nullptr);
+			mainVT.setProperty(ValTreeIDs::fadeoutYPosition, fadeoutWidget.getBounds().getY(), nullptr);
 			repaint();
 		}
 		//else
@@ -243,7 +227,7 @@ public:
 			if ( x > getWidth() - fadeoutWidgetRightEdgeOffset)
 			{
 				fadeoutWidget.setBounds(getWidth() - fadeoutWidgetRightEdgeOffset, -3, fadeWidgetWidth, fadeWidgetHeight);
-				mainVT.setProperty(ValTreeIDs::fadeoutXPosition, getParentWidth() - 20, nullptr);
+				mainVT.setProperty(ValTreeIDs::fadeoutXPosition, getParentWidth() - fadeoutWidgetRightEdgeOffset, nullptr);
 				mainVT.setProperty(ValTreeIDs::fadeoutYPosition, -3, nullptr);
 			}
 
