@@ -19,7 +19,7 @@ class MainComponent;
 
 
 class LocalTableList : public Component, public FileDragAndDropTarget,
-	public TableListBoxModel, public MouseListener, public ValueTree::Listener
+	public TableListBoxModel, public MouseListener, public ValueTree::Listener, public DragAndDropContainer
 {
 public:
 	LocalTableList(MainComponent& mc, ValueTree vt, String chooseButtonText, bool isLeftPanel,String sInitFile);
@@ -63,6 +63,13 @@ public:
 	void mouseExit(const MouseEvent& event) override;
 	void valueTreePropertyChanged(ValueTree& tree,
 		const Identifier& property);
+	void startDragging(const var& sourceDescription,
+		Component* sourceComponent,
+		Image 	dragImage = Image(),
+		bool 	allowDraggingToOtherJuceWindows = false,
+		const Point< int >* imageOffsetFromMouse = nullptr,
+		const MouseInputSource* inputSourceCausingDrag = nullptr
+	);
 
 
 

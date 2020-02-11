@@ -776,3 +776,10 @@ void LocalTableList::valueTreePropertyChanged(ValueTree& tree, const Identifier&
 	}
 }
 
+void LocalTableList::startDragging(const var& sourceDescription, Component* sourceComponent,
+	Image dragImage, bool allowDraggingToOtherJuceWindows, 
+	const Point<int>* imageOffsetFromMouse, const MouseInputSource* inputSourceCausingDrag)
+{
+	DBG("started dragging");
+}
+

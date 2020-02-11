@@ -184,6 +184,8 @@ public:
 		void valueTreePropertyChanged(ValueTree& tree, const Identifier& property);
 
 
+
+
 		class ButtonPanel : public Component, public Slider::Listener, public MouseListener
 		{
 		public:
