@@ -69,6 +69,7 @@ MainComponent::~MainComponent()
 	// This shuts down the audio device and clears the audio source.
 	transportSource.setSource(nullptr);
 	shutdownAudio();
+	mainVT.setProperty(ValTreeIDs::closeLabellingDialog, "close", nullptr);
 }
 
 
